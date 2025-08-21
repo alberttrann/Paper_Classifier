@@ -1,5 +1,7 @@
 ## Technical Report: A Systematic Approach to Scientific Abstract Classification using Ensemble Methods
 
+*Check benchmark_results.txt for detailed benchmark runs throughout the project*
+
 ### Executive Summary
 
 This report details the systematic development and evaluation of a machine learning classifier for categorizing scientific paper abstracts from the 2.29 million-sample arXiv dataset. The project began with an exploration of individual models (Decision Tree, k-Nearest Neighbors, Multinomial Naive Bayes, K-Means) across various feature representations (Bag-of-Words, TF-IDF, SBERT Embeddings). Initial benchmarks revealed that no single feature set was universally optimal; traditional models like Multinomial Naive Bayes excelled with sparse, keyword-based features (BoW, accuracy **0.8710**), while modern semantic models like k-Nearest Neighbors performed best with dense embeddings (accuracy **0.8590**).
