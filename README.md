@@ -152,5 +152,5 @@ Stacking Configuration                            | Accuracy
 [MNB(b)+kNN(e)] + DT(t)                           | 0.8700
 [MNB(b)+kNN(e)] + LR(b)                           | 0.8850
 [MNB(b)+kNN(e)] + LR(t)                           | 0.8910
-[MNB(b)+kNN(e)] + LR(e)			                    | 0.8870
+[MNB(b)+kNN(e)] + LR(e)			                  | 0.8870
 ```
