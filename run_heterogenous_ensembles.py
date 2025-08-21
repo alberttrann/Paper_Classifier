@@ -1,4 +1,3 @@
-# run_heterogeneous_ensembles.py
 
 import os
 import re

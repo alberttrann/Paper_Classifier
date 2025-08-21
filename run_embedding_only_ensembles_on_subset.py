@@ -1,4 +1,3 @@
-# run_ensemble_on_subset.py
 
 import os
 import re

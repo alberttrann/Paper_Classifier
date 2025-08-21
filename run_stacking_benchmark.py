@@ -1,4 +1,3 @@
-# run_stacking_benchmark.py
 
 import os
 import re

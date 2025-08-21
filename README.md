@@ -1,6 +1,6 @@
 ## Technical Report: A Systematic Approach to Scientific Abstract Classification using Ensemble Methods
 
-*Check benchmark_results.txt for detailed benchmark runs throughout the project*
+*Check `benchmark_results.txt` for detailed benchmark runs throughout the project*
 
 ### Executive Summary
 
@@ -56,6 +56,7 @@ Three distinct feature representations were benchmarked:
 
 #### 3.1. Experiment 1: Individual Model Benchmarking
 This experiment tested each of the 4 algorithms against each of the 3 feature sets.
+Check `run_single_benchmarks.py` for code script
 
 **Summary Table 1: Individual Model Accuracy**
 | Algorithm | Bag of Words | TF-IDF | Embeddings |
@@ -74,6 +75,8 @@ This experiment tested each of the 4 algorithms against each of the 3 feature se
 #### 3.2. Experiment 2: Heterogeneous Voting Ensembles
 This experiment tested the hypothesis that an ensemble where each model is paired with its optimal feature set would outperform any single model. A hard-voting (majority rule) approach was used.
 
+Check `run_heterogenous_ensembles.py` for code script. Also check `run_embedding_only_ensembles.py` for the code script of evaluating the 2 initial embedding-only ensembles. [MNB(emb) + kNN(emb) + DTT(emb) & MNB(emb) + kNN(emb)]
+
 **Summary Table 2: Heterogeneous Voting Ensemble Accuracy**
 | Ensemble Configuration | Accuracy |
 | :--- | :--- |
@@ -87,6 +90,8 @@ This experiment tested the hypothesis that an ensemble where each model is paire
 
 #### 3.3. Experiment 3: Advanced Stacking Ensembles
 This final experiment implemented a stacking classifier. A meta-learner was trained on the out-of-fold predictions of the base models, combined with original features.
+
+Check `run_stacking_benchmark.py` for code script
 
 **Summary Table 3: Stacking Ensemble Accuracy**
 | Stacking Configuration | Accuracy |
@@ -108,3 +113,44 @@ This project successfully navigated the journey from a simple modeling concept t
 The key takeaway is that state-of-the-art results in complex classification tasks are rarely achieved by a single model or a single feature type. The highest accuracy of **89.8%** was achieved by a **stacking ensemble** that embraced heterogeneity: it combined the lexical prowess of **Multinomial Naive Bayes on TF-IDF features**, the semantic understanding of **k-Nearest Neighbors on SBERT embeddings**, and the diverse perspective of a **Decision Tree on TF-IDF features**. This rich set of base predictions was then intelligently synthesized by a **Logistic Regression meta-learner**, which itself benefited from TF-IDF features for final context.
 
 This demonstrates a powerful principle: the most effective solutions are often those that synergize the strengths of both traditional and modern techniques, allowing different models to contribute their unique expertise to a collective, superior decision.
+
+#### Recap
+
+```
+--- Single Benchmark Results Summary (Accuracy) ---
+Algorithm       | Bag of Words    | TF-IDF          | Embeddings     
+---------------------------------------------------------------------
+kNN             | 0.3500          | 0.8010          | 0.8590         
+MNB             | 0.8710          | 0.8670          | 0.8160         
+DT              | 0.6130          | 0.6200          | 0.5110         
+KMeans          | 0.3880          | 0.6990          | 0.7260         
+---------------------------------------------------------------------
+
+--- Heterogeneous Ensemble Summary (Accuracy) ---
+Ensemble Configuration                             | Accuracy       
+--------------------------------------------------------------------
+MNB(emb) + kNN(emb) + DT(emb)                      | 0.8280
+MNB(bow) + kNN(emb) + DT(tfidf)                    | 0.8760         
+MNB(tfidf) + kNN(emb) + DT(bow)                    | 0.8700         
+MNB(tfidf) + kNN(emb) + DT(tfidf)                  | 0.8750         
+MNB(bow) + kNN(emb) + DT(bow)                      | 0.8710
+MNB(emb) + kNN(emb)                                | 0.8340
+MNB(bow) + kNN(emb)                                | 0.8580         
+MNB(tfidf) + kNN(emb)                              | 0.8500         
+--------------------------------------------------------------------
+
+--- Stacking Ensemble Summary (Accuracy) ---
+Stacking Configuration                            | Accuracy
+--------------------------------------------------|
+[MNB(b)+kNN(e)+DT(t)] + LR(b)                     | 0.8870
+[MNB(b)+kNN(e)+DT(t)] + LR(t)                     | 0.8950
+[MNB(b)+kNN(e)+DT(t)] + LR(e)                     | 0.8870
+[MNB(t)+kNN(e)+DT(t)] + LR(b)                     | 0.8820
+[MNB(t)+kNN(e)+DT(t)] + LR(t)                     | 0.8980
+[MNB(t)+kNN(e)+DT(t)] + LR(e)                     | 0.8930
+[MNB(b)+kNN(e)+DT(t)] + DT(t)                     | 0.8570
+[MNB(b)+kNN(e)] + DT(t)                           | 0.8700
+[MNB(b)+kNN(e)] + LR(b)                           | 0.8850
+[MNB(b)+kNN(e)] + LR(t)                           | 0.8910
+[MNB(b)+kNN(e)] + LR(e)			                    | 0.8870
+```
