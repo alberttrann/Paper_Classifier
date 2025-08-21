@@ -6,4 +6,5 @@ scikit-learn
 nltk
 tqdm
 joblib
-torch
+scipy
+torch torchvision --index-url https://download.pytorch.org/whl/cu126
