@@ -117,6 +117,17 @@ This demonstrates a powerful principle: the most effective solutions are often t
 #### Recap
 
 ```
+--- Configuration ---
+Categories: ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
+Samples per Category: 1000
+DATASET_NAME = "UniverseTBD/arxiv-abstracts-large" 
+SBERT Model: intfloat/multilingual-e5-base
+TFIDF_MAX_FEATURES = 10000
+KNN_N_NEIGHBORS = 5
+DT_MAX_DEPTH = 20
+RANDOM_STATE = 42
+Device: cuda
+-------------------------
 --- Single Benchmark Results Summary (Accuracy) ---
 Algorithm       | Bag of Words    | TF-IDF          | Embeddings     
 ---------------------------------------------------------------------
