@@ -47,9 +47,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LOG_FILE_PATH = "benchmark_results.txt"
 
 # --- NLTK Downloads ---
-# (Assuming they are already downloaded from previous runs)
 
-# --- Helper function for logging ---
 def log_message(message):
     print(message)
     with open(LOG_FILE_PATH, 'a') as f:
@@ -76,7 +74,6 @@ log_message("="*80)
 
 # 1. Data Sampling and Preprocessing
 print("--- Step 1: Data Sampling & Preprocessing ---")
-# ... (This section is identical to previous scripts) ...
 category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
 samples = []
 dataset_generator = load_dataset(DATASET_NAME, split="train", streaming=True)

@@ -22,9 +22,9 @@ from tqdm.auto import tqdm
 import torch
 
 # --- Configuration ---
-# NEW: Define the parent categories to focus on and the number of samples per category
+# Define the parent categories to focus on and the number of samples per category
 CATEGORIES_TO_SELECT = ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-SAMPLES_PER_CATEGORY = 1000 # Increase this for a more robust model, e.g., 5000 or 10000
+SAMPLES_PER_CATEGORY = 1000 
 TOTAL_SAMPLES = len(CATEGORIES_TO_SELECT) * SAMPLES_PER_CATEGORY
 
 DATASET_NAME = "UniverseTBD/arxiv-abstracts-large"
@@ -35,7 +35,7 @@ RANDOM_STATE = 42
 BATCH_SIZE = 64
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-# --- NLTK Downloads (run once if not already downloaded) ---
+# --- NLTK Downloads  ---
 try:
     stopwords.words('english')
 except LookupError:
@@ -53,7 +53,7 @@ except LookupError:
     nltk.download('wordnet')
     nltk.download('omw-1.4')
 
-# --- Text Preprocessing Function (Preserved from previous logic) ---
+# --- Text Preprocessing Function  ---
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 def clean_text(text):
@@ -74,7 +74,7 @@ def clean_text(text):
 # --- Main Execution ---
 print(f"Using device: {DEVICE}")
 
-# --- 1. NEW: Targeted Data Sampling ---
+# --- Targeted Data Sampling ---
 print(f"Starting targeted data sampling...")
 print(f"Goal: {SAMPLES_PER_CATEGORY} samples for each of the following categories: {CATEGORIES_TO_SELECT}")
 
@@ -94,7 +94,6 @@ for s in tqdm(dataset_generator, desc="Scanning for samples"):
     if s['categories'] is None or s['abstract'] is None:
         continue
 
-    # As per your teacher's logic: only consider samples with a single category label
     if len(s['categories'].split(' ')) != 1:
         continue
 
@@ -152,7 +151,7 @@ print(f"Train set shape: {X_train.shape}, Test set shape: {X_test.shape}")
 
 # --- 6. Initialize Classifiers and Pipelines (Preserved from previous logic) ---
 mnb_pipeline = Pipeline([
-    ('mnb', MultinomialNB()) # No need for scaler as data is already scaled
+    ('mnb', MultinomialNB()) 
 ])
 clf_dt = DecisionTreeClassifier(random_state=RANDOM_STATE, max_depth=15)
 
