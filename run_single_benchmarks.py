@@ -34,7 +34,7 @@ import torch
 # --- Configuration ---
 # Data Sampling
 CATEGORIES_TO_SELECT = ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-SAMPLES_PER_CATEGORY = 1000 # Using 1000 per category for a more robust benchmark (5k total)
+SAMPLES_PER_CATEGORY = 2000 # Using 1000 per category for a more robust benchmark (5k total)
 DATASET_NAME = "UniverseTBD/arxiv-abstracts-large"  # Replace with your dataset name
 
 # Models & Vectorizers

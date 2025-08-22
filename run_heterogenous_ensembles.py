@@ -34,7 +34,7 @@ import torch
 
 # --- Configuration ---
 CATEGORIES_TO_SELECT = ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-SAMPLES_PER_CATEGORY = 1000 # Using 1000 for a robust result (5k total)
+SAMPLES_PER_CATEGORY = 2000 # Using 1000 for a robust result (5k total)
 DATASET_NAME = "UniverseTBD/arxiv-abstracts-large"
 
 MODEL_NAME = "intfloat/multilingual-e5-base"
@@ -42,7 +42,7 @@ TFIDF_MAX_FEATURES = 10000
 KNN_N_NEIGHBORS = 5
 DT_MAX_DEPTH = 20
 RANDOM_STATE = 42
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LOG_FILE_PATH = "benchmark_results.txt"
 

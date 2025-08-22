@@ -23,7 +23,7 @@ import torch
 # --- Configuration ---
 # Define the parent categories to focus on and the number of samples per category
 CATEGORIES_TO_SELECT = ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-SAMPLES_PER_CATEGORY = 1000 
+SAMPLES_PER_CATEGORY = 2000 
 TOTAL_SAMPLES = len(CATEGORIES_TO_SELECT) * SAMPLES_PER_CATEGORY
 
 DATASET_NAME = "UniverseTBD/arxiv-abstracts-large"
@@ -31,7 +31,7 @@ MODEL_NAME = "intfloat/multilingual-e5-base"
 OUTPUT_DIR = "processed_data_subset" # Use a new directory for this smaller dataset
 KNN_N_NEIGHBORS = 5
 RANDOM_STATE = 42
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # --- NLTK Downloads  ---

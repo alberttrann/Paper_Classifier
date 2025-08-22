@@ -106,26 +106,14 @@ Check `run_stacking_benchmark.py` for code script
 *   **TF-IDF for the Meta-Learner:** The highest performing configurations were those where the Logistic Regression meta-learner was given TF-IDF features as additional context. This suggests that after seeing the probabilistic outputs of the base models, the meta-learner benefits from having access to the original keyword-based features to make a final, refined decision.
 *   **Logistic Regression as an Ideal Meta-Learner:** The simple, linear Logistic Regression outperformed the more complex Decision Tree as a meta-learner, highlighting that for a meta-task, a simpler model that can effectively weigh strong input features is often superior.
 
-### 4. Conclusion
-
-This project successfully navigated the journey from a simple modeling concept to a sophisticated, high-performance classification system. The iterative process of benchmarking, analyzing results, and refining the strategy was critical to its success.
-
-The key takeaway is that state-of-the-art results in complex classification tasks are rarely achieved by a single model or a single feature type. The highest accuracy of **89.8%** was achieved by a **stacking ensemble** that embraced heterogeneity: it combined the lexical prowess of **Multinomial Naive Bayes on TF-IDF features**, the semantic understanding of **k-Nearest Neighbors on SBERT embeddings**, and the diverse perspective of a **Decision Tree on TF-IDF features**. This rich set of base predictions was then intelligently synthesized by a **Logistic Regression meta-learner**, which itself benefited from TF-IDF features for final context.
-
-This demonstrates a powerful principle: the most effective solutions are often those that synergize the strengths of both traditional and modern techniques, allowing different models to contribute their unique expertise to a collective, superior decision.
-
 #### Recap
 
 ```
 --- Configuration ---
 Categories: ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-Samples per Category: 1000
 DATASET_NAME = "UniverseTBD/arxiv-abstracts-large" 
-SBERT Model: intfloat/multilingual-e5-base
 TFIDF_MAX_FEATURES = 10000
 KNN_N_NEIGHBORS = 5
-DT_MAX_DEPTH = 20
-RANDOM_STATE = 42
 Device: cuda
 -------------------------
 --- Single Benchmark Results Summary (Accuracy) ---
@@ -165,3 +153,131 @@ Stacking Configuration                            | Accuracy
 [MNB(b)+kNN(e)] + LR(t)                           | 0.8910
 [MNB(b)+kNN(e)] + LR(e)			                  | 0.8870
 ```
+
+
+### **Project Phase 3: Advanced Optimization and Hybrid Modeling**
+
+**Core Principle:** All experiments will be conducted on the targeted, balanced subset of data to ensure rapid iteration and clear, comparable results. We will build a new, comprehensive benchmarking script that executes this entire plan.
+
+---
+
+### **Phase 3, Step 1: Foundational Enhancements (Upgrading the "Ingredients")**
+
+**(No changes here - this step is solid and foundational for everything else)**
+
+*   **Sub-step 1.1:** Enhance Text Cleaning (Custom, Domain-Specific Stop Words).
+*   **Sub-step 1.2:** Enhance TF-IDF Vectorizer (n-grams, `min_df`, `max_df`, `sublinear_tf`).
+*   **Sub-step 1.3:** Enhance SBERT Embeddings (Switch to **SciBERT**).
+*   **Sub-step 1.4:** Hyperparameter Tuning of Base Models (`MNB`, `DT`, `kNN`) using `GridSearchCV`.
+
+---
+
+### **Phase 3, Step 2: Advanced Feature Engineering (Creating New Signals)**
+
+We will now create a diverse portfolio of feature sets.
+
+*   **Sub-step 2.1:** Engineer Structural & Metadata Features (`X_meta`).
+*   **Sub-step 2.2:** Engineer "Abstract vs. Title" Features (`X_title_similarity`, `X_title_diff`).
+*   **Sub-step 2.3:** Engineer the "Semantic Dissonance" Feature (`X_dissonance`).
+*   **Sub-step 2.4: Implement Combined Feature Sets at the Input Layer.**
+    *   **Action:** Create new, combined feature matrices before any models are trained.
+    *   **Plan:**
+        1.  Create `X_tfidf_plus_emb`: Horizontally stack the "advanced" TF-IDF matrix and the SciBERT embeddings matrix using `scipy.sparse.hstack`.
+        2.  Create `X_tfidf_plus_meta`: Horizontally stack the "advanced" TF-IDF matrix and the metadata features (`X_meta`) from Step 2.1.
+    *   **Goal:** Create two powerful, wide feature sets to test if a single strong model (`XGBoost` or `LogisticRegression`) can outperform ensembles when given access to all features at once.
+
+---
+
+### **Phase 3, Step 3: Advanced Single Model Benchmarks**
+
+Before moving to the final ensembles, we'll test our new combined feature sets.
+
+*   **Sub-step 3.1: Benchmark Models on Combined Features.**
+    *   **Action:** Train and evaluate powerful single models on the new feature sets from Step 2.4.
+    *   **Plan:**
+        1.  Train and test a `LogisticRegression` on `X_tfidf_plus_emb`.
+        2.  Train and test an `XGBClassifier` on `X_tfidf_plus_emb`.
+        3.  Train and test an `XGBClassifier` on `X_tfidf_plus_meta`.
+*   **Goal:** To establish a new "state-of-the-art" single model baseline. It's possible one of these combinations might be so powerful it rivals the ensembles.
+
+---
+
+### **Phase 3, Step 4: Advanced Ensemble and Stacking Benchmarks**
+
+This is the final, comprehensive bake-off.
+
+*   **Sub-step 4.1: Implement Probability Calibration.**
+    *   **Action:** Create calibrated versions of our best-tuned base models.
+    *   **Plan:**
+        1.  Wrap the tuned `DecisionTreeClassifier` in `sklearn.calibration.CalibratedClassifierCV`.
+        2.  Wrap the tuned `KNeighborsClassifier` in `CalibratedClassifierCV`. (MNB is generally well-calibrated, so we can skip it initially).
+    *   **Goal:** To have "calibrated" versions of our base models ready for use in the soft voting and stacking experiments below.
+
+*   **Sub-step 4.2: Implement Soft Voting with Calibrated Models.**
+    *   **Action:** Create a heterogeneous ensemble using soft voting.
+    *   **Plan:**
+        1.  Use the **calibrated** base models (`CalibratedDT`, `CalibratedKNN`) and the tuned `MNB`.
+        2.  Generate `predict_proba` outputs from each and average them to get the final prediction.
+*   **Goal:** Test if probability calibration improves the performance of the soft voting ensemble compared to hard voting.
+
+*   **Sub-step 4.3: Implement "Pure" Stacking (Calibrated Probabilities Only).**
+    *   **Action:** Test the stacking architecture where the meta-learner is trained *only* on the out-of-fold predictions of the **calibrated** base models.
+    *   **Plan:**
+        *   Generate out-of-fold `predict_proba` outputs using the calibrated base models.
+        *   Train a meta-learner (e.g., `LogisticRegression`) on *only* these probability vectors.
+*   **Goal:** Test the "purest" form of stacking with the highest quality probability signals.
+        * Instead of:
+        ```python
+        # The predictions PLUS the original TF-IDF features
+        meta_learner_train_X = hstack([
+            meta_features_train['MNB_tfidf'], 
+            meta_features_train['kNN_emb'], 
+            meta_features_train['DT_tfidf'],
+            X_train_tfidf  # <-- The "Raw Evidence"
+        ]).tocsr()
+        ```
+        We'll just do:
+        ```python 
+        # Only the predictions from the base models
+        meta_features_pure_train = np.hstack([
+            meta_features_train['MNB_tfidf'], 
+            meta_features_train['kNN_emb'], 
+            meta_features_train['DT_tfidf']
+        ])
+        ```
+
+*   **Sub-step 4.4: Implement Stacking with New Meta-Learners and All Engineered Features.**
+    *   **Action:** Run a new, expanded set of stacking experiments using the **calibrated** base models.
+    *   **Plan:**
+        1.  **New Meta-Learners:** Benchmark `GaussianNB`
+        2.  **New Meta-Features:** For each meta-learner, test its performance when given different combinations of our engineered features from Step 2 (e.g., calibrated probabilities + metadata, calibrated probabilities + title similarity, calibrated probabilities + dissonance).
+*   **Goal:** Systematically find the absolute best combination of calibrated base model predictions, original features, and meta-learner.
+
+---
+
+### **Phase 3, Step 5: The "YOLO" Experiments**
+
+These are high-risk, high-reward experiments to be run in parallel or after the main benchmarks.
+
+*   **Sub-step 5.1: Implement the "Confidence-Gated Ensemble."**
+    *   **Action:** Build the cascading ensemble where a meta-learner acts as a "reliability gate."
+    *   **Plan:**
+        1.  Train the tuned `MNB(tfidf)` as the primary model.
+        2.  Train a `LogisticRegression` "gatekeeper" to predict if MNB will be correct.
+        3.  Implement the inference logic to escalate to the tuned, **calibrated** `kNN(SciBERT)` when the gatekeeper is not confident.
+*   **Goal:** Test if this dynamic, efficiency-focused ensemble can match or beat the accuracy of the more complex stacking models.
+
+*   **Sub-step 5.2: Implement the "Model Chimera" - kNN-Informed Decision Tree.**
+    *   **Action:** Attempt a proof-of-concept implementation of this hybrid model. This is a research-level task.
+    *   **Plan:**
+        1.  Define a custom Python class for the `KnnInformedDecisionTree`.
+        2.  The `fit` method will recursively build the tree.
+        3.  The `_find_best_split` method at each node will **not** iterate through features. Instead, it will:
+            *   Run a localized kNN search on the data points currently at that node.
+            *   Generate meta-features like `neighbor_purity` for each point.
+            *   Find the best threshold to split the node based on one of these meta-features (e.g., `if neighbor_purity <= 0.6`).
+        4.  The `predict` method will traverse this custom tree.
+*   **Goal:** Explore a truly novel modeling architecture. The primary outcome is the learning experience and insight, with a potential (but not guaranteed) for high performance.
+
+---
+
