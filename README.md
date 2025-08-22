@@ -179,9 +179,7 @@ We will now create a diverse portfolio of feature sets.
 *   **Sub-step 2.3:** Engineer the "Semantic Dissonance" Feature (`X_dissonance`).
 *   **Sub-step 2.4: Implement Combined Feature Sets at the Input Layer.**
     *   **Action:** Create new, combined feature matrices before any models are trained.
-    *   **Plan:**
-        1.  Create `X_tfidf_plus_emb`: Horizontally stack the "advanced" TF-IDF matrix and the SciBERT embeddings matrix using `scipy.sparse.hstack`.
-        2.  Create `X_tfidf_plus_meta`: Horizontally stack the "advanced" TF-IDF matrix and the metadata features (`X_meta`) from Step 2.1.
+    *   **Plan:**: Create `X_tfidf_plus_emb`: Horizontally stack the "advanced" TF-IDF matrix and the SciBERT embeddings matrix using `scipy.sparse.hstack`.
     *   **Goal:** Create two powerful, wide feature sets to test if a single strong model (`XGBoost` or `LogisticRegression`) can outperform ensembles when given access to all features at once.
 
 
@@ -191,11 +189,8 @@ Before moving to the final ensembles, we'll test our new combined feature sets.
 
 *   **Sub-step 3.1: Benchmark Models on Combined Features.**
     *   **Action:** Train and evaluate powerful single models on the new feature sets from Step 2.4.
-    *   **Plan:**
-        1.  Train and test a `LogisticRegression` on `X_tfidf_plus_emb`.
-        2.  Train and test an `XGBClassifier` on `X_tfidf_plus_emb`.
-        3.  Train and test an `XGBClassifier` on `X_tfidf_plus_meta`.
-*   **Goal:** To establish a new "state-of-the-art" single model baseline. It's possible one of these combinations might be so powerful it rivals the ensembles.
+    *   **Plan:**: Train and test a `LogisticRegression` on `X_tfidf_plus_emb`.
+*   **Goal:** To establish a new "state-of-the-art" single model baseline. It's possible this combination could turn out powerful
 
 
 #### **Phase 3, Step 4: Advanced Ensemble and Stacking Benchmarks**
@@ -302,15 +297,15 @@ Here is a direct comparison of the model performances from the `run_ultimate_ben
 
 The most immediate and noteworthy insight from the side-by-side table is that **doubling the training data did not consistently improve performance, and in several key cases, it slightly decreased accuracy.**
 
-*   **Top Performers Dip:** Your two best models, `Soft Voting` and `Pure Stacking`, both saw a minor decrease in accuracy when trained on 20k samples versus 10k.
+*   **Top Performers Dip:** The two best models, `Soft Voting` and `Pure Stacking`, both saw a minor decrease in accuracy when trained on 20k samples versus 10k.
 *   **Why would this happen?** This is a classic and highly insightful machine learning phenomenon. More data is not always better if other factors are not adjusted.
     *   **Increased Complexity and Noise:** The additional 1000 samples per category may have introduced more ambiguous or harder-to-classify abstracts. This can make the decision boundaries "fuzzier," slightly hurting the performance of a model whose parameters were optimized for a smaller, perhaps cleaner, subset.
-    *   **Fixed Hyperparameters:** The hyperparameters for our base models (`alpha` for MNB, `k` for kNN, `max_depth` for DT) were tuned on a 10k sample dataset. The optimal parameters for a 20k dataset might be different. By using the same parameters, the models might be slightly "out of tune" for the larger dataset, leading to a marginal performance drop.
+    *   **Fixed Hyperparameters:** The hyperparameters for base models (`alpha` for MNB, `k` for kNN, `max_depth` for DT) were tuned on a 10k sample dataset. The optimal parameters for a 20k dataset might be different. By using the same parameters, the models might be slightly "out of tune" for the larger dataset, leading to a marginal performance drop.
     *   **Diminishing Returns:** The first 1000 samples per category were likely sufficient to capture the core vocabulary and semantic patterns. The next 1000 samples provided less new information, meaning the models didn't learn significantly more, but were exposed to more noise.
 
 ##### 2. Analysis of the Ensemble Architectures
 
-This benchmark gave us a clear bake-off between several advanced ensemble strategies.
+This benchmark gave a clear bake-off between several advanced ensemble strategies.
 
 *   **"Pure" Stacking is the Champion (of this set):** The `Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR` model, which trains a Logistic Regression meta-learner *only* on the out-of-fold predictions of the base models, achieved the highest accuracy of **0.8910**. This confirms that learning the relationships between model predictions is a powerful strategy.
 
@@ -322,7 +317,7 @@ This benchmark gave us a clear bake-off between several advanced ensemble strate
 
 ##### 3. Grand Conclusion: Comparison to the Previous All-Time Best
 
-Now, let's address the most important question: did we beat the previous champion?
+Did we beat the previous champion?
 
 *   **Previous Champion:** `Stacking [MNB(t)+kNN(e)+DT(t)] + LR(t)` from the last experiment, with an accuracy of **0.8980**.
 *   **Ultimate Benchmark Champion:** `Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR` with an accuracy of **0.8910**.
@@ -333,6 +328,7 @@ Now, let's address the most important question: did we beat the previous champio
 This is the most valuable finding of all. The only significant difference between the all-time best model and the "Pure Stacking" champion is that the **previous winner also fed the original TF-IDF features to the meta-learner alongside the base model predictions.**
 
 This provides a powerful, data-driven conclusion:
+
 The optimal stacking architecture for this problem is one where the meta-learner has access to **both**:
 1.  **The "Opinions" of the Experts:** The out-of-fold probability predictions from the diverse base models.
 2.  **The "Raw Evidence":** The original lexical features (in this case, TF-IDF) of the text itself.
