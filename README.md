@@ -226,7 +226,8 @@ This is the final, comprehensive bake-off.
         *   Generate out-of-fold `predict_proba` outputs using the calibrated base models.
         *   Train a meta-learner (e.g., `LogisticRegression`) on *only* these probability vectors.
 *   **Goal:** Test the "purest" form of stacking with the highest quality probability signals.
-        * Instead of:
+
+    Instead of:
 
     ```python
     # The predictions PLUS the original TF-IDF features
