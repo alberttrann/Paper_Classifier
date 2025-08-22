@@ -336,8 +336,8 @@ The optimal stacking architecture for this problem is one where the meta-learner
 The "Pure" stack is very powerful, but giving the meta-learner access to the original TF-IDF features provides a crucial layer of context, allowing it to make a more informed final decision and pushing the accuracy from 0.8910 to a project-high of **0.8980**. This small difference is often what separates a winning model from a runner-up in competitive machine learning.
 
 --> Focus on improving the highest previous pipeline of ensemble , integrating 
-    * Enhanced Text Cleaning (Custom, Domain-Specific Stop Words).
-    * Enhanced TF-IDF Vectorizer (n-grams, min_df, max_df, sublinear_tf).
-    * Enhanced SBERT Embeddings (Switch to SciBERT).
-    * Hyperparameter Tuning of Base Models (MNB, DT, kNN) using GridSearchCV.
-    * Try switching LR(tfidf) with XBGClassifier(TFIDF, BoW, Embedding) and GaussianNB(TFIDF, BoW, Embedding)
+1. Enhanced Text Cleaning (Custom, Domain-Specific Stop Words).
+2. Enhanced TF-IDF Vectorizer (n-grams, min_df, max_df, sublinear_tf).
+3. Enhanced SBERT Embeddings (Switch to SciBERT).
+4. Hyperparameter Tuning of Base Models (MNB, DT, kNN) using GridSearchCV.
+5. Try switching LR(tfidf) with XBGClassifier(TFIDF, BoW, Embedding) and GaussianNB(TFIDF, BoW, Embedding)
