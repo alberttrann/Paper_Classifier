@@ -790,7 +790,6 @@ weighted avg       0.88      0.88      0.88      2000
 ```
 </details>
 
----
 
 ## 6. Ultimate Benchmark (`run_ultimate_benchmark_e5.py`)
 
@@ -974,12 +973,13 @@ weighted avg       0.88      0.88      0.88      2000
 
 ---
 
-## 7. Champion Pipeline Benchmarks
+### **7. Champion Pipeline Benchmarks**
 
-### 7.1. SciBERT Model (`run_champion_pipeline.py`)
+This section details the performance of the most advanced stacking architectures, where a meta-learner is trained on the out-of-fold predictions of the best-tuned base models (`MNB(tfidf)`, `kNN(embedding)`, `DT(tfidf)`). Experiments were run using both domain-specific **SciBERT** and general-purpose **e5-base** embeddings at two different data scales.
 
-#### 1000 Samples per Category
+#### 7.1. SciBERT Model (`run_champion_pipeline.py`)
 
+##### 1000 Samples per Category
 *   **Run Date**: 2025-08-22 11:39:16
 
 <details>
@@ -988,11 +988,13 @@ weighted avg       0.88      0.88      0.88      2000
 **Overall Accuracy**: 0.8940
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.90      0.92      0.91       200
           cs       0.90      0.90      0.90       200
         math       0.93      0.97      0.95       200
      physics       0.78      0.74      0.76       200
+
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
@@ -1005,11 +1007,13 @@ weighted avg       0.89      0.89      0.89      1000
 **Overall Accuracy**: 0.8850
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.96      0.92      0.94       200
     cond-mat       0.87      0.90      0.88       200
           cs       0.91      0.90      0.90       200
         math       0.93      0.97      0.95       200
      physics       0.76      0.73      0.74       200
+
     accuracy                           0.89      1000
    macro avg       0.88      0.89      0.88      1000
 weighted avg       0.88      0.89      0.88      1000
@@ -1022,11 +1026,13 @@ weighted avg       0.88      0.89      0.88      1000
 **Overall Accuracy**: 0.8780
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.86      0.86      0.86       200
           cs       0.91      0.92      0.92       200
         math       0.94      0.94      0.94       200
      physics       0.74      0.74      0.74       200
+
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.88      1000
 weighted avg       0.88      0.88      0.88      1000
@@ -1039,11 +1045,13 @@ weighted avg       0.88      0.88      0.88      1000
 **Overall Accuracy**: 0.8940
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.96      0.93      0.94       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.91      0.93      0.92       200
         math       0.94      0.95      0.95       200
      physics       0.78      0.76      0.77       200
+
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
@@ -1056,11 +1064,13 @@ weighted avg       0.89      0.89      0.89      1000
 **Overall Accuracy**: 0.8860
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.91      0.91      0.91       200
         math       0.94      0.95      0.94       200
      physics       0.76      0.74      0.75       200
+
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
@@ -1073,11 +1083,13 @@ weighted avg       0.89      0.89      0.89      1000
 **Overall Accuracy**: 0.8940
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.96      0.92      0.94       200
     cond-mat       0.89      0.93      0.90       200
           cs       0.90      0.91      0.90       200
         math       0.94      0.96      0.95       200
      physics       0.78      0.76      0.77       200
+
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
@@ -1090,11 +1102,13 @@ weighted avg       0.89      0.89      0.89      1000
 **Overall Accuracy**: 0.7810
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.91      0.93      0.92       200
     cond-mat       0.75      0.79      0.77       200
           cs       0.80      0.81      0.80       200
         math       0.89      0.81      0.85       200
      physics       0.57      0.57      0.57       200
+
     accuracy                           0.78      1000
    macro avg       0.78      0.78      0.78      1000
 weighted avg       0.78      0.78      0.78      1000
@@ -1107,11 +1121,13 @@ weighted avg       0.78      0.78      0.78      1000
 **Overall Accuracy**: 0.7640
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.89      0.89      0.89       200
     cond-mat       0.71      0.77      0.74       200
           cs       0.80      0.82      0.81       200
         math       0.88      0.84      0.86       200
      physics       0.53      0.51      0.52       200
+
     accuracy                           0.76      1000
    macro avg       0.76      0.76      0.76      1000
 weighted avg       0.76      0.76      0.76      1000
@@ -1124,18 +1140,371 @@ weighted avg       0.76      0.76      0.76      1000
 **Overall Accuracy**: 0.8630
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.98      0.89      0.93       200
     cond-mat       0.84      0.86      0.85       200
           cs       0.86      0.92      0.89       200
         math       0.95      0.95      0.95       200
      physics       0.70      0.69      0.70       200
+
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
 ```
 </details>
 
-#### 2000 Samples per Category
+##### 2000 Samples per Category
+*   **Run Date**: 2025-08-22 11:39:16
+
+<details>
+<summary>Meta-Learner: LR(TFIDF)</summary>
+
+**Overall Accuracy**: 0.8900
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.93      0.95       400
+    cond-mat       0.90      0.84      0.87       400
+          cs       0.92      0.89      0.90       400
+        math       0.91      0.95      0.93       400
+     physics       0.76      0.84      0.80       400
+
+    accuracy                           0.89      2000
+   macro avg       0.89      0.89      0.89      2000
+weighted avg       0.89      0.89      0.89      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: LR(BoW)</summary>
+
+**Overall Accuracy**: 0.8865
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.99      0.93      0.96       400
+    cond-mat       0.88      0.85      0.86       400
+          cs       0.91      0.88      0.89       400
+        math       0.91      0.95      0.93       400
+     physics       0.76      0.82      0.79       400
+
+    accuracy                           0.89      2000
+   macro avg       0.89      0.89      0.89      2000
+weighted avg       0.89      0.89      0.89      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: LR(Emb)</summary>
+
+**Overall Accuracy**: 0.8755
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.95       400
+    cond-mat       0.88      0.84      0.86       400
+          cs       0.89      0.88      0.88       400
+        math       0.90      0.94      0.92       400
+     physics       0.75      0.79      0.77       400
+
+    accuracy                           0.88      2000
+   macro avg       0.88      0.88      0.88      2000
+weighted avg       0.88      0.88      0.88      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(TFIDF)</summary>
+
+**Overall Accuracy**: 0.8885
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.93      0.95       400
+    cond-mat       0.90      0.84      0.87       400
+          cs       0.91      0.89      0.90       400
+        math       0.92      0.94      0.93       400
+     physics       0.76      0.83      0.79       400
+
+    accuracy                           0.89      2000
+   macro avg       0.89      0.89      0.89      2000
+weighted avg       0.89      0.89      0.89      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(BoW)</summary>
+
+**Overall Accuracy**: 0.8960
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.94      0.96       400
+    cond-mat       0.89      0.86      0.88       400
+          cs       0.91      0.91      0.91       400
+        math       0.92      0.94      0.93       400
+     physics       0.79      0.83      0.81       400
+
+    accuracy                           0.90      2000
+   macro avg       0.90      0.90      0.90      2000
+weighted avg       0.90      0.90      0.90      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(Emb)</summary>
+
+**Overall Accuracy**: 0.8880
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.99      0.94      0.96       400
+    cond-mat       0.90      0.84      0.87       400
+          cs       0.90      0.89      0.89       400
+        math       0.91      0.94      0.93       400
+     physics       0.76      0.84      0.80       400
+
+    accuracy                           0.89      2000
+   macro avg       0.89      0.89      0.89      2000
+weighted avg       0.89      0.89      0.89      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(TFIDF)</summary>
+
+**Overall Accuracy**: 0.7775
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.92      0.92      0.92       400
+    cond-mat       0.74      0.79      0.76       400
+          cs       0.77      0.77      0.77       400
+        math       0.89      0.82      0.86       400
+     physics       0.57      0.59      0.58       400
+
+    accuracy                           0.78      2000
+   macro avg       0.78      0.78      0.78      2000
+weighted avg       0.78      0.78      0.78      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(BoW)</summary>
+
+**Overall Accuracy**: 0.7420
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.86      0.91      0.89       400
+    cond-mat       0.68      0.79      0.73       400
+          cs       0.74      0.76      0.75       400
+        math       0.84      0.82      0.83       400
+     physics       0.54      0.43      0.48       400
+
+    accuracy                           0.74      2000
+   macro avg       0.74      0.74      0.74      2000
+weighted avg       0.74      0.74      0.74      2000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(Emb)</summary>
+
+**Overall Accuracy**: 0.8490
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.88      0.93       400
+    cond-mat       0.87      0.81      0.84       400
+          cs       0.86      0.88      0.87       400
+        math       0.93      0.93      0.93       400
+     physics       0.65      0.75      0.70       400
+
+    accuracy                           0.85      2000
+   macro avg       0.86      0.85      0.85      2000
+weighted avg       0.86      0.85      0.85      2000
+```
+</details>
+
+#### 7.2. e5-base Model (`run_champion_pipeline_e5.py`)
+
+##### 1000 Samples per Category
+*   **Run Date**: 2025-08-22 12:13:03
+
+<details>
+<summary>Meta-Learner: LR(TFIDF)</summary>
+
+**Overall Accuracy**: 0.9040
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.96       200
+    cond-mat       0.89      0.91      0.90       200
+          cs       0.93      0.90      0.91       200
+        math       0.92      0.98      0.95       200
+     physics       0.81      0.79      0.80       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: LR(BoW)</summary>
+
+**Overall Accuracy**: 0.8840
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.92      0.94       200
+    cond-mat       0.87      0.89      0.88       200
+          cs       0.91      0.90      0.90       200
+        math       0.93      0.97      0.95       200
+     physics       0.75      0.75      0.75       200
+
+    accuracy                           0.88      1000
+   macro avg       0.88      0.88      0.88      1000
+weighted avg       0.88      0.88      0.88      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: LR(Emb)</summary>
+
+**Overall Accuracy**: 0.9020
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.95       200
+    cond-mat       0.88      0.92      0.90       200
+          cs       0.93      0.90      0.91       200
+        math       0.93      0.98      0.95       200
+     physics       0.80      0.79      0.79       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(TFIDF)</summary>
+
+**Overall Accuracy**: 0.9020
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.96       200
+    cond-mat       0.89      0.90      0.89       200
+          cs       0.92      0.92      0.92       200
+        math       0.94      0.97      0.96       200
+     physics       0.79      0.78      0.78       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(BoW)</summary>
+
+**Overall Accuracy**: 0.9030
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95       200
+    cond-mat       0.88      0.91      0.90       200
+          cs       0.93      0.92      0.92       200
+        math       0.94      0.98      0.96       200
+     physics       0.78      0.78      0.78       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: XGB(Emb)</summary>
+
+**Overall Accuracy**: 0.9030
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96       200
+    cond-mat       0.87      0.92      0.90       200
+          cs       0.92      0.91      0.91       200
+        math       0.94      0.97      0.95       200
+     physics       0.81      0.77      0.79       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(TFIDF)</summary>
+
+**Overall Accuracy**: 0.7810
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.91      0.93      0.92       200
+    cond-mat       0.75      0.79      0.77       200
+          cs       0.80      0.81      0.80       200
+        math       0.89      0.81      0.85       200
+     physics       0.57      0.57      0.57       200
+
+    accuracy                           0.78      1000
+   macro avg       0.78      0.78      0.78      1000
+weighted avg       0.78      0.78      0.78      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(BoW)</summary>
+
+**Overall Accuracy**: 0.7640
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.89      0.89      0.89       200
+    cond-mat       0.71      0.77      0.74       200
+          cs       0.80      0.82      0.81       200
+        math       0.88      0.84      0.86       200
+     physics       0.53      0.51      0.52       200
+
+    accuracy                           0.76      1000
+   macro avg       0.76      0.76      0.76      1000
+weighted avg       0.76      0.76      0.76      1000
+```
+</details>
+
+<details>
+<summary>Meta-Learner: GNB(Emb)</summary>
+
+**Overall Accuracy**: 0.8700
+```
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.96       200
+    cond-mat       0.81      0.90      0.85       200
+          cs       0.87      0.90      0.89       200
+        math       0.91      0.96      0.94       200
+     physics       0.77      0.65      0.70       200
+
+    accuracy                           0.87      1000
+   macro avg       0.87      0.87      0.87      1000
+weighted avg       0.87      0.87      0.87      1000
+```
+</details>
+
+##### 2000 Samples per Category
+*   **Run Date**: 2025-08-22 12:17:30
 
 <details>
 <summary>Meta-Learner: LR(TFIDF)</summary>
@@ -1143,11 +1512,13 @@ weighted avg       0.86      0.86      0.86      1000
 **Overall Accuracy**: 0.8920
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.94      0.96       400
     cond-mat       0.91      0.85      0.88       400
           cs       0.91      0.88      0.89       400
         math       0.90      0.97      0.93       400
      physics       0.78      0.83      0.80       400
+
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
@@ -1160,11 +1531,13 @@ weighted avg       0.89      0.89      0.89      2000
 **Overall Accuracy**: 0.8825
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.98      0.93      0.95       400
     cond-mat       0.87      0.83      0.85       400
           cs       0.92      0.87      0.89       400
         math       0.90      0.96      0.93       400
      physics       0.76      0.83      0.79       400
+
     accuracy                           0.88      2000
    macro avg       0.89      0.88      0.88      2000
 weighted avg       0.89      0.88      0.88      2000
@@ -1177,11 +1550,13 @@ weighted avg       0.89      0.88      0.88      2000
 **Overall Accuracy**: 0.8920
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.94      0.95       400
     cond-mat       0.92      0.85      0.88       400
           cs       0.91      0.88      0.89       400
         math       0.90      0.97      0.93       400
      physics       0.78      0.83      0.80       400
+
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
@@ -1194,11 +1569,13 @@ weighted avg       0.89      0.89      0.89      2000
 **Overall Accuracy**: 0.8940
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.95      0.96       400
     cond-mat       0.92      0.85      0.88       400
           cs       0.90      0.89      0.90       400
         math       0.91      0.94      0.93       400
      physics       0.78      0.84      0.81       400
+
     accuracy                           0.89      2000
    macro avg       0.90      0.89      0.89      2000
 weighted avg       0.90      0.89      0.89      2000
@@ -1211,11 +1588,13 @@ weighted avg       0.90      0.89      0.89      2000
 **Overall Accuracy**: 0.8915
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.94      0.96       400
     cond-mat       0.91      0.84      0.87       400
           cs       0.91      0.90      0.91       400
         math       0.91      0.95      0.93       400
      physics       0.77      0.82      0.80       400
+
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
@@ -1228,11 +1607,13 @@ weighted avg       0.89      0.89      0.89      2000
 **Overall Accuracy**: 0.8975
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.93      0.95       400
     cond-mat       0.93      0.85      0.89       400
           cs       0.90      0.90      0.90       400
         math       0.92      0.95      0.93       400
      physics       0.79      0.84      0.81       400
+
     accuracy                           0.90      2000
    macro avg       0.90      0.90      0.90      2000
 weighted avg       0.90      0.90      0.90      2000
@@ -1245,11 +1626,13 @@ weighted avg       0.90      0.90      0.90      2000
 **Overall Accuracy**: 0.7775
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.92      0.92      0.92       400
     cond-mat       0.74      0.79      0.76       400
           cs       0.77      0.77      0.77       400
         math       0.89      0.82      0.86       400
      physics       0.57      0.59      0.58       400
+
     accuracy                           0.78      2000
    macro avg       0.78      0.78      0.78      2000
 weighted avg       0.78      0.78      0.78      2000
@@ -1262,11 +1645,13 @@ weighted avg       0.78      0.78      0.78      2000
 **Overall Accuracy**: 0.7425
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.87      0.91      0.89       400
     cond-mat       0.68      0.79      0.73       400
           cs       0.74      0.76      0.75       400
         math       0.84      0.82      0.83       400
      physics       0.54      0.43      0.48       400
+
     accuracy                           0.74      2000
    macro avg       0.74      0.74      0.74      2000
 weighted avg       0.74      0.74      0.74      2000
@@ -1276,25 +1661,27 @@ weighted avg       0.74      0.74      0.74      2000
 <details>
 <summary>Meta-Learner: GNB(Emb)</summary>
 
-**Overall Accuracy**: 0.8700
+**Overall Accuracy**: 0.8545
 ```
               precision    recall  f1-score   support
-    astro-ph       0.97      0.94      0.96       400
-    cond-mat       0.81      0.90      0.85       400
-          cs       0.87      0.90      0.89       400
-        math       0.91      0.96      0.94       400
-     physics       0.77      0.65      0.70       400
-    accuracy                           0.87      2000
-   macro avg       0.87      0.87      0.87      2000
-weighted avg       0.87      0.87      0.87      2000
+
+    astro-ph       0.98      0.91      0.94       400
+    cond-mat       0.86      0.84      0.85       400
+          cs       0.86      0.84      0.85       400
+        math       0.88      0.94      0.91       400
+     physics       0.71      0.73      0.72       400
+
+    accuracy                           0.85      2000
+   macro avg       0.86      0.85      0.86      2000
+weighted avg       0.86      0.85      0.86      2000
 ```
 </details>
 
----
+### **8. Single Model Benchmark (LR & XGBoost) (`run_single_LR_XBG.py`)**
 
-## 8. Single Model Benchmark (LR & XGBoost) (`run_single_LR_XBG.py`)
+This experiment was conducted to validate the superiority of the ensemble methods by establishing a strong baseline using powerful, well-known single models on the same enhanced feature sets.
 
-### 8.1. 1000 Samples per Category
+#### 8.1. 1000 Samples per Category
 
 *   **Run Date**: 2025-08-22 14:12:02
 
@@ -1304,11 +1691,13 @@ weighted avg       0.87      0.87      0.87      2000
 **Overall Accuracy**: 0.8580
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.95      0.91      0.93       200
     cond-mat       0.83      0.86      0.85       200
           cs       0.89      0.84      0.87       200
         math       0.89      0.98      0.93       200
      physics       0.72      0.69      0.71       200
+
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
@@ -1321,11 +1710,13 @@ weighted avg       0.86      0.86      0.86      1000
 **Overall Accuracy**: 0.8700
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.97      0.91      0.94       200
     cond-mat       0.85      0.90      0.88       200
           cs       0.87      0.88      0.88       200
         math       0.91      0.95      0.93       200
      physics       0.75      0.70      0.73       200
+
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
@@ -1338,11 +1729,13 @@ weighted avg       0.87      0.87      0.87      1000
 **Overall Accuracy**: 0.8560
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.94      0.96      0.95       200
     cond-mat       0.80      0.88      0.84       200
           cs       0.85      0.89      0.87       200
         math       0.88      0.95      0.92       200
      physics       0.79      0.59      0.68       200
+
     accuracy                           0.86      1000
    macro avg       0.85      0.86      0.85      1000
 weighted avg       0.85      0.86      0.85      1000
@@ -1355,11 +1748,13 @@ weighted avg       0.85      0.86      0.85      1000
 **Overall Accuracy**: 0.8230
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.94      0.94      0.94       200
     cond-mat       0.82      0.86      0.84       200
           cs       0.81      0.79      0.80       200
         math       0.84      0.94      0.89       200
      physics       0.68      0.59      0.63       200
+
     accuracy                           0.82      1000
    macro avg       0.82      0.82      0.82      1000
 weighted avg       0.82      0.82      0.82      1000
@@ -1372,11 +1767,13 @@ weighted avg       0.82      0.82      0.82      1000
 **Overall Accuracy**: 0.8270
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.94      0.94      0.94       200
     cond-mat       0.80      0.85      0.83       200
           cs       0.83      0.83      0.83       200
         math       0.86      0.93      0.89       200
      physics       0.68      0.58      0.63       200
+
     accuracy                           0.83      1000
    macro avg       0.82      0.83      0.82      1000
 weighted avg       0.82      0.83      0.82      1000
@@ -1389,18 +1786,20 @@ weighted avg       0.82      0.83      0.82      1000
 **Overall Accuracy**: 0.8380
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.92      0.96      0.94       200
     cond-mat       0.78      0.82      0.80       200
           cs       0.85      0.86      0.86       200
         math       0.90      0.95      0.92       200
      physics       0.71      0.59      0.65       200
+
     accuracy                           0.84      1000
    macro avg       0.83      0.84      0.83      1000
 weighted avg       0.83      0.84      0.83      1000
 ```
 </details>
 
-### 8.2. 2000 Samples per Category
+#### 8.2. 2000 Samples per Category
 
 *   **Run Date**: 2025-08-22 14:15:16
 
@@ -1410,11 +1809,13 @@ weighted avg       0.83      0.84      0.83      1000
 **Overall Accuracy**: 0.8515
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.99      0.90      0.94       400
     cond-mat       0.84      0.81      0.82       400
           cs       0.89      0.83      0.86       400
         math       0.86      0.95      0.91       400
      physics       0.71      0.77      0.74       400
+
     accuracy                           0.85      2000
    macro avg       0.86      0.85      0.85      2000
 weighted avg       0.86      0.85      0.85      2000
@@ -1427,11 +1828,13 @@ weighted avg       0.86      0.85      0.85      2000
 **Overall Accuracy**: 0.8710
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.98      0.92      0.95       400
     cond-mat       0.88      0.85      0.86       400
           cs       0.89      0.86      0.87       400
         math       0.86      0.95      0.90       400
      physics       0.76      0.78      0.77       400
+
     accuracy                           0.87      2000
    macro avg       0.87      0.87      0.87      2000
 weighted avg       0.87      0.87      0.87      2000
@@ -1444,11 +1847,13 @@ weighted avg       0.87      0.87      0.87      2000
 **Overall Accuracy**: 0.8400
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.94      0.92      0.93       400
     cond-mat       0.83      0.82      0.82       400
           cs       0.86      0.84      0.85       400
         math       0.85      0.94      0.89       400
      physics       0.72      0.68      0.70       400
+
     accuracy                           0.84      2000
    macro avg       0.84      0.84      0.84      2000
 weighted avg       0.84      0.84      0.84      2000
@@ -1461,11 +1866,13 @@ weighted avg       0.84      0.84      0.84      2000
 **Overall Accuracy**: 0.8345
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.96      0.90      0.93       400
     cond-mat       0.85      0.79      0.82       400
           cs       0.87      0.83      0.85       400
         math       0.83      0.94      0.88       400
      physics       0.69      0.72      0.70       400
+
     accuracy                           0.83      2000
    macro avg       0.84      0.83      0.84      2000
 weighted avg       0.84      0.83      0.84      2000
@@ -1478,11 +1885,13 @@ weighted avg       0.84      0.83      0.84      2000
 **Overall Accuracy**: 0.8360
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.95      0.88      0.92       400
     cond-mat       0.87      0.81      0.84       400
           cs       0.86      0.81      0.84       400
         math       0.83      0.93      0.88       400
      physics       0.69      0.75      0.72       400
+
     accuracy                           0.84      2000
    macro avg       0.84      0.84      0.84      2000
 weighted avg       0.84      0.84      0.84      2000
@@ -1495,14 +1904,15 @@ weighted avg       0.84      0.84      0.84      2000
 **Overall Accuracy**: 0.8350
 ```
               precision    recall  f1-score   support
+
     astro-ph       0.94      0.91      0.92       400
     cond-mat       0.81      0.80      0.80       400
           cs       0.86      0.85      0.86       400
         math       0.86      0.93      0.89       400
      physics       0.70      0.69      0.70       400
+
     accuracy                           0.83      2000
    macro avg       0.83      0.84      0.83      2000
-weighted avg       0.83      0.84      0.83      2000
+weighted avg       0.83      0.83      0.83      2000
 ```
 </details>
-

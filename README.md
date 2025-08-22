@@ -265,18 +265,6 @@ These are high-risk, high-reward experiments to be run in parallel or after the 
         3.  Implement the inference logic to escalate to the tuned, **calibrated** `kNN(SciBERT)` when the gatekeeper is not confident.
 *   **Goal:** Test if this dynamic, efficiency-focused ensemble can match or beat the accuracy of the more complex stacking models.
 
-*   **Sub-step 5.2: Implement the "Model Chimera" - kNN-Informed Decision Tree.**
-    *   **Action:** Attempt a proof-of-concept implementation of this hybrid model. This is a research-level task.
-    *   **Plan:**
-        1.  Define a custom Python class for the `KnnInformedDecisionTree`.
-        2.  The `fit` method will recursively build the tree.
-        3.  The `_find_best_split` method at each node will **not** iterate through features. Instead, it will:
-            *   Run a localized kNN search on the data points currently at that node.
-            *   Generate meta-features like `neighbor_purity` for each point.
-            *   Find the best threshold to split the node based on one of these meta-features (e.g., `if neighbor_purity <= 0.6`).
-        4.  The `predict` method will traverse this custom tree.
-*   **Goal:** Explore a truly novel modeling architecture. The primary outcome is the learning experience and insight, with a potential (but not guaranteed) for high performance.
-
 ---
 
 #### Analysis of the "Ultimate Benchmark" Results & Implications for Change
