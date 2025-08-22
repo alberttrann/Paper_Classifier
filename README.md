@@ -551,4 +551,4 @@ XGB(Emb)                  | 0.8350
 -------------------------------------------
 ```
 
-![alt text](Definitive_Benchmark_Dashboard_v3.png)
+![alt text](visualizations/Definitive_Benchmark_Dashboard_v3.png)
