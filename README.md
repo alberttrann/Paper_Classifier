@@ -1,6 +1,7 @@
 ## Technical Report: A Systematic Approach to Scientific Abstract Classification using Ensemble Methods
 
-*Check `benchmark_results.txt` for detailed benchmark runs throughout the project*
+*Check `benchmark_results.md` for detailed benchmark runs and visualizations of the project*
+*Also check out `visualizations` folder to see some visual graphics if you wish to*
 
 ### Executive Summary
 
@@ -551,4 +552,3 @@ XGB(Emb)                  | 0.8350
 -------------------------------------------
 ```
 
-![alt text](visualizations/Definitive_Benchmark_Dashboard_v3.png)
