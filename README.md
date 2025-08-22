@@ -426,7 +426,7 @@ This table summarizes the performance of the advanced models using **e5-base emb
 | Stacking [Base Models] + GNB(meta+title) | 0.8770 |
 
 
-**Table 5: Table 1: SciBERT - 1000 Samples & 2000 Samples per Category**
+**Table 5: SciBERT - 1000 Samples & 2000 Samples per Category**
 
 `run_champion_pipeline.py`
 
