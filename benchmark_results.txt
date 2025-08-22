@@ -5,6 +5,7 @@ Device: cuda
 -------------------------
 
 --- Detailed Classification Reports ---
+run_single_benchmark.py
 (1000 samples per category)
 intfloat/multilingual-e5-base
 
@@ -225,7 +226,9 @@ weighted avg       0.59      0.73      0.65      1000
 
 
 
---- Evaluating Ensemble 1: MNB + kNN (Manual Voting) (All embedding) on Test Set ---
+--- Evaluating Ensemble 1: MNB(emb) + kNN(emb) (Manual Voting) on Test Set ---
+run_embedding_only_ensembles_on_subset.py
+1000 samples /category
 Accuracy: 0.8340
 Classification Report:
               precision    recall  f1-score   support
@@ -240,7 +243,9 @@ Classification Report:
    macro avg       0.85      0.83      0.81      1000
 weighted avg       0.85      0.83      0.81      1000
 
---- Evaluating Ensemble 2: MNB + kNN + Decision Tree (Manual Voting) (All embedding)on Test Set ---
+--- Evaluating Ensemble 2: MNB(emb) + kNN(emb) + Decision Tree(emb) (Manual Voting) (embedding)on Test Set ---
+run_embedding_only_ensembles_on_subset.py
+1000 samples/category
 Accuracy: 0.8280
 Classification Report:
               precision    recall  f1-score   support
@@ -259,7 +264,8 @@ weighted avg       0.83      0.83      0.82      1000
 
 
 ================================================================================
---- Heterogeneous Ensemble Benchmark Run : 2025-08-21 12:56:29 ---
+--- Heterogeneous Ensemble Benchmark Run : 2025-08-21 12:56:29 --- 
+run_heterogenous_ensembles.py
 ================================================================================
 (1000 samples per category)
 intfloat/multilingual-e5-base
@@ -378,6 +384,7 @@ weighted avg       0.87      0.85      0.84      1000
 
 ================================================================================
 --- Stacking Ensemble Benchmark Run (Extended) : 2025-08-21 13:42:00 ---
+run_stacking_benchmark.py
 ================================================================================
 (1000 samples per category)
 intfloat/multilingual-e5-base
@@ -649,8 +656,9 @@ Stacking Configuration                            | Accuracy
 
 ================================================================================
 --- Ultimate Benchmark Run (Corrected SciBERT): 2025-08-22 11:56:57 ---
+run_ultimate_benchmark.py
 ================================================================================
-1000sam/cat
+1000 samples/category
 
 --- Advanced Single Model Reports (Corrected SciBERT) ---
 
@@ -745,8 +753,9 @@ weighted avg       0.86      0.86      0.86      1000
 
 ================================================================================
 --- Ultimate Benchmark Run (Corrected SciBERT): 2025-08-22 12:00:31 ---
+run_ultimate_benchmark.py
 ================================================================================
-2000sam/cat
+2000 samples/category
 
 --- Advanced Single Model Reports (Corrected SciBERT) ---
 
@@ -843,8 +852,9 @@ weighted avg       0.88      0.88      0.88      2000
 
 ================================================================================
 --- Ultimate Benchmark Run (e5-base Model): 2025-08-22 12:13:03 ---
+run_ultimate_benchmark_e5.py
 ================================================================================
-1000sam/cat
+1000 samples/category
 
 --- Advanced Single Model Reports (e5-base Model) ---
 
@@ -939,8 +949,9 @@ weighted avg       0.86      0.86      0.86      1000
 
 ================================================================================
 --- Ultimate Benchmark Run (e5-base Model): 2025-08-22 12:17:30 ---
+run_ultimate_benchmark_e5.py
 ================================================================================
-2000sam/cat
+2000 samples/category
 
 --- Advanced Single Model Reports (e5-base Model) ---
 
@@ -1032,68 +1043,16 @@ Overall Accuracy: 0.8800
 weighted avg       0.88      0.88      0.88      2000
 
 
-### **Table 1: SciBERT - 1000 Samples per Category**
-
-This table summarizes the performance of the advanced models using **SciBERT embeddings** on the smaller dataset of 5,000 total samples.
-
-| Configuration | Accuracy |
-| :--- | :--- |
-| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8930** |
-| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8850 |
-| Stacking [Base Models] + GNB(meta+title) | 0.8840 |
-| LogisticRegression on TF-IDF + Embeddings | 0.8690 |
-| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8590 |
-
----
-
-### **Table 2: e5-base Model - 1000 Samples per Category**
-
-This table summarizes the performance of the advanced models using **e5-base embeddings** on the smaller dataset of 5,000 total samples.
-
-| Configuration | Accuracy |
-| :--- | :--- |
-| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.9010** |
-| Stacking [Base Models] + GNB(meta+title) | 0.8900 |
-| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8920 |
-| LogisticRegression on TF-IDF + Embeddings | 0.8850 |
-| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8590 |
-
----
-
-### **Table 3: SciBERT - 2000 Samples per Category**
-
-This table summarizes the performance of the advanced models using **SciBERT embeddings** on the larger dataset of 10,000 total samples.
-
-| Configuration | Accuracy |
-| :--- | :--- |
-| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | **0.8850** |
-| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8850** |
-| Stacking [Base Models] + GNB(meta+title) | 0.8790 |
-| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8785 |
-| LogisticRegression on TF-IDF + Embeddings | 0.8570 |
-
----
-
-### **Table 4: e5-base Model - 2000 Samples per Category**
-
-This table summarizes the performance of the advanced models using **e5-base embeddings** on the larger dataset of 10,000 total samples.
-
-| Configuration | Accuracy |
-| :--- | :--- |
-| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8895** |
-| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8870 |
-| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8800 |
-| LogisticRegression on TF-IDF + Embeddings | 0.8820 |
-| Stacking [Base Models] + GNB(meta+title) | 0.8770 |
 
 ### run_champion_pipeline.py and run_champion_pipeline_e5.py
 
 --- Champion Pipeline: Stacking with Various Meta-Learners ---
 SciBERT
-1000sam/cat
+1000 samples/category
 
 ================================================================================
 --- Champion Pipeline Benchmark (SciBERT): 2025-08-22 11:39:16 ---
+run_champion_pipeline.py
 ================================================================================
 
 ==================================================
@@ -1268,9 +1227,10 @@ weighted avg       0.86      0.86      0.86      1000
 
 --- Champion Pipeline: Stacking with Various Meta-Learners ---
 SciBERT
-2000sam/cat
+2000 samples /category
 ================================================================================
 --- Champion Pipeline Benchmark (SciBERT): 2025-08-22 11:39:16 ---
+run_champion_pipeline.py
 ================================================================================
 ==================================================
 Evaluating Meta-Learner: LR(TFIDF)
@@ -1443,39 +1403,14 @@ Overall Accuracy: 0.8490
 weighted avg       0.86      0.85      0.85      2000
 
 
---- Champion Stacking Pipeline Summary (Accuracy) (1000sam/cat) ---
-Meta-Learner Configuration          | Accuracy
------------------------------------------------------
-LR(TFIDF)                           | 0.8940
-LR(BoW)                             | 0.8850
-LR(Emb)                             | 0.8780
-XGB(TFIDF)                          | 0.8940
-XGB(BoW)                            | 0.8860
-XGB(Emb)                            | 0.8940
-GNB(TFIDF)                          | 0.7810
-GNB(BoW)                            | 0.7640
-GNB(Emb)                            | 0.8630
------------------------------------------------------
-
---- Champion Stacking Pipeline Summary (Accuracy) (2000sam/cat) ---
-Meta-Learner Configuration          | Accuracy
------------------------------------------------------
-LR(TFIDF)                           | 0.8900
-LR(BoW)                             | 0.8865
-LR(Emb)                             | 0.8755
-XGB(TFIDF)                          | 0.8885
-XGB(BoW)                            | 0.8960
-XGB(Emb)                            | 0.8880
-GNB(TFIDF)                          | 0.7775
-GNB(BoW)                            | 0.7420
-GNB(Emb)                            | 0.8490
------------------------------------------------------
 
 
 
 
 --- Champion Pipeline (e5-base): Stacking with Various Meta-Learners ---
-1000sam/cat
+run_champion_pipeline_e5.py
+
+1000 samples/category
 ==================================================
 Evaluating Meta-Learner (e5-base run): LR(TFIDF)
 ==================================================
@@ -1647,7 +1582,9 @@ Overall Accuracy: 0.8700
 weighted avg       0.87      0.87      0.87      1000
 
 --- Champion Pipeline (e5-base): Stacking with Various Meta-Learners ---
-2000sam/cat
+run_champion_pipeline_e5.py
+
+2000 samples/category
 
 ==================================================
 Evaluating Meta-Learner (e5-base run): LR(TFIDF)
@@ -1819,41 +1756,15 @@ Overall Accuracy: 0.8545
    macro avg       0.86      0.85      0.86      2000
 weighted avg       0.86      0.85      0.86      2000
 
---- Champion Stacking Pipeline Summary (e5-base run) (1000sam/cat) ---
-Meta-Learner Configuration          | Accuracy
------------------------------------------------------
-LR(TFIDF)                           | 0.9040
-LR(BoW)                             | 0.8840
-LR(Emb)                             | 0.9020
-XGB(TFIDF)                          | 0.9020
-XGB(BoW)                            | 0.9030
-XGB(Emb)                            | 0.9030
-GNB(TFIDF)                          | 0.7810
-GNB(BoW)                            | 0.7640
-GNB(Emb)                            | 0.8700
------------------------------------------------------
-
---- Champion Stacking Pipeline Summary (e5-base run) (2000sam/cat) ---
-Meta-Learner Configuration          | Accuracy
------------------------------------------------------
-LR(TFIDF)                           | 0.8920
-LR(BoW)                             | 0.8825
-LR(Emb)                             | 0.8920
-XGB(TFIDF)                          | 0.8940
-XGB(BoW)                            | 0.8915
-XGB(Emb)                            | 0.8975
-GNB(TFIDF)                          | 0.7775
-GNB(BoW)                            | 0.7425
-GNB(Emb)                            | 0.8545
------------------------------------------------------
 
 
 
 
 ================================================================================
 --- Single Model Benchmark (LR & XGBoost): 2025-08-22 14:12:02 ---
+run_single_LR_XBG.py
 ================================================================================
-1000sam/cat
+1000 samples /category
 
 --- Detailed Single Model Reports (LR & XGBoost) ---
 
@@ -1960,22 +1871,12 @@ weighted avg       0.83      0.84      0.83      1000
 
 
 
---- Single Model (LR & XGBoost) Summary ---
-Model Configuration       | Accuracy       
--------------------------------------------
-LR(BoW)                   | 0.8580         
-LR(TFIDF)                 | 0.8700         
-LR(Emb)                   | 0.8560         
-XGB(BoW)                  | 0.8230         
-XGB(TFIDF)                | 0.8270         
-XGB(Emb)                  | 0.8380         
--------------------------------------------
-
 
 ================================================================================
 --- Single Model Benchmark (LR & XGBoost): 2025-08-22 14:15:16 ---
+run_single_LR_XBG.py
 ================================================================================
-2000sam/cat
+2000 samples /category
 
 --- Detailed Single Model Reports (LR & XGBoost) ---
 
@@ -2082,13 +1983,3 @@ weighted avg       0.83      0.83      0.83      2000
 
 
 
---- Single Model (LR & XGBoost) Summary ---
-Model Configuration       | Accuracy       
--------------------------------------------
-LR(BoW)                   | 0.8515         
-LR(TFIDF)                 | 0.8710         
-LR(Emb)                   | 0.8400         
-XGB(BoW)                  | 0.8345         
-XGB(TFIDF)                | 0.8360         
-XGB(Emb)                  | 0.8350         
--------------------------------------------
