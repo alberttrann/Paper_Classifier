@@ -14,7 +14,9 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-from sentence_transformers import SentenceTransformer, models
+# --- MODIFIED ---
+# We now only need the base SentenceTransformer class for e5-base
+from sentence_transformers import SentenceTransformer
 
 # Scikit-learn for models, vectorizers, and metrics
 from sklearn.model_selection import train_test_split, cross_val_predict, GridSearchCV
@@ -29,6 +31,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 
 
+# Other utilities
 from scipy.sparse import hstack, csr_matrix, issparse
 from scipy.spatial.distance import jensenshannon
 from tqdm.auto import tqdm
@@ -37,16 +40,17 @@ import torch
 # --- Configuration ---
 # Data Sampling
 CATEGORIES_TO_SELECT = ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-SAMPLES_PER_CATEGORY = 2000 # 10k total samples for a robust benchmark
+SAMPLES_PER_CATEGORY = 2000 # Using 2000 for a robust result (10k total)
 
+# --- MODIFIED ---
 # Models & Vectorizers
-SCIBERT_MODEL_NAME = "allenai/scibert_scivocab_uncased" 
+E5_MODEL_NAME = "intfloat/multilingual-e5-base" # Swapped back to e5-base
 TFIDF_MAX_FEATURES = 10000
 KNN_N_NEIGHBORS = 5
 DT_MAX_DEPTH = 20
 RANDOM_STATE = 42
-CV_FOLDS = 5 # 3 folds for faster GridSearchCV
-BATCH_SIZE = 128 # Reduce batch size slightly as SciBERT can be more memory intensive
+CV_FOLDS = 5 # 5 folds for faster GridSearchCV
+BATCH_SIZE = 128 # e5 is generally efficient, can use a slightly larger batch size
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LOG_FILE_PATH = "benchmark_results.txt"
 
@@ -57,14 +61,14 @@ LOG_FILE_PATH = "benchmark_results.txt"
 def log_message(message, to_console=True):
     if to_console:
         print(message)
-    with open(LOG_FILE_PATH, 'a') as f:
+    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
         f.write(message + '\n')
 
-# --- Text Preprocessing Function (with Custom Stop Words) ---
+# --- Enhanced Text Preprocessing Function (with Custom Stop Words) ---
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 # Add your custom, domain-specific stop words
-domain_specific_stopwords = {'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 'approach', 'propose', 'demonstrate', 'investigate', 'present', 'based', 'using', 'also', 'however', 'propose'}
+domain_specific_stopwords = {'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 'approach', 'propose', 'demonstrate', 'investigate', 'present', 'based', 'using', 'also', 'however', 'propose', 'provide', 'describe'}
 stop_words.update(domain_specific_stopwords)
 def clean_text(text):
     text = text.lower()
@@ -77,7 +81,8 @@ def clean_text(text):
 
 # --- Main Execution ---
 log_message("\n\n" + "="*80)
-log_message(f"--- Ultimate Benchmark Run (Corrected SciBERT): {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+# --- MODIFIED ---
+log_message(f"--- Ultimate Benchmark Run (e5-base Model): {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
 log_message("="*80)
 
 # 1. Data Sampling and Preprocessing
@@ -121,13 +126,11 @@ tfidf_vectorizer = TfidfVectorizer(
 X_train_tfidf = tfidf_vectorizer.fit_transform([processed_abstracts[i] for i in train_indices])
 X_test_tfidf = tfidf_vectorizer.transform([processed_abstracts[i] for i in test_indices])
 
-# SciBERT Embeddings
-print(f"Creating SciBERT Embeddings using {SCIBERT_MODEL_NAME}...")
-word_embedding_model = models.Transformer(SCIBERT_MODEL_NAME, max_seq_length=256)
-# Apply a pooling layer to get a single sentence embedding.
-pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())
-sbert_model = SentenceTransformer(modules=[word_embedding_model, pooling_model], device=DEVICE)
-print("SciBERT model created successfully.")
+# --- MODIFIED ---
+# SBERT Embeddings (using e5-base)
+print(f"Creating SBERT Embeddings using {E5_MODEL_NAME}...")
+sbert_model = SentenceTransformer(E5_MODEL_NAME, device=DEVICE)
+print("e5-base model created successfully.")
 
 X_train_emb = sbert_model.encode([processed_abstracts[i] for i in train_indices], batch_size=BATCH_SIZE, show_progress_bar=True)
 X_test_emb = sbert_model.encode([processed_abstracts[i] for i in test_indices], batch_size=BATCH_SIZE, show_progress_bar=True)
@@ -184,7 +187,7 @@ print(f"Best DT params: {dt_grid.best_params_}")
 
 # 5. Advanced Single Model Benchmarks
 print("\n--- Step 4: Benchmarking Models on Combined Features ---")
-log_message("\n\n--- Advanced Single Model Reports (Corrected SciBERT) ---", to_console=False)
+log_message("\n\n--- Advanced Single Model Reports (e5-base Model) ---", to_console=False)
 # Logistic Regression on TF-IDF + Embeddings
 print("Training LR on TF-IDF + Embeddings...")
 lr_combined = LogisticRegression(random_state=RANDOM_STATE, max_iter=1000).fit(X_train_tfidf_plus_emb, y_train)
@@ -197,6 +200,8 @@ log_message(f"Overall Accuracy: {acc:.4f}\n" + report, to_console=False)
 # 6. Calibrate Models and Generate Out-of-Fold Predictions for Stacking
 print("\n--- Step 5: Calibrating Models and Generating Meta-Features ---")
 # Calibrate the best-tuned DT and kNN
+# --- MODIFIED ---
+# Use the 'estimator' parameter for newer scikit-learn versions
 calibrated_dt = CalibratedClassifierCV(estimator=best_dt, cv=CV_FOLDS, method='isotonic')
 calibrated_knn = CalibratedClassifierCV(estimator=best_knn, cv=CV_FOLDS, method='isotonic')
 # MNB is usually well-calibrated, so we'll use the tuned version directly
@@ -218,7 +223,7 @@ print("All meta-features for stacking generated.")
 
 # 7. Final Stacking and Ensemble Benchmarks
 print("\n--- Step 6: Final Ensemble Benchmarks ---")
-log_message("\n\n--- Final Ensemble Reports (Corrected SciBERT) ---", to_console=False)
+log_message("\n\n--- Final Ensemble Reports (e5-base Model) ---", to_console=False)
 
 # Soft Voting Ensemble
 print("Evaluating Soft Voting Ensemble...")

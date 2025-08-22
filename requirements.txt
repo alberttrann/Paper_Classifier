@@ -1,5 +1,6 @@
 datasets 
 sentence-transformers 
+transformers
 faiss-cpu
 numpy
 scikit-learn

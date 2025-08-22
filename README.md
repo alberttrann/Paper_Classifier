@@ -180,7 +180,7 @@ We will now create a diverse portfolio of feature sets.
 *   **Sub-step 2.4: Implement Combined Feature Sets at the Input Layer.**
     *   **Action:** Create new, combined feature matrices before any models are trained.
     *   **Plan:**: Create `X_tfidf_plus_emb`: Horizontally stack the "advanced" TF-IDF matrix and the SciBERT embeddings matrix using `scipy.sparse.hstack`.
-    *   **Goal:** Create two powerful, wide feature sets to test if a single strong model (`XGBoost` or `LogisticRegression`) can outperform ensembles when given access to all features at once.
+    *   **Goal:** Test if a single strong model can outperform ensembles when given access to all features at once.
 
 
 #### **Phase 3, Step 3: Advanced Single Model Benchmarks**
@@ -275,69 +275,219 @@ These are high-risk, high-reward experiments to be run in parallel or after the 
 
 ---
 
-#### A. Side-by-Side Comparison: 1000 vs. 2000 Samples/Category
+#### Analysis of the "Ultimate Benchmark" Results & Implications for Change
 
-Here is a direct comparison of the model performances from the `run_ultimate_benchmark.py` script at two different data scales.
+*Check `run_ultimate_benchmark.py` and `run_ultimate_benchmark_e5.py` for the code*
 
-*This script has not implemented kNN-informed DT splits yet due to its complexity*
+This first phase of advanced testing was designed to establish the maximum performance of various *individual* modeling techniques after applying significant feature and model optimizations. We tested highly-tuned base models, advanced ensemble methods like soft voting and stacking, and novel architectures like the confidence-gated ensemble. The experiments were run with both a domain-specific **SciBERT** and a powerful general-purpose **e5-base** model for embeddings, and on two data scales (1000 and 2000 samples per category).
 
-| Model / Ensemble Configuration | Accuracy @ 1000 sam/cat | Accuracy @ 2000 sam/cat | Change |
-| :--- | :--- | :--- | :--- |
-| **Advanced Single Model** | | | |
-| `LR on (TF-IDF + Emb)` | 0.8690 | 0.8570 | <span style="color:red">-0.0120</span> |
-| **Final Ensembles** | | | |
-| `Soft Voting` | 0.8870 | 0.8845 | <span style="color:red">-0.0025</span> |
-| `Pure Stacking + LR` | **0.8910** | 0.8860 | <span style="color:red">-0.0050</span> |
-| `Stacking + GNB(meta+title)` | 0.8770 | 0.8800 | <span style="color:green">+0.0030</span> |
-| `Confidence-Gated` | 0.8690 | 0.8790 | <span style="color:green">+0.0010</span> |
+##### 1.1. Key Technical Findings from the "Ultimate Benchmark"
 
-#### B. Thorough Analysis of the Ultimate Benchmark
+**1. General-Purpose Embeddings (e5-base) Triumphed Over Domain-Specific (SciBERT):**
+*   **Observation:** This is the most significant and counter-intuitive finding. Across almost every ensemble configuration and data scale, the models using **e5-base embeddings consistently outperformed those using SciBERT.**
+    *   **Pure Stacking (1k samples):** e5-base hit **0.9010**, while SciBERT reached **0.8930**.
+    *   **LR on Combined Features (2k samples):** e5-base achieved **0.8820**, while SciBERT got **0.8570**.
+*   **Technical Interpretation:** This result challenges the common wisdom that domain-specific models are always superior. The `intfloat/multilingual-e5-base` model has been trained on a colossal and diverse dataset with a contrastive learning objective, which is explicitly designed to produce high-quality, well-separated sentence embeddings ideal for similarity and clustering tasks. SciBERT, while trained on scientific text, is a base BERT model; its raw token embeddings require effective pooling (like the mean pooling we implemented) to create a sentence-level representation. The e5-base model is *natively* a sentence-embedding model. This architectural difference and the power of its training methodology appear to have outweighed SciBERT's domain-specific vocabulary advantage for this particular classification task.
 
-##### 1. The Surprising Effect of More Data
+**2. The Power of Simple, Calibrated Ensembles:**
+*   **Observation:** The **Soft Voting Ensemble** consistently performed at a very high level, often matching or only slightly underperforming the more complex stacking models.
+    *   With e5-base (2k samples), Soft Voting achieved **0.8870**, just shy of the best stacking model's **0.8895**.
+*   **Technical Interpretation:** This demonstrates the power of **probability calibration**. By using `CalibratedClassifierCV`, we ensured that the probability scores from the very different base models (probabilistic MNB, distance-based kNN, rule-based DT) were on a comparable scale. This allows a simple weighted average (soft voting) to be extremely effective, as it correctly balances the confidence of each model's vote.
 
-The most immediate and noteworthy insight from the side-by-side table is that **doubling the training data did not consistently improve performance, and in several key cases, it slightly decreased accuracy.**
+**3. "Pure" Stacking Emerges as a Top Contender:**
+*   **Observation:** The "Pure" Stacking model, which uses *only* the base model predictions as features for the meta-learner, was consistently one of the top performers.
+    *   With e5-base (1k samples), it hit **0.9010**, the highest in that set.
+    *   With SciBERT (2k samples), it was tied for the top spot at **0.8850**.
+*   **Technical Interpretation:** This finding suggests that the most powerful signals for the meta-learner are the *interactions and error patterns* of the base models themselves. Adding original features back in can sometimes introduce noise that complicates the meta-learner's task. A "pure" stack forces the meta-learner to become an expert at one thing: learning which base model to trust under which circumstances, based purely on their probabilistic outputs.
 
-*   **Top Performers Dip:** The two best models, `Soft Voting` and `Pure Stacking`, both saw a minor decrease in accuracy when trained on 20k samples versus 10k.
-*   **Why would this happen?** This is a classic and highly insightful machine learning phenomenon. More data is not always better if other factors are not adjusted.
-    *   **Increased Complexity and Noise:** The additional 1000 samples per category may have introduced more ambiguous or harder-to-classify abstracts. This can make the decision boundaries "fuzzier," slightly hurting the performance of a model whose parameters were optimized for a smaller, perhaps cleaner, subset.
-    *   **Fixed Hyperparameters:** The hyperparameters for base models (`alpha` for MNB, `k` for kNN, `max_depth` for DT) were tuned on a 10k sample dataset. The optimal parameters for a 20k dataset might be different. By using the same parameters, the models might be slightly "out of tune" for the larger dataset, leading to a marginal performance drop.
-    *   **Diminishing Returns:** The first 1000 samples per category were likely sufficient to capture the core vocabulary and semantic patterns. The next 1000 samples provided less new information, meaning the models didn't learn significantly more, but were exposed to more noise.
+**4. The "Weird" Ensembles Showed Promise but Weren't Champions:**
+*   **Observation:** The `Confidence-Gated Ensemble` and the `Stacking + GNB(meta+title)` performed well, but never reached the top tier of accuracy.
+*   **Technical Interpretation:**
+    *   The **Confidence-Gated Ensemble** is designed for *efficiency*—it uses a fast model for most cases and escalates only when necessary. Its accuracy (e.g., **0.8800** with e5-base 2k) being competitive with the best models is actually a huge success, suggesting it could be the best choice in a production environment where prediction latency is a concern.
+    *   The **Stacking + GNB** model's lower performance is likely due to the strong (and often incorrect) assumption of feature independence that is core to Gaussian Naive Bayes. The probabilistic outputs from the base models are highly correlated, which violates this assumption and limits the GNB meta-learner's effectiveness compared to a discriminative model like Logistic Regression.
 
-##### 2. Analysis of the Ensemble Architectures
+##### 1.2. Implications for Change & The "Champion Pipeline"
 
-This benchmark gave a clear bake-off between several advanced ensemble strategies.
+The "Ultimate Benchmark" provided a clear path forward. The results were so strong and consistent that they invalidated some of the assumptions from our very first set of experiments.
 
-*   **"Pure" Stacking is the Champion (of this set):** The `Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR` model, which trains a Logistic Regression meta-learner *only* on the out-of-fold predictions of the base models, achieved the highest accuracy of **0.8910**. This confirms that learning the relationships between model predictions is a powerful strategy.
+1.  **Implication 1: Abandon SciBERT, Embrace e5-base.** The data unequivocally showed that `intfloat/multilingual-e5-base` was the superior embedding model for this task. Therefore, the final champion pipeline should be built exclusively using e5-base.
+2.  **Implication 2: Stacking is the Path to Peak Performance.** While Soft Voting was strong, Stacking consistently delivered the highest or tied-for-highest results, justifying its extra complexity.
+3.  **Implication 3: The Meta-Learner is a Critical Tuning Parameter.** The initial stacking results showed that different meta-learners and their features could produce different outcomes. This confirmed that a final, exhaustive benchmark focusing solely on the best stacking architecture with various meta-learners was the logical next step to find the absolute best model.
 
-*   **Soft Voting is Extremely Competitive:** The `Soft Voting Ensemble` was a very close second at **0.8870**. This is a crucial finding: a well-calibrated, weighted average of model probabilities is a simple yet incredibly powerful technique that can achieve nearly the same performance as a more complex stacking model.
+This led directly to the design of the **"Champion Pipeline"** experiments, which took the best base models and features from this benchmark and combined them with an expanded set of powerful meta-learners (`XGBoost`, `LogisticRegression`, `GaussianNB`) and their respective optimal feature sets.
 
-*   **Adding Metadata Features Hurt Performance:** The `Stacking + GNB(meta+title)` model, which included extra metadata features, performed worse (0.8770) than the "Pure" stack. This suggests that for this task, the simple metadata features (like abstract length) added more noise than signal for the Gaussian Naive Bayes meta-learner.
-
-*   **Confidence-Gated Ensemble is a Strong Heuristic:** This unique model performed well (0.8690) but couldn't beat the ensembles that consider all models' opinions on every sample. It proves to be an effective strategy but is ultimately less powerful than a full stack that can learn more complex interactions.
-
-##### 3. Grand Conclusion: Comparison to the Previous All-Time Best
-
-Did we beat the previous champion?
-
-*   **Previous Champion:** `Stacking [MNB(t)+kNN(e)+DT(t)] + LR(t)` from the last experiment, with an accuracy of **0.8980**.
-*   **Ultimate Benchmark Champion:** `Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR` with an accuracy of **0.8910**.
-
-**Final Verdict:** We did **not** exceed the previous top performer.
-
-**Why? The Final, Critical Insight of the Project:**
-This is the most valuable finding of all. The only significant difference between the all-time best model and the "Pure Stacking" champion is that the **previous winner also fed the original TF-IDF features to the meta-learner alongside the base model predictions.**
-
-This provides a powerful, data-driven conclusion:
-
-The optimal stacking architecture for this problem is one where the meta-learner has access to **both**:
-1.  **The "Opinions" of the Experts:** The out-of-fold probability predictions from the diverse base models.
-2.  **The "Raw Evidence":** The original lexical features (in this case, TF-IDF) of the text itself.
-
-The "Pure" stack is very powerful, but giving the meta-learner access to the original TF-IDF features provides a crucial layer of context, allowing it to make a more informed final decision and pushing the accuracy from 0.8910 to a project-high of **0.8980**. This small difference is often what separates a winning model from a runner-up in competitive machine learning.
-
+---
 --> Focus on improving the highest previous pipeline of ensemble , integrating 
 1. Enhanced Text Cleaning (Custom, Domain-Specific Stop Words).
 2. Enhanced TF-IDF Vectorizer (n-grams, min_df, max_df, sublinear_tf).
 3. Enhanced SBERT Embeddings (Switch to SciBERT).
 4. Hyperparameter Tuning of Base Models (MNB, DT, kNN) using GridSearchCV.
 5. Try switching LR(tfidf) with XBGClassifier(TFIDF, BoW, Embedding) and GaussianNB(TFIDF, BoW, Embedding)
+
+---
+
+### Analysis of the Final "Champion Pipeline" Results
+
+*Check `run_champion_pipeline.py` and `run_champion_pipeline_e5.py` for the code 
+
+This final set of experiments represents the project's culmination. It took the winning formula—a stacking ensemble with tuned, calibrated base models (`MNB(tfidf)`, `kNN(e5-emb)`, `DT(tfidf)`)—and stress-tested it with a variety of sophisticated meta-learners.
+
+#### 2.1. Key Technical Findings from the "Champion Pipeline"
+
+**1. The Absolute Champion: `LR(TFIDF)` with e5-base Embeddings (at 1k scale):**
+*   **Observation:** The single best accuracy achieved in the entire project was **0.9040**, accomplished by the stacking model that used `e5-base` embeddings for its kNN component and a `LogisticRegression` meta-learner fed with both the base model predictions and the enhanced TF-IDF features.
+*   **Technical Interpretation:** This result synthesizes all our key findings.
+    *   It confirms **e5-base** as the superior embedding model.
+    *   It confirms **stacking** as the superior ensemble method.
+    *   It confirms that providing the meta-learner with both the **"experts' opinions"** (base model probabilities) and the **"raw evidence"** (TF-IDF features) allows it to make the most informed and accurate final decision. The linear, robust nature of Logistic Regression proved to be a perfect tool for finding the optimal weights for this wide set of features.
+
+**2. XGBoost as a Powerful Alternative:**
+*   **Observation:** `XGBoost` proved to be an extremely competitive meta-learner, achieving the top accuracy in the 2k sample run (`XGB(Emb)` at **0.8975**) and nearly matching the top LR model in the 1k run (`XGB(BoW)` at **0.9030**).
+*   **Technical Interpretation:** XGBoost is a non-linear, gradient-boosted tree model. Its ability to achieve top-tier performance indicates that there are complex, non-linear interactions between the base model predictions and the original features. While Logistic Regression finds the best linear combination, XGBoost can learn more intricate rules (e.g., "If MNB's prob is in range A AND kNN's prob is in range B, then adjust the final prediction"). This makes it an excellent, and in some cases superior, choice for a meta-learner.
+
+**3. The Effect of Data Scale (1k vs. 2k samples/cat):**
+*   **Observation:** Interestingly, the peak accuracy was achieved with 1000 samples per category (**0.9040**) rather than 2000 samples per category (**0.8975**).
+*   **Technical Interpretation:** This is a fascinating result. While more data is usually better, this could indicate several things:
+    *   **Diminishing Returns:** The models may have reached their peak performance with the information present in 1000 samples/cat, and the additional 1000 samples did not provide enough new, useful information to overcome the added noise or complexity.
+    *   **Hyperparameter Sensitivity:** The hyperparameters tuned on the 10k dataset might have been slightly better suited for that scale than for the 20k dataset. A separate tuning run for the 20k dataset might have yielded a higher score.
+    *   **Statistical Noise:** The difference is small (~0.65%), and it's possible it falls within the margin of error of the experiment. However, it strongly suggests that for this problem, significant gains beyond ~10k samples would require more advanced models (like fine-tuning a Transformer) rather than just more data.
+
+### 4. Final Project Conclusion
+
+The comprehensive journey of this project, from initial benchmarks to advanced optimizations, culminates in a clear and powerful conclusion. While individual models like `MultinomialNB` with `TF-IDF` provide a remarkably strong baseline, peak performance is achieved through a **heterogeneous stacking ensemble**.
+
+The champion architecture, achieving **90.4% accuracy**, leverages the principle of "using the right tool for the right job" at every level. It combines the lexical precision of a tuned **Multinomial Naive Bayes** on n-gram TF-IDF features with the semantic nuance of a tuned, calibrated **k-Nearest Neighbors** on state-of-the-art **e5-base embeddings**, using a diverse **Decision Tree** to resolve ambiguities. The final verdict is rendered by a **Logistic Regression meta-learner**, which weighs the advice of these experts while also reviewing the raw TF-IDF evidence for itself.
+
+This project demonstrates conclusively that through systematic experimentation, data-driven refinement, and the intelligent combination of diverse feature representations and advanced ensemble techniques, it is possible to build a classifier that is significantly more powerful than the sum of its individual parts.
+
+#### Recap
+
+
+**Table 1: SciBERT - 1000 Samples per Category**
+
+`run_ultimate_benchmark.py`
+
+This table summarizes the performance of the advanced models using **SciBERT embeddings** on the smaller dataset of 5,000 total samples.
+
+| Configuration | Accuracy |
+| :--- | :--- |
+| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8930** |
+| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8850 |
+| Stacking [Base Models] + GNB(meta+title) | 0.8840 |
+| LogisticRegression on TF-IDF + Embeddings | 0.8690 |
+| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8590 |
+
+---
+
+**Table 2: e5-base Model - 1000 Samples per Category**
+
+`run_ultimate_benchmark_e5.py`
+
+This table summarizes the performance of the advanced models using **e5-base embeddings** on the smaller dataset of 5,000 total samples.
+
+| Configuration | Accuracy |
+| :--- | :--- |
+| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.9010** |
+| Stacking [Base Models] + GNB(meta+title) | 0.8900 |
+| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8920 |
+| LogisticRegression on TF-IDF + Embeddings | 0.8850 |
+| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8590 |
+
+---
+
+**Table 3: SciBERT - 2000 Samples per Category**
+
+`run_ultimate_benchmark.py`
+
+This table summarizes the performance of the advanced models using **SciBERT embeddings** on the larger dataset of 10,000 total samples.
+
+| Configuration | Accuracy |
+| :--- | :--- |
+| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | **0.8850** |
+| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8850** |
+| Stacking [Base Models] + GNB(meta+title) | 0.8790 |
+| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8785 |
+| LogisticRegression on TF-IDF + Embeddings | 0.8570 |
+
+---
+
+**Table 4: e5-base Model - 2000 Samples per Category**
+
+`run_ultimate_benchmark_e5.py`
+
+This table summarizes the performance of the advanced models using **e5-base embeddings** on the larger dataset of 10,000 total samples.
+
+| Configuration | Accuracy |
+| :--- | :--- |
+| Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR | **0.8895** |
+| Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)] | 0.8870 |
+| Confidence-Gated Ensemble [MNB(t) -> kNN(e)] | 0.8800 |
+| LogisticRegression on TF-IDF + Embeddings | 0.8820 |
+| Stacking [Base Models] + GNB(meta+title) | 0.8770 |
+
+
+**Table 5: Table 1: SciBERT - 1000 Samples & 2000 Samples per Category**
+
+`run_champion_pipeline.py`
+
+```
+--- Champion Stacking Pipeline Summary (Accuracy) (1000sam/cat) ---
+Meta-Learner Configuration          | Accuracy
+-----------------------------------------------------
+LR(TFIDF)                           | 0.8940
+LR(BoW)                             | 0.8850
+LR(Emb)                             | 0.8780
+XGB(TFIDF)                          | 0.8940
+XGB(BoW)                            | 0.8860
+XGB(Emb)                            | 0.8940
+GNB(TFIDF)                          | 0.7810
+GNB(BoW)                            | 0.7640
+GNB(Emb)                            | 0.8630
+-----------------------------------------------------
+
+--- Champion Stacking Pipeline Summary (Accuracy) (2000sam/cat) ---
+Meta-Learner Configuration          | Accuracy
+-----------------------------------------------------
+LR(TFIDF)                           | 0.8900
+LR(BoW)                             | 0.8865
+LR(Emb)                             | 0.8755
+XGB(TFIDF)                          | 0.8885
+XGB(BoW)                            | 0.8960
+XGB(Emb)                            | 0.8880
+GNB(TFIDF)                          | 0.7775
+GNB(BoW)                            | 0.7420
+GNB(Emb)                            | 0.8490
+-----------------------------------------------------
+```
+
+**Table 6: e5-base Model - 2000 Samples per Category**
+
+```
+--- Champion Stacking Pipeline Summary (e5-base run) (1000sam/cat) ---
+Meta-Learner Configuration          | Accuracy
+-----------------------------------------------------
+LR(TFIDF)                           | 0.9040
+LR(BoW)                             | 0.8840
+LR(Emb)                             | 0.9020
+XGB(TFIDF)                          | 0.9020
+XGB(BoW)                            | 0.9030
+XGB(Emb)                            | 0.9030
+GNB(TFIDF)                          | 0.7810
+GNB(BoW)                            | 0.7640
+GNB(Emb)                            | 0.8700
+-----------------------------------------------------
+
+--- Champion Stacking Pipeline Summary (e5-base run) (2000sam/cat) ---
+Meta-Learner Configuration          | Accuracy
+-----------------------------------------------------
+LR(TFIDF)                           | 0.8920
+LR(BoW)                             | 0.8825
+LR(Emb)                             | 0.8920
+XGB(TFIDF)                          | 0.8940
+XGB(BoW)                            | 0.8915
+XGB(Emb)                            | 0.8975
+GNB(TFIDF)                          | 0.7775
+GNB(BoW)                            | 0.7425
+GNB(Emb)                            | 0.8545
+-----------------------------------------------------
+```
