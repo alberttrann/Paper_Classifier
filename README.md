@@ -227,24 +227,27 @@ This is the final, comprehensive bake-off.
         *   Train a meta-learner (e.g., `LogisticRegression`) on *only* these probability vectors.
 *   **Goal:** Test the "purest" form of stacking with the highest quality probability signals.
         * Instead of:
-        ```python
-        # The predictions PLUS the original TF-IDF features
-        meta_learner_train_X = hstack([
-            meta_features_train['MNB_tfidf'], 
-            meta_features_train['kNN_emb'], 
-            meta_features_train['DT_tfidf'],
-            X_train_tfidf  # <-- The "Raw Evidence"
-        ]).tocsr()
-        ```
+
+    ```python
+    # The predictions PLUS the original TF-IDF features
+    meta_learner_train_X = hstack([
+        meta_features_train['MNB_tfidf'], 
+        meta_features_train['kNN_emb'], 
+        meta_features_train['DT_tfidf'],
+        X_train_tfidf  # <-- The "Raw Evidence"
+    ]).tocsr()
+    ```
+
         We'll just do:
-        ```python 
-        # Only the predictions from the base models
-        meta_features_pure_train = np.hstack([
-            meta_features_train['MNB_tfidf'], 
-            meta_features_train['kNN_emb'], 
-            meta_features_train['DT_tfidf']
-        ])
-        ```
+
+    ```python 
+    # Only the predictions from the base models
+    meta_features_pure_train = np.hstack([
+        meta_features_train['MNB_tfidf'], 
+        meta_features_train['kNN_emb'], 
+        meta_features_train['DT_tfidf']
+    ])
+    ```
 
 *   **Sub-step 4.4: Implement Stacking with New Meta-Learners and All Engineered Features.**
     *   **Action:** Run a new, expanded set of stacking experiments using the **calibrated** base models.
