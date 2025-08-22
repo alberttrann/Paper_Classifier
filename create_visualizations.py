@@ -38,6 +38,8 @@ df_ensemble_perf = pd.DataFrame({
     ],
     'Accuracy': [0.8710, 0.8280, 0.8760, 0.8980, 0.9040]
 })
+df_ensemble_perf['Full Description'] = df_ensemble_perf['Ensemble Stage'].str.split('. ').str[1] + "\n(" + df_ensemble_perf['Description'] + ")"
+
 # === Chart 4 & 5 Data: Stacking Meta-Learner Analysis (e5-base, 1k samples/cat) ===
 df_stacking_meta_e5 = pd.DataFrame({
     'Meta-Learner': ['LR', 'LR', 'LR', 'XGB', 'XGB', 'XGB', 'GNB', 'GNB', 'GNB'],
@@ -99,13 +101,27 @@ ax2.set_title('Chart 2: Feature Effectiveness by Model', fontsize=18, fontweight
 ax2.set_ylabel('Algorithm', fontsize=14); ax2.set_xlabel('Feature Type', fontsize=14)
 
 ax3 = fig.add_subplot(gs[0, 2])
-bars = sns.barplot(x='Accuracy', y='Ensemble Stage', hue='Ensemble Stage', data=df_ensemble_perf, ax=ax3, palette=palette_ensembles, legend=False)
+# Use the new 'Full Description' for the y-axis
+bars = sns.barplot(x='Accuracy', y='Full Description', hue='Ensemble Stage', data=df_ensemble_perf, ax=ax3, palette=palette_ensembles, dodge=False, legend=False)
 ax3.set_title('Chart 3: The Path to 90.4% Accuracy', fontsize=18, fontweight='bold')
-ax3.set_xlim(0.82, 0.92); ax3.set_xlabel('Accuracy', fontsize=14); ax3.set_ylabel('Ensemble Complexity', fontsize=14)
-for i, bar in enumerate(bars.patches):
-    y, x, desc, acc = bar.get_y() + bar.get_height()/2, bar.get_width(), df_ensemble_perf['Description'][i], df_ensemble_perf['Accuracy'][i]
-    ax3.text(x - 0.002, y + 0.1, f'{acc:.4f}', ha='right', va='center', color='white', fontweight='bold', fontsize=12)
-    ax3.text(x - 0.003, y - 0.1, f'({desc})', ha='right', va='center', color='white', fontsize=9)
+ax3.set_xlim(0.82, 0.92)
+ax3.set_xlabel('Accuracy', fontsize=14)
+ax3.set_ylabel('Model Configuration', fontsize=14)
+
+# New, robust annotation logic
+for bar in bars.patches:
+    y = bar.get_y() + bar.get_height() / 2
+    x = bar.get_width()
+    
+    # Define a threshold for placing text inside or outside
+    threshold = 0.84 
+    
+    if x > threshold:
+        # Place text inside the bar, aligned right
+        ax3.text(x - 0.002, y, f'{x:.4f}', ha='right', va='center', color='white', fontweight='bold', fontsize=12)
+    else:
+        # Place text outside the bar, aligned left
+        ax3.text(x + 0.001, y, f'{x:.4f}', ha='left', va='center', color='black', fontweight='bold', fontsize=12)
 
 # --- Row 2: Deep Dive into Stacking ---
 ax4 = fig.add_subplot(gs[1, 0])
