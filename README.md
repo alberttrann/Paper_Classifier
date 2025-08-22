@@ -238,7 +238,7 @@ This is the final, comprehensive bake-off.
     ]).tocsr()
     ```
 
-        We'll just do:
+    We'll just do:
 
     ```python 
     # Only the predictions from the base models
