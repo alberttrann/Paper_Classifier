@@ -1,1985 +1,1508 @@
---- Configuration ---
-Categories: ['astro-ph', 'cond-mat', 'cs', 'math', 'physics']
-DATASET_NAME = "UniverseTBD/arxiv-abstracts-large" 
-Device: cuda
--------------------------
+# Benchmark Results
 
---- Detailed Classification Reports ---
-run_single_benchmark.py
-(1000 samples per category)
-intfloat/multilingual-e5-base
+## 1. Configuration
 
-==================================================
-Model: kNN with Features: Bag of Words
-==================================================
-Overall Accuracy: 0.3500
+- **Categories**: `['astro-ph', 'cond-mat', 'cs', 'math', 'physics']`
+- **Dataset**: `UniverseTBD/arxiv-abstracts-large`
+- **Device**: `cuda`
+- **Embedding Model**: `intfloat/multilingual-e5-base`
 
+---
+
+## 2. Single Model Benchmarks (`run_single_benchmark.py`)
+
+*   **Samples per category**: 1000
+
+### 2.1. k-Nearest Neighbors (kNN)
+
+<details>
+<summary>kNN with Bag of Words</summary>
+
+**Overall Accuracy**: 0.3500
+```
               precision    recall  f1-score   support
-
            0       0.62      0.40      0.48       200
            1       0.57      0.08      0.14       200
            2       0.33      0.43      0.38       200
            3       0.27      0.73      0.40       200
            4       0.47      0.10      0.16       200
-
     accuracy                           0.35      1000
    macro avg       0.45      0.35      0.31      1000
 weighted avg       0.45      0.35      0.31      1000
+```
+</details>
 
+<details>
+<summary>kNN with TF-IDF</summary>
 
-==================================================
-Model: kNN with Features: TF-IDF
-==================================================
-Overall Accuracy: 0.8010
-
+**Overall Accuracy**: 0.8010
+```
               precision    recall  f1-score   support
-
            0       0.87      0.90      0.88       200
            1       0.78      0.84      0.81       200
            2       0.83      0.80      0.81       200
            3       0.84      0.88      0.86       200
            4       0.68      0.58      0.63       200
-
     accuracy                           0.80      1000
    macro avg       0.80      0.80      0.80      1000
 weighted avg       0.80      0.80      0.80      1000
+```
+</details>
 
+<details>
+<summary>kNN with Embeddings</summary>
 
-==================================================
-Model: kNN with Features: Embeddings
-==================================================
-Overall Accuracy: 0.8590
-
+**Overall Accuracy**: 0.8590
+```
               precision    recall  f1-score   support
-
            0       0.92      0.95      0.94       200
            1       0.76      0.94      0.84       200
            2       0.90      0.91      0.90       200
            3       0.89      0.92      0.91       200
            4       0.85      0.58      0.69       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.85      1000
 weighted avg       0.86      0.86      0.85      1000
+```
+</details>
 
+### 2.2. Multinomial Naive Bayes (MNB)
 
-==================================================
-Model: MNB with Features: Bag of Words
-==================================================
-Overall Accuracy: 0.8710
+<details>
+<summary>MNB with Bag of Words</summary>
 
+**Overall Accuracy**: 0.8710
+```
               precision    recall  f1-score   support
-
            0       0.98      0.89      0.93       200
            1       0.84      0.93      0.88       200
            2       0.89      0.88      0.89       200
            3       0.91      0.97      0.94       200
            4       0.74      0.69      0.71       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>MNB with TF-IDF</summary>
 
-==================================================
-Model: MNB with Features: TF-IDF
-==================================================
-Overall Accuracy: 0.8670
-
+**Overall Accuracy**: 0.8670
+```
               precision    recall  f1-score   support
-
            0       0.94      0.93      0.93       200
            1       0.81      0.95      0.87       200
            2       0.88      0.88      0.88       200
            3       0.91      0.96      0.94       200
            4       0.79      0.61      0.69       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.86      1000
 weighted avg       0.87      0.87      0.86      1000
+```
+</details>
 
+<details>
+<summary>MNB with Embeddings</summary>
 
-==================================================
-Model: MNB with Features: Embeddings
-==================================================
-Overall Accuracy: 0.8160
-
+**Overall Accuracy**: 0.8160
+```
               precision    recall  f1-score   support
-
            0       0.90      0.94      0.92       200
            1       0.78      0.83      0.80       200
            2       0.83      0.84      0.84       200
            3       0.86      0.93      0.89       200
            4       0.67      0.54      0.60       200
-
     accuracy                           0.82      1000
    macro avg       0.81      0.82      0.81      1000
 weighted avg       0.81      0.82      0.81      1000
+```
+</details>
 
+### 2.3. Decision Tree (DT)
 
-==================================================
-Model: DT with Features: Bag of Words
-==================================================
-Overall Accuracy: 0.6130
+<details>
+<summary>DT with Bag of Words</summary>
 
+**Overall Accuracy**: 0.6130
+```
               precision    recall  f1-score   support
-
            0       0.88      0.74      0.80       200
            1       0.67      0.62      0.64       200
            2       0.64      0.67      0.65       200
            3       0.75      0.54      0.62       200
            4       0.34      0.50      0.41       200
-
     accuracy                           0.61      1000
    macro avg       0.65      0.61      0.63      1000
 weighted avg       0.65      0.61      0.63      1000
+```
+</details>
 
+<details>
+<summary>DT with TF-IDF</summary>
 
-==================================================
-Model: DT with Features: TF-IDF
-==================================================
-Overall Accuracy: 0.6200
-
+**Overall Accuracy**: 0.6200
+```
               precision    recall  f1-score   support
-
            0       0.86      0.72      0.78       200
            1       0.69      0.54      0.60       200
            2       0.68      0.64      0.66       200
            3       0.77      0.57      0.66       200
            4       0.37      0.63      0.47       200
-
     accuracy                           0.62      1000
    macro avg       0.67      0.62      0.63      1000
 weighted avg       0.67      0.62      0.63      1000
+```
+</details>
 
+<details>
+<summary>DT with Embeddings</summary>
 
-==================================================
-Model: DT with Features: Embeddings
-==================================================
-Overall Accuracy: 0.5110
-
+**Overall Accuracy**: 0.5110
+```
               precision    recall  f1-score   support
-
            0       0.64      0.65      0.64       200
            1       0.48      0.54      0.51       200
            2       0.54      0.49      0.51       200
            3       0.56      0.58      0.57       200
            4       0.33      0.30      0.31       200
-
     accuracy                           0.51      1000
    macro avg       0.51      0.51      0.51      1000
 weighted avg       0.51      0.51      0.51      1000
+```
+</details>
 
+### 2.4. K-Means Clustering
 
-==================================================
-Model: KMeans with Features: Bag of Words
-==================================================
-Overall Accuracy: 0.3880
+<details>
+<summary>KMeans with Bag of Words</summary>
 
+**Overall Accuracy**: 0.3880
+```
               precision    recall  f1-score   support
-
            0       0.97      0.58      0.73       200
            1       0.43      0.33      0.37       200
            2       0.41      0.04      0.06       200
            3       0.28      1.00      0.44       200
            4       0.00      0.00      0.00       200
-
     accuracy                           0.39      1000
    macro avg       0.42      0.39      0.32      1000
 weighted avg       0.42      0.39      0.32      1000
+```
+</details>
 
+<details>
+<summary>KMeans with TF-IDF</summary>
 
-==================================================
-Model: KMeans with Features: TF-IDF
-==================================================
-Overall Accuracy: 0.6990
-
+**Overall Accuracy**: 0.6990
+```
               precision    recall  f1-score   support
-
            0       0.98      0.79      0.87       200
            1       0.59      0.93      0.72       200
            2       0.62      0.84      0.71       200
            3       0.75      0.94      0.83       200
            4       0.00      0.00      0.00       200
-
     accuracy                           0.70      1000
    macro avg       0.59      0.70      0.63      1000
 weighted avg       0.59      0.70      0.63      1000
+```
+</details>
 
+<details>
+<summary>KMeans with Embeddings</summary>
 
-==================================================
-Model: KMeans with Features: Embeddings
-==================================================
-Overall Accuracy: 0.7260
-
+**Overall Accuracy**: 0.7260
+```
               precision    recall  f1-score   support
-
            0       0.77      0.96      0.86       200
            1       0.56      0.90      0.69       200
            2       0.81      0.82      0.82       200
            3       0.83      0.94      0.88       200
            4       0.00      0.00      0.00       200
-
     accuracy                           0.73      1000
    macro avg       0.59      0.73      0.65      1000
 weighted avg       0.59      0.73      0.65      1000
+```
+</details>
 
+### 2.5. Summary of Single Model Performance
 
+| Algorithm | Bag of Words | TF-IDF | Embeddings |
+| :--- | :--- | :--- | :--- |
+| **kNN** | 0.3500 | 0.8010 | 0.8590 |
+| **MNB** | 0.8710 | 0.8670 | 0.8160 |
+| **DT** | 0.6130 | 0.6200 | 0.5110 |
+| **KMeans**| 0.3880 | 0.6990 | 0.7260 |
 
---- Evaluating Ensemble 1: MNB(emb) + kNN(emb) (Manual Voting) on Test Set ---
-run_embedding_only_ensembles_on_subset.py
-1000 samples /category
-Accuracy: 0.8340
+---
+
+## 3. Ensemble Model Benchmarks
+
+### 3.1. Embedding-Only Ensembles (`run_embedding_only_ensembles_on_subset.py`)
+
+*   **Samples per category**: 1000
+
+<details>
+<summary>Ensemble 1: MNB(emb) + kNN(emb) (Manual Voting)</summary>
+
+**Accuracy**: 0.8340
+```
 Classification Report:
               precision    recall  f1-score   support
-
     astro-ph       0.87      0.98      0.92       200
     cond-mat       0.72      0.95      0.82       200
           cs       0.83      0.94      0.88       200
         math       0.91      0.94      0.92       200
      physics       0.91      0.37      0.53       200
-
     accuracy                           0.83      1000
    macro avg       0.85      0.83      0.81      1000
 weighted avg       0.85      0.83      0.81      1000
+```
+</details>
 
---- Evaluating Ensemble 2: MNB(emb) + kNN(emb) + Decision Tree(emb) (Manual Voting) (embedding)on Test Set ---
-run_embedding_only_ensembles_on_subset.py
-1000 samples/category
-Accuracy: 0.8280
+<details>
+<summary>Ensemble 2: MNB(emb) + kNN(emb) + DT(emb) (Manual Voting)</summary>
+
+**Accuracy**: 0.8280
+```
 Classification Report:
               precision    recall  f1-score   support
-              
     astro-ph       0.88      0.96      0.92       200
     cond-mat       0.72      0.93      0.81       200
           cs       0.86      0.83      0.85       200
         math       0.89      0.93      0.91       200
      physics       0.81      0.49      0.61       200
-
     accuracy                           0.83      1000
    macro avg       0.83      0.83      0.82      1000
 weighted avg       0.83      0.83      0.82      1000
+```
+</details>
 
+### 3.2. Heterogeneous Ensembles (`run_heterogenous_ensembles.py`)
 
+*   **Run Date**: 2025-08-21 12:56:29
+*   **Samples per category**: 1000
 
+<details>
+<summary>Ensemble 1: MNB(bow) + kNN(emb) + DT(tfidf)</summary>
 
-================================================================================
---- Heterogeneous Ensemble Benchmark Run : 2025-08-21 12:56:29 --- 
-run_heterogenous_ensembles.py
-================================================================================
-(1000 samples per category)
-intfloat/multilingual-e5-base
-
-
---- Detailed Heterogeneous Ensemble Reports ---
-
-==================================================
-Evaluating: Ensemble 1 | Components: MNB(bow) + kNN(emb) + DT(tfidf)
-==================================================
-Overall Accuracy: 0.8760
-
+**Overall Accuracy**: 0.8760
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.93      0.93       200
     cond-mat       0.82      0.93      0.87       200
           cs       0.88      0.91      0.89       200
         math       0.94      0.94      0.94       200
      physics       0.80      0.68      0.74       200
-
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.87      1000
 weighted avg       0.88      0.88      0.87      1000
+```
+</details>
 
+<details>
+<summary>Ensemble 2: MNB(tfidf) + kNN(emb) + DT(bow)</summary>
 
-==================================================
-Evaluating: Ensemble 2 | Components: MNB(tfidf) + kNN(emb) + DT(bow)
-==================================================
-Overall Accuracy: 0.8700
-
+**Overall Accuracy**: 0.8700
+```
               precision    recall  f1-score   support
-
     astro-ph       0.93      0.96      0.95       200
     cond-mat       0.78      0.95      0.86       200
           cs       0.88      0.92      0.90       200
         math       0.94      0.93      0.93       200
      physics       0.83      0.59      0.69       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>Ensemble 3: MNB(tfidf) + kNN(emb) + DT(tfidf)</summary>
 
-==================================================
-Evaluating: Ensemble 3 | Components: MNB(tfidf) + kNN(emb) + DT(tfidf)
-==================================================
-Overall Accuracy: 0.8750
-
+**Overall Accuracy**: 0.8750
+```
               precision    recall  f1-score   support
-
     astro-ph       0.93      0.95      0.94       200
     cond-mat       0.81      0.94      0.87       200
           cs       0.88      0.91      0.89       200
         math       0.93      0.93      0.93       200
      physics       0.84      0.65      0.73       200
-
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.87      1000
 weighted avg       0.88      0.88      0.87      1000
+```
+</details>
 
+<details>
+<summary>Ensemble 4: MNB(bow) + kNN(emb) + DT(bow)</summary>
 
-==================================================
-Evaluating: Ensemble 4 | Components: MNB(bow) + kNN(emb) + DT(bow)
-==================================================
-Overall Accuracy: 0.8710
-
+**Overall Accuracy**: 0.8710
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.94      0.94       200
     cond-mat       0.80      0.94      0.86       200
           cs       0.88      0.92      0.89       200
         math       0.94      0.94      0.94       200
      physics       0.80      0.63      0.71       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>Ensemble 5: MNB(bow) + kNN(emb)</summary>
 
-==================================================
-Evaluating: Ensemble 5 | Components: MNB(bow) + kNN(emb)
-==================================================
-Overall Accuracy: 0.8580
-
+**Overall Accuracy**: 0.8580
+```
               precision    recall  f1-score   support
-
     astro-ph       0.91      0.96      0.94       200
     cond-mat       0.73      0.96      0.83       200
           cs       0.87      0.94      0.90       200
         math       0.92      0.94      0.93       200
      physics       0.92      0.48      0.64       200
-
     accuracy                           0.86      1000
    macro avg       0.87      0.86      0.85      1000
 weighted avg       0.87      0.86      0.85      1000
+```
+</details>
 
+<details>
+<summary>Ensemble 6: MNB(tfidf) + kNN(emb)</summary>
 
-==================================================
-Evaluating: Ensemble 6 | Components: MNB(tfidf) + kNN(emb)
-==================================================
-Overall Accuracy: 0.8500
-
+**Overall Accuracy**: 0.8500
+```
               precision    recall  f1-score   support
-
     astro-ph       0.89      0.97      0.93       200
     cond-mat       0.72      0.97      0.83       200
           cs       0.87      0.94      0.90       200
         math       0.92      0.93      0.93       200
      physics       0.95      0.44      0.60       200
-
     accuracy                           0.85      1000
    macro avg       0.87      0.85      0.84      1000
 weighted avg       0.87      0.85      0.84      1000
+```
+</details>
 
+### 3.3. Summary of Heterogeneous Ensemble Performance
 
+| Ensemble Configuration | Accuracy |
+| :--- | :--- |
+| MNB(emb) + kNN(emb) + DT(emb) | 0.8280 |
+| MNB(bow) + kNN(emb) + DT(tfidf) | 0.8760 |
+| MNB(tfidf) + kNN(emb) + DT(bow) | 0.8700 |
+| MNB(tfidf) + kNN(emb) + DT(tfidf)| 0.8750 |
+| MNB(bow) + kNN(emb) + DT(bow) | 0.8710 |
+| MNB(emb) + kNN(emb) | 0.8340 |
+| MNB(bow) + kNN(emb) | 0.8580 |
+| MNB(tfidf) + kNN(emb) | 0.8500 |
 
-================================================================================
---- Stacking Ensemble Benchmark Run (Extended) : 2025-08-21 13:42:00 ---
-run_stacking_benchmark.py
-================================================================================
-(1000 samples per category)
-intfloat/multilingual-e5-base
+---
 
---- Detailed Stacking Ensemble Reports (Extended) ---
+## 4. Stacking Ensemble Benchmarks (`run_stacking_benchmark.py`)
 
-==================================================
-Evaluating: Stack 1: [MNB(b)+kNN(e)+DT(t)] + LR(b) | Base: MNB(bow) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 1: [MNB(b)+kNN(e)+DT(t)] + LR(b)...
-  Predicting with Stack 1: [MNB(b)+kNN(e)+DT(t)] + LR(b)...
-Overall Accuracy: 0.8870
+*   **Run Date**: 2025-08-21 13:42:00
+*   **Samples per category**: 1000
 
+<details>
+<summary>Stack 1: [MNB(b)+kNN(e)+DT(t)] + LR(b)</summary>
+
+**Overall Accuracy**: 0.8870
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.92      0.94       200
     cond-mat       0.85      0.91      0.88       200
           cs       0.91      0.90      0.90       200
         math       0.93      0.98      0.95       200
      physics       0.77      0.73      0.75       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stack 2: [MNB(b)+kNN(e)+DT(t)] + LR(t)</summary>
 
-==================================================
-Evaluating: Stack 2: [MNB(b)+kNN(e)+DT(t)] + LR(t) | Base: MNB(bow) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 2: [MNB(b)+kNN(e)+DT(t)] + LR(t)...
-  Predicting with Stack 2: [MNB(b)+kNN(e)+DT(t)] + LR(t)...
-Overall Accuracy: 0.8950
-
+**Overall Accuracy**: 0.8950
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.96       200
     cond-mat       0.88      0.92      0.90       200
           cs       0.91      0.89      0.90       200
         math       0.91      0.97      0.94       200
      physics       0.79      0.76      0.78       200
-
     accuracy                           0.90      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.90      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stack 3: [MNB(b)+kNN(e)+DT(t)] + LR(e)</summary>
 
-==================================================
-Evaluating: Stack 3: [MNB(b)+kNN(e)+DT(t)] + LR(e) | Base: MNB(bow) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 3: [MNB(b)+kNN(e)+DT(t)] + LR(e)...
-  Predicting with Stack 3: [MNB(b)+kNN(e)+DT(t)] + LR(e)...
-Overall Accuracy: 0.8870
-
+**Overall Accuracy**: 0.8870
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.90      0.89      0.89       200
         math       0.91      0.97      0.94       200
      physics       0.77      0.74      0.76       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stack 4: [MNB(t)+kNN(e)+DT(t)] + LR(b)</summary>
 
-==================================================
-Evaluating: Stack 4: [MNB(t)+kNN(e)+DT(t)] + LR(b) | Base: MNB(tfidf) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 4: [MNB(t)+kNN(e)+DT(t)] + LR(b)...
-  Predicting with Stack 4: [MNB(t)+kNN(e)+DT(t)] + LR(b)...
-Overall Accuracy: 0.8820
-
+**Overall Accuracy**: 0.8820
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.83      0.90      0.86       200
           cs       0.93      0.89      0.91       200
         math       0.92      0.98      0.95       200
      physics       0.76      0.72      0.74       200
-
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.88      1000
 weighted avg       0.88      0.88      0.88      1000
+```
+</details>
 
+<details>
+<summary>Stack 5: [MNB(t)+kNN(e)+DT(t)] + LR(t)</summary>
 
-==================================================
-Evaluating: Stack 5: [MNB(t)+kNN(e)+DT(t)] + LR(t) | Base: MNB(tfidf) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 5: [MNB(t)+kNN(e)+DT(t)] + LR(t)...
-  Predicting with Stack 5: [MNB(t)+kNN(e)+DT(t)] + LR(t)...
-Overall Accuracy: 0.8980
-
+**Overall Accuracy**: 0.8980
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.88      0.92      0.90       200
           cs       0.93      0.89      0.91       200
         math       0.92      0.98      0.95       200
      physics       0.79      0.77      0.78       200
-
     accuracy                           0.90      1000
    macro avg       0.90      0.90      0.90      1000
 weighted avg       0.90      0.90      0.90      1000
+```
+</details>
 
+<details>
+<summary>Stack 6: [MNB(t)+kNN(e)+DT(t)] + LR(e)</summary>
 
-==================================================
-Evaluating: Stack 6: [MNB(t)+kNN(e)+DT(t)] + LR(e) | Base: MNB(tfidf) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 6: [MNB(t)+kNN(e)+DT(t)] + LR(e)...
-  Predicting with Stack 6: [MNB(t)+kNN(e)+DT(t)] + LR(e)...
-Overall Accuracy: 0.8930
-
+**Overall Accuracy**: 0.8930
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.88      0.92      0.90       200
           cs       0.91      0.88      0.89       200
         math       0.92      0.97      0.95       200
      physics       0.78      0.77      0.77       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stack 7: [MNB(b)+kNN(e)+DT(t)] + DT(t)</summary>
 
-==================================================
-Evaluating: Stack 7: [MNB(b)+kNN(e)+DT(t)] + DT(t) | Base: MNB(bow) + kNN(emb) + DT(tfidf)
-==================================================
-  Training meta-learner for Stack 7: [MNB(b)+kNN(e)+DT(t)] + DT(t)...
-  Predicting with Stack 7: [MNB(b)+kNN(e)+DT(t)] + DT(t)...
-Overall Accuracy: 0.8570
-
+**Overall Accuracy**: 0.8570
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.83      0.89      0.86       200
           cs       0.88      0.86      0.87       200
         math       0.89      0.92      0.90       200
      physics       0.73      0.69      0.71       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
+```
+</details>
 
+<details>
+<summary>Stack 8: [MNB(b)+kNN(e)] + DT(t)</summary>
 
-==================================================
-Evaluating: Stack 8: [MNB(b)+kNN(e)] + DT(t) | Base: MNB(bow) + kNN(emb)
-==================================================
-  Training meta-learner for Stack 8: [MNB(b)+kNN(e)] + DT(t)...
-  Predicting with Stack 8: [MNB(b)+kNN(e)] + DT(t)...
-Overall Accuracy: 0.8700
-
+**Overall Accuracy**: 0.8700
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.85      0.86      0.86       200
           cs       0.89      0.86      0.88       200
         math       0.90      0.93      0.92       200
      physics       0.74      0.77      0.75       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>Stack 9: [MNB(b)+kNN(e)] + LR(b)</summary>
 
-==================================================
-Evaluating: Stack 9: [MNB(b)+kNN(e)] + LR(b) | Base: MNB(bow) + kNN(emb)
-==================================================
-  Training meta-learner for Stack 9: [MNB(b)+kNN(e)] + LR(b)...
-  Predicting with Stack 9: [MNB(b)+kNN(e)] + LR(b)...
-Overall Accuracy: 0.8850
-
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.92      0.94       200
     cond-mat       0.85      0.91      0.87       200
           cs       0.91      0.90      0.90       200
         math       0.93      0.98      0.95       200
      physics       0.77      0.72      0.75       200
-
     accuracy                           0.89      1000
    macro avg       0.88      0.89      0.88      1000
 weighted avg       0.88      0.89      0.88      1000
+```
+</details>
 
+<details>
+<summary>Stack 10: [MNB(b)+kNN(e)] + LR(t)</summary>
 
-==================================================
-Evaluating: Stack 10: [MNB(b)+kNN(e)] + LR(t) | Base: MNB(bow) + kNN(emb)
-==================================================
-  Training meta-learner for Stack 10: [MNB(b)+kNN(e)] + LR(t)...
-  Predicting with Stack 10: [MNB(b)+kNN(e)] + LR(t)...
-Overall Accuracy: 0.8910
-
+**Overall Accuracy**: 0.8910
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.88      0.92      0.90       200
           cs       0.91      0.89      0.90       200
         math       0.91      0.97      0.94       200
      physics       0.78      0.76      0.77       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stack 11: [MNB(b)+kNN(e)] + LR(e)</summary>
 
-==================================================
-Evaluating: Stack 11: [MNB(b)+kNN(e)] + LR(e) | Base: MNB(bow) + kNN(emb)
-==================================================
-  Training meta-learner for Stack 11: [MNB(b)+kNN(e)] + LR(e)...
-  Predicting with Stack 11: [MNB(b)+kNN(e)] + LR(e)...
-Overall Accuracy: 0.8870
-
+**Overall Accuracy**: 0.8870
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.90      0.89      0.89       200
         math       0.91      0.97      0.94       200
      physics       0.77      0.74      0.76       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+### 4.1. Summary of Stacking Ensemble Performance
 
+| Stacking Configuration | Accuracy |
+| :--- | :--- |
+| [MNB(b)+kNN(e)+DT(t)] + LR(b) | 0.8870 |
+| [MNB(b)+kNN(e)+DT(t)] + LR(t) | 0.8950 |
+| [MNB(b)+kNN(e)+DT(t)] + LR(e) | 0.8870 |
+| [MNB(t)+kNN(e)+DT(t)] + LR(b) | 0.8820 |
+| [MNB(t)+kNN(e)+DT(t)] + LR(t) | 0.8980 |
+| [MNB(t)+kNN(e)+DT(t)] + LR(e) | 0.8930 |
+| [MNB(b)+kNN(e)+DT(t)] + DT(t) | 0.8570 |
+| [MNB(b)+kNN(e)] + DT(t) | 0.8700 |
+| [MNB(b)+kNN(e)] + LR(b) | 0.8850 |
+| [MNB(b)+kNN(e)] + LR(t) | 0.8910 |
+| [MNB(b)+kNN(e)] + LR(e) | 0.8870 |
 
---- Benchmark Results Summary (Accuracy) ---
-Algorithm       | Bag of Words    | TF-IDF          | Embeddings     
----------------------------------------------------------------------
-kNN             | 0.3500          | 0.8010          | 0.8590         
-MNB             | 0.8710          | 0.8670          | 0.8160         
-DT              | 0.6130          | 0.6200          | 0.5110         
-KMeans          | 0.3880          | 0.6990          | 0.7260         
----------------------------------------------------------------------
+---
 
---- Heterogeneous Ensemble Summary (Accuracy) ---
-Ensemble Configuration                             | Accuracy       
---------------------------------------------------------------------
-MNB(emb) + kNN(emb) + DT(emb)                      | 0.8280
-MNB(bow) + kNN(emb) + DT(tfidf)                    | 0.8760         
-MNB(tfidf) + kNN(emb) + DT(bow)                    | 0.8700         
-MNB(tfidf) + kNN(emb) + DT(tfidf)                  | 0.8750         
-MNB(bow) + kNN(emb) + DT(bow)                      | 0.8710
-MNB(emb) + kNN(emb)                                | 0.8340
-MNB(bow) + kNN(emb)                                | 0.8580         
-MNB(tfidf) + kNN(emb)                              | 0.8500         
---------------------------------------------------------------------
+## 5. Ultimate Benchmark (`run_ultimate_benchmark.py`)
 
---- Stacking Ensemble Summary (Accuracy) ---
-Stacking Configuration                            | Accuracy
---------------------------------------------------|
-[MNB(b)+kNN(e)+DT(t)] + LR(b)                     | 0.8870
-[MNB(b)+kNN(e)+DT(t)] + LR(t)                     | 0.8950
-[MNB(b)+kNN(e)+DT(t)] + LR(e)                     | 0.8870
-[MNB(t)+kNN(e)+DT(t)] + LR(b)                     | 0.8820
-[MNB(t)+kNN(e)+DT(t)] + LR(t)                     | 0.8980
-[MNB(t)+kNN(e)+DT(t)] + LR(e)                     | 0.8930
-[MNB(b)+kNN(e)+DT(t)] + DT(t)                     | 0.8570
-[MNB(b)+kNN(e)] + DT(t)                           | 0.8700
-[MNB(b)+kNN(e)] + LR(b)                           | 0.8850
-[MNB(b)+kNN(e)] + LR(t)                           | 0.8910
-[MNB(b)+kNN(e)] + LR(e)			                    | 0.8870
+### 5.1. SciBERT Model (1000 samples/category)
 
+*   **Run Date**: 2025-08-22 11:56:57
 
+<details>
+<summary>LogisticRegression on TF-IDF + Embeddings</summary>
 
-
-
-
-================================================================================
---- Ultimate Benchmark Run (Corrected SciBERT): 2025-08-22 11:56:57 ---
-run_ultimate_benchmark.py
-================================================================================
-1000 samples/category
-
---- Advanced Single Model Reports (Corrected SciBERT) ---
-
-==================================================
-Model: LogisticRegression on TF-IDF + Embeddings
-==================================================
-Overall Accuracy: 0.8690
+**Overall Accuracy**: 0.8690
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.92      0.93       200
     cond-mat       0.86      0.86      0.86       200
           cs       0.92      0.88      0.90       200
         math       0.93      0.95      0.94       200
      physics       0.71      0.73      0.72       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]</summary>
 
-
---- Final Ensemble Reports (Corrected SciBERT) ---
-
-==================================================
-Model: Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]
-==================================================
-Overall Accuracy: 0.8850
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.92      0.93       200
     cond-mat       0.86      0.92      0.89       200
           cs       0.91      0.90      0.90       200
         math       0.92      0.98      0.95       200
      physics       0.77      0.70      0.74       200
-
     accuracy                           0.89      1000
    macro avg       0.88      0.89      0.88      1000
 weighted avg       0.88      0.89      0.88      1000
+```
+</details>
 
+<details>
+<summary>Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR</summary>
 
-==================================================
-Model: Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR
-==================================================
-Overall Accuracy: 0.8930
+**Overall Accuracy**: 0.8930
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.92      0.94       200
     cond-mat       0.89      0.92      0.91       200
           cs       0.91      0.90      0.90       200
         math       0.94      0.97      0.95       200
-     physics       0.77      0.76      0.76       200
-
-    accuracy                           0.89      1000
+     physics       0.77      0.76      0.78       200
+    accuracy                           0.90      1000
    macro avg       0.89      0.89      0.89      1000
-weighted avg       0.89      0.89      0.89      1000
+weighted avg       0.89      0.90      0.89      1000
+```
+</details>
 
+<details>
+<summary>Stacking [Base Models] + GNB(meta+title)</summary>
 
-==================================================
-Model: Stacking [Base Models] + GNB(meta+title)
-==================================================
-Overall Accuracy: 0.8840
+**Overall Accuracy**: 0.8840
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.92      0.94       200
     cond-mat       0.85      0.93      0.89       200
           cs       0.90      0.90      0.90       200
         math       0.94      0.96      0.95       200
      physics       0.77      0.71      0.74       200
-
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.88      1000
 weighted avg       0.88      0.88      0.88      1000
+```
+</details>
 
+<details>
+<summary>Confidence-Gated Ensemble [MNB(t) -> kNN(e)]</summary>
 
-==================================================
-Model: Confidence-Gated Ensemble [MNB(t) -> kNN(e)]
-==================================================
-Overall Accuracy: 0.8590
+**Overall Accuracy**: 0.8590
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.89      0.92       200
     cond-mat       0.85      0.90      0.87       200
           cs       0.86      0.88      0.87       200
         math       0.92      0.95      0.94       200
      physics       0.72      0.67      0.70       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
+```
+</details>
 
+### 5.2. SciBERT Model (2000 samples/category)
 
+*   **Run Date**: 2025-08-22 12:00:31
 
-================================================================================
---- Ultimate Benchmark Run (Corrected SciBERT): 2025-08-22 12:00:31 ---
-run_ultimate_benchmark.py
-================================================================================
-2000 samples/category
+<details>
+<summary>LogisticRegression on TF-IDF + Embeddings</summary>
 
---- Advanced Single Model Reports (Corrected SciBERT) ---
-
-==================================================
-Model: LogisticRegression on TF-IDF + Embeddings
-==================================================
-Overall Accuracy: 0.8570
+**Overall Accuracy**: 0.8570
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.93      0.94       400
     cond-mat       0.85      0.82      0.83       400
           cs       0.88      0.84      0.86       400
         math       0.89      0.94      0.91       400
      physics       0.72      0.76      0.74       400
-
     accuracy                           0.86      2000
    macro avg       0.86      0.86      0.86      2000
 weighted avg       0.86      0.86      0.86      2000
+```
+</details>
 
+<details>
+<summary>Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]</summary>
 
-
---- Final Ensemble Reports (Corrected SciBERT) ---
-
-==================================================
-Model: Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]
-==================================================
-Overall Accuracy: 0.8850
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.92      0.94       400
     cond-mat       0.89      0.85      0.87       400
           cs       0.91      0.88      0.90       400
         math       0.91      0.96      0.93       400
      physics       0.75      0.82      0.79       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR</summary>
 
-==================================================
-Model: Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR
-==================================================
-Overall Accuracy: 0.8850
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
-    astro-ph       0.97      0.92      0.94       400
+    astro-ph       0.97      0.94      0.95       400
     cond-mat       0.90      0.84      0.87       400
           cs       0.91      0.88      0.90       400
         math       0.91      0.95      0.93       400
      physics       0.75      0.84      0.79       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Stacking [Base Models] + GNB(meta+title)</summary>
 
-==================================================
-Model: Stacking [Base Models] + GNB(meta+title)
-==================================================
-Overall Accuracy: 0.8790
+**Overall Accuracy**: 0.8790
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.92      0.94       400
     cond-mat       0.86      0.86      0.86       400
           cs       0.92      0.89      0.90       400
         math       0.93      0.95      0.94       400
      physics       0.74      0.78      0.76       400
-
     accuracy                           0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
+```
+</details>
 
+<details>
+<summary>Confidence-Gated Ensemble [MNB(t) -> kNN(e)]</summary>
 
-==================================================
-Model: Confidence-Gated Ensemble [MNB(t) -> kNN(e)]
-==================================================
-Overall Accuracy: 0.8785
+**Overall Accuracy**: 0.8785
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.90      0.94       400
     cond-mat       0.86      0.85      0.86       400
           cs       0.91      0.88      0.90       400
         math       0.90      0.96      0.93       400
      physics       0.75      0.80      0.77       400
-
     accuracy                           0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
+```
+</details>
 
+---
 
+## 6. Ultimate Benchmark (`run_ultimate_benchmark_e5.py`)
 
+### 6.1. e5-base Model (1000 samples/category)
 
+*   **Run Date**: 2025-08-22 12:13:03
 
-================================================================================
---- Ultimate Benchmark Run (e5-base Model): 2025-08-22 12:13:03 ---
-run_ultimate_benchmark_e5.py
-================================================================================
-1000 samples/category
+<details>
+<summary>LogisticRegression on TF-IDF + Embeddings</summary>
 
---- Advanced Single Model Reports (e5-base Model) ---
-
-==================================================
-Model: LogisticRegression on TF-IDF + Embeddings
-==================================================
-Overall Accuracy: 0.8850
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.95      0.96       200
     cond-mat       0.85      0.90      0.88       200
           cs       0.89      0.90      0.90       200
         math       0.92      0.97      0.94       200
      physics       0.79      0.70      0.75       200
-
     accuracy                           0.89      1000
    macro avg       0.88      0.89      0.88      1000
 weighted avg       0.88      0.89      0.88      1000
+```
+</details>
 
+<details>
+<summary>Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]</summary>
 
-
---- Final Ensemble Reports (e5-base Model) ---
-
-==================================================
-Model: Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]
-==================================================
-Overall Accuracy: 0.8920
+**Overall Accuracy**: 0.8920
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.95       200
     cond-mat       0.85      0.93      0.89       200
           cs       0.90      0.92      0.91       200
         math       0.92      0.97      0.95       200
      physics       0.81      0.71      0.76       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR</summary>
 
-==================================================
-Model: Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR
-==================================================
-Overall Accuracy: 0.9010
+**Overall Accuracy**: 0.9010
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.95       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.93      0.90      0.91       200
         math       0.93      0.98      0.95       200
      physics       0.79      0.79      0.79       200
-
     accuracy                           0.90      1000
    macro avg       0.90      0.90      0.90      1000
 weighted avg       0.90      0.90      0.90      1000
+```
+</details>
 
+<details>
+<summary>Stacking [Base Models] + GNB(meta+title)</summary>
 
-==================================================
-Model: Stacking [Base Models] + GNB(meta+title)
-==================================================
-Overall Accuracy: 0.8900
+**Overall Accuracy**: 0.8900
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.95       200
     cond-mat       0.85      0.92      0.88       200
           cs       0.91      0.91      0.91       200
         math       0.94      0.96      0.95       200
      physics       0.79      0.73      0.76       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Confidence-Gated Ensemble [MNB(t) -> kNN(e)]</summary>
 
-==================================================
-Model: Confidence-Gated Ensemble [MNB(t) -> kNN(e)]
-==================================================
-Overall Accuracy: 0.8590
+**Overall Accuracy**: 0.8590
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.91      0.93       200
     cond-mat       0.82      0.92      0.86       200
           cs       0.85      0.88      0.86       200
         math       0.92      0.96      0.94       200
      physics       0.75      0.64      0.69       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
+```
+</details>
 
+### 6.2. e5-base Model (2000 samples/category)
 
+*   **Run Date**: 2025-08-22 12:17:30
 
-================================================================================
---- Ultimate Benchmark Run (e5-base Model): 2025-08-22 12:17:30 ---
-run_ultimate_benchmark_e5.py
-================================================================================
-2000 samples/category
+<details>
+<summary>LogisticRegression on TF-IDF + Embeddings</summary>
 
---- Advanced Single Model Reports (e5-base Model) ---
-
-==================================================
-Model: LogisticRegression on TF-IDF + Embeddings
-==================================================
-Overall Accuracy: 0.8820
+**Overall Accuracy**: 0.8820
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.93      0.95       400
     cond-mat       0.89      0.85      0.87       400
           cs       0.90      0.88      0.89       400
         math       0.88      0.96      0.92       400
      physics       0.77      0.80      0.78       400
-
     accuracy                           0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
+```
+</details>
 
+<details>
+<summary>Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]</summary>
 
-
---- Final Ensemble Reports (e5-base Model) ---
-
-==================================================
-Model: Soft Voting Ensemble [MNB(t)+kNN(e)+DT(t)]
-==================================================
-Overall Accuracy: 0.8870
+**Overall Accuracy**: 0.8870
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       400
     cond-mat       0.91      0.85      0.88       400
           cs       0.90      0.87      0.88       400
         math       0.89      0.97      0.93       400
      physics       0.77      0.82      0.79       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR</summary>
 
-==================================================
-Model: Pure Stacking [MNB(t)+kNN(e)+DT(t)] + LR
-==================================================
-Overall Accuracy: 0.8895
+**Overall Accuracy**: 0.8895
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.93      0.95       400
     cond-mat       0.92      0.84      0.88       400
           cs       0.90      0.88      0.89       400
         math       0.90      0.96      0.93       400
      physics       0.77      0.83      0.80       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Stacking [Base Models] + GNB(meta+title)</summary>
 
-==================================================
-Model: Stacking [Base Models] + GNB(meta+title)
-==================================================
-Overall Accuracy: 0.8770
+**Overall Accuracy**: 0.8770
+```
               precision    recall  f1-score   support
-
-    astro-ph       0.97      0.92      0.95       400
+    astro-ph       0.97      0.92      0.94       400
     cond-mat       0.89      0.85      0.87       400
           cs       0.90      0.88      0.89       400
         math       0.90      0.95      0.93       400
      physics       0.74      0.79      0.76       400
-
     accuracy                           0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
+```
+</details>
 
+<details>
+<summary>Confidence-Gated Ensemble [MNB(t) -> kNN(e)]</summary>
 
-==================================================
-Model: Confidence-Gated Ensemble [MNB(t) -> kNN(e)]
-==================================================
-Overall Accuracy: 0.8800
+**Overall Accuracy**: 0.8800
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.92      0.95       400
     cond-mat       0.89      0.85      0.87       400
           cs       0.90      0.87      0.89       400
         math       0.89      0.96      0.92       400
      physics       0.75      0.81      0.78       400
-
     accuracy                           0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
+```
+</details>
 
+---
 
+## 7. Champion Pipeline Benchmarks
 
-### run_champion_pipeline.py and run_champion_pipeline_e5.py
+### 7.1. SciBERT Model (`run_champion_pipeline.py`)
 
---- Champion Pipeline: Stacking with Various Meta-Learners ---
-SciBERT
-1000 samples/category
+#### 1000 Samples per Category
 
-================================================================================
---- Champion Pipeline Benchmark (SciBERT): 2025-08-22 11:39:16 ---
-run_champion_pipeline.py
-================================================================================
+*   **Run Date**: 2025-08-22 11:39:16
 
-==================================================
-Evaluating Meta-Learner: LR(TFIDF)
-==================================================
-  Training meta-learner LR(TFIDF)...
-  Predicting with LR(TFIDF)...
-Overall Accuracy: 0.8940
+<details>
+<summary>Meta-Learner: LR(TFIDF)</summary>
+
+**Overall Accuracy**: 0.8940
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.90      0.92      0.91       200
           cs       0.90      0.90      0.90       200
         math       0.93      0.97      0.95       200
      physics       0.78      0.74      0.76       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: LR(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner: LR(BoW)
-==================================================
-  Training meta-learner LR(BoW)...
-  Predicting with LR(BoW)...
-Overall Accuracy: 0.8850
+**Overall Accuracy**: 0.8850
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.92      0.94       200
     cond-mat       0.87      0.90      0.88       200
           cs       0.91      0.90      0.90       200
         math       0.93      0.97      0.95       200
      physics       0.76      0.73      0.74       200
-
     accuracy                           0.89      1000
    macro avg       0.88      0.89      0.88      1000
 weighted avg       0.88      0.89      0.88      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: LR(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner: LR(Emb)
-==================================================
-  Training meta-learner LR(Emb)...
-  Predicting with LR(Emb)...
-Overall Accuracy: 0.8780
+**Overall Accuracy**: 0.8780
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.86      0.86      0.86       200
           cs       0.91      0.92      0.92       200
         math       0.94      0.94      0.94       200
      physics       0.74      0.74      0.74       200
-
     accuracy                           0.88      1000
    macro avg       0.88      0.88      0.88      1000
 weighted avg       0.88      0.88      0.88      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(TFIDF)</summary>
 
-==================================================
-Evaluating Meta-Learner: XGB(TFIDF)
-==================================================
-  Training meta-learner XGB(TFIDF)...
-  Predicting with XGB(TFIDF)...
-Overall Accuracy: 0.8940
+**Overall Accuracy**: 0.8940
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.93      0.94       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.91      0.93      0.92       200
         math       0.94      0.95      0.95       200
      physics       0.78      0.76      0.77       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner: XGB(BoW)
-==================================================
-  Training meta-learner XGB(BoW)...
-  Predicting with XGB(BoW)...
-Overall Accuracy: 0.8860
+**Overall Accuracy**: 0.8860
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.93      0.94       200
     cond-mat       0.88      0.91      0.89       200
           cs       0.91      0.91      0.91       200
         math       0.94      0.95      0.94       200
      physics       0.76      0.74      0.75       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner: XGB(Emb)
-==================================================
-  Training meta-learner XGB(Emb)...
-  Predicting with XGB(Emb)...
-Overall Accuracy: 0.8940
+**Overall Accuracy**: 0.8940
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.92      0.94       200
     cond-mat       0.89      0.93      0.90       200
           cs       0.90      0.91      0.90       200
         math       0.94      0.96      0.95       200
      physics       0.78      0.76      0.77       200
-
     accuracy                           0.89      1000
    macro avg       0.89      0.89      0.89      1000
 weighted avg       0.89      0.89      0.89      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(TFIDF)</summary>
 
-==================================================
-Evaluating Meta-Learner: GNB(TFIDF)
-==================================================
-  Training meta-learner GNB(TFIDF)...
-  Predicting with GNB(TFIDF)...
-Overall Accuracy: 0.7810
+**Overall Accuracy**: 0.7810
+```
               precision    recall  f1-score   support
-
     astro-ph       0.91      0.93      0.92       200
     cond-mat       0.75      0.79      0.77       200
           cs       0.80      0.81      0.80       200
         math       0.89      0.81      0.85       200
      physics       0.57      0.57      0.57       200
-
     accuracy                           0.78      1000
    macro avg       0.78      0.78      0.78      1000
 weighted avg       0.78      0.78      0.78      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner: GNB(BoW)
-==================================================
-  Training meta-learner GNB(BoW)...
-  Predicting with GNB(BoW)...
-Overall Accuracy: 0.7640
+**Overall Accuracy**: 0.7640
+```
               precision    recall  f1-score   support
-
     astro-ph       0.89      0.89      0.89       200
     cond-mat       0.71      0.77      0.74       200
           cs       0.80      0.82      0.81       200
         math       0.88      0.84      0.86       200
      physics       0.53      0.51      0.52       200
-
     accuracy                           0.76      1000
    macro avg       0.76      0.76      0.76      1000
 weighted avg       0.76      0.76      0.76      1000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner: GNB(Emb)
-==================================================
-  Training meta-learner GNB(Emb)...
-  Predicting with GNB(Emb)...
-Overall Accuracy: 0.8630
+**Overall Accuracy**: 0.8630
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.89      0.93       200
     cond-mat       0.84      0.86      0.85       200
           cs       0.86      0.92      0.89       200
         math       0.95      0.95      0.95       200
      physics       0.70      0.69      0.70       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
+```
+</details>
 
---- Champion Pipeline: Stacking with Various Meta-Learners ---
-SciBERT
-2000 samples /category
-================================================================================
---- Champion Pipeline Benchmark (SciBERT): 2025-08-22 11:39:16 ---
-run_champion_pipeline.py
-================================================================================
-==================================================
-Evaluating Meta-Learner: LR(TFIDF)
-==================================================
-  Training meta-learner LR(TFIDF)...
-  Predicting with LR(TFIDF)...
-Overall Accuracy: 0.8900
+#### 2000 Samples per Category
+
+<details>
+<summary>Meta-Learner: LR(TFIDF)</summary>
+
+**Overall Accuracy**: 0.8920
+```
               precision    recall  f1-score   support
-
-    astro-ph       0.98      0.93      0.95       400
-    cond-mat       0.90      0.84      0.87       400
-          cs       0.92      0.89      0.90       400
-        math       0.91      0.95      0.93       400
-     physics       0.76      0.84      0.80       400
-
-    accuracy                           0.89      2000
-   macro avg       0.89      0.89      0.89      2000
-weighted avg       0.89      0.89      0.89      2000
-
-
-==================================================
-Evaluating Meta-Learner: LR(BoW)
-==================================================
-  Training meta-learner LR(BoW)...
-  Predicting with LR(BoW)...
-Overall Accuracy: 0.8865
-              precision    recall  f1-score   support
-
-    astro-ph       0.99      0.93      0.96       400
-    cond-mat       0.88      0.85      0.86       400
-          cs       0.91      0.88      0.89       400
-        math       0.91      0.95      0.93       400
-     physics       0.76      0.82      0.79       400
-
-    accuracy                           0.89      2000
-   macro avg       0.89      0.89      0.89      2000
-weighted avg       0.89      0.89      0.89      2000
-
-
-==================================================
-Evaluating Meta-Learner: LR(Emb)
-==================================================
-  Training meta-learner LR(Emb)...
-  Predicting with LR(Emb)...
-Overall Accuracy: 0.8755
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.94      0.95       400
-    cond-mat       0.88      0.84      0.86       400
-          cs       0.89      0.88      0.88       400
-        math       0.90      0.94      0.92       400
-     physics       0.75      0.79      0.77       400
-
-    accuracy                           0.88      2000
-   macro avg       0.88      0.88      0.88      2000
-weighted avg       0.88      0.88      0.88      2000
-
-
-==================================================
-Evaluating Meta-Learner: XGB(TFIDF)
-==================================================
-  Training meta-learner XGB(TFIDF)...
-  Predicting with XGB(TFIDF)...
-Overall Accuracy: 0.8885
-              precision    recall  f1-score   support
-
-    astro-ph       0.98      0.93      0.95       400
-    cond-mat       0.90      0.84      0.87       400
-          cs       0.91      0.89      0.90       400
-        math       0.92      0.94      0.93       400
-     physics       0.76      0.83      0.79       400
-
-    accuracy                           0.89      2000
-   macro avg       0.89      0.89      0.89      2000
-weighted avg       0.89      0.89      0.89      2000
-
-
-==================================================
-Evaluating Meta-Learner: XGB(BoW)
-==================================================
-  Training meta-learner XGB(BoW)...
-  Predicting with XGB(BoW)...
-Overall Accuracy: 0.8960
-              precision    recall  f1-score   support
-
-    astro-ph       0.98      0.94      0.96       400
-    cond-mat       0.89      0.86      0.88       400
-          cs       0.91      0.91      0.91       400
-        math       0.92      0.94      0.93       400
-     physics       0.79      0.83      0.81       400
-
-    accuracy                           0.90      2000
-   macro avg       0.90      0.90      0.90      2000
-weighted avg       0.90      0.90      0.90      2000
-
-
-==================================================
-Evaluating Meta-Learner: XGB(Emb)
-==================================================
-  Training meta-learner XGB(Emb)...
-  Predicting with XGB(Emb)...
-Overall Accuracy: 0.8880
-              precision    recall  f1-score   support
-
-    astro-ph       0.99      0.94      0.96       400
-    cond-mat       0.90      0.84      0.87       400
-          cs       0.90      0.89      0.89       400
-        math       0.91      0.94      0.93       400
-     physics       0.76      0.84      0.80       400
-
-    accuracy                           0.89      2000
-   macro avg       0.89      0.89      0.89      2000
-weighted avg       0.89      0.89      0.89      2000
-
-
-==================================================
-Evaluating Meta-Learner: GNB(TFIDF)
-==================================================
-  Training meta-learner GNB(TFIDF)...
-  Predicting with GNB(TFIDF)...
-Overall Accuracy: 0.7775
-              precision    recall  f1-score   support
-
-    astro-ph       0.92      0.92      0.92       400
-    cond-mat       0.74      0.79      0.76       400
-          cs       0.77      0.77      0.77       400
-        math       0.89      0.82      0.86       400
-     physics       0.57      0.59      0.58       400
-
-    accuracy                           0.78      2000
-   macro avg       0.78      0.78      0.78      2000
-weighted avg       0.78      0.78      0.78      2000
-
-
-==================================================
-Evaluating Meta-Learner: GNB(BoW)
-==================================================
-  Training meta-learner GNB(BoW)...
-  Predicting with GNB(BoW)...
-Overall Accuracy: 0.7420
-              precision    recall  f1-score   support
-
-    astro-ph       0.86      0.91      0.89       400
-    cond-mat       0.68      0.79      0.73       400
-          cs       0.74      0.76      0.75       400
-        math       0.84      0.82      0.83       400
-     physics       0.54      0.43      0.48       400
-
-    accuracy                           0.74      2000
-   macro avg       0.74      0.74      0.74      2000
-weighted avg       0.74      0.74      0.74      2000
-
-
-==================================================
-Evaluating Meta-Learner: GNB(Emb)
-==================================================
-  Training meta-learner GNB(Emb)...
-  Predicting with GNB(Emb)...
-Overall Accuracy: 0.8490
-              precision    recall  f1-score   support
-
-    astro-ph       0.98      0.88      0.93       400
-    cond-mat       0.87      0.81      0.84       400
-          cs       0.86      0.88      0.87       400
-        math       0.93      0.93      0.93       400
-     physics       0.65      0.75      0.70       400
-
-    accuracy                           0.85      2000
-   macro avg       0.86      0.85      0.85      2000
-weighted avg       0.86      0.85      0.85      2000
-
-
-
-
-
-
---- Champion Pipeline (e5-base): Stacking with Various Meta-Learners ---
-run_champion_pipeline_e5.py
-
-1000 samples/category
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(TFIDF)
-==================================================
-  Training meta-learner LR(TFIDF)...
-  Predicting with LR(TFIDF)...
-Overall Accuracy: 0.9040
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.94      0.96       200
-    cond-mat       0.89      0.91      0.90       200
-          cs       0.93      0.90      0.91       200
-        math       0.92      0.98      0.95       200
-     physics       0.81      0.79      0.80       200
-
-    accuracy                           0.90      1000
-   macro avg       0.90      0.90      0.90      1000
-weighted avg       0.90      0.90      0.90      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(BoW)
-==================================================
-  Training meta-learner LR(BoW)...
-  Predicting with LR(BoW)...
-Overall Accuracy: 0.8840
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.92      0.94       200
-    cond-mat       0.87      0.89      0.88       200
-          cs       0.91      0.90      0.90       200
-        math       0.93      0.97      0.95       200
-     physics       0.75      0.75      0.75       200
-
-    accuracy                           0.88      1000
-   macro avg       0.88      0.88      0.88      1000
-weighted avg       0.88      0.88      0.88      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(Emb)
-==================================================
-  Training meta-learner LR(Emb)...
-  Predicting with LR(Emb)...
-Overall Accuracy: 0.9020
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.94      0.95       200
-    cond-mat       0.88      0.92      0.90       200
-          cs       0.93      0.90      0.91       200
-        math       0.93      0.98      0.95       200
-     physics       0.80      0.79      0.79       200
-
-    accuracy                           0.90      1000
-   macro avg       0.90      0.90      0.90      1000
-weighted avg       0.90      0.90      0.90      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(TFIDF)
-==================================================
-  Training meta-learner XGB(TFIDF)...
-  Predicting with XGB(TFIDF)...
-Overall Accuracy: 0.9020
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.94      0.96       200
-    cond-mat       0.89      0.90      0.89       200
-          cs       0.92      0.92      0.92       200
-        math       0.94      0.97      0.96       200
-     physics       0.79      0.78      0.78       200
-
-    accuracy                           0.90      1000
-   macro avg       0.90      0.90      0.90      1000
-weighted avg       0.90      0.90      0.90      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(BoW)
-==================================================
-  Training meta-learner XGB(BoW)...
-  Predicting with XGB(BoW)...
-Overall Accuracy: 0.9030
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.93      0.95       200
-    cond-mat       0.88      0.91      0.90       200
-          cs       0.93      0.92      0.92       200
-        math       0.94      0.98      0.96       200
-     physics       0.78      0.78      0.78       200
-
-    accuracy                           0.90      1000
-   macro avg       0.90      0.90      0.90      1000
-weighted avg       0.90      0.90      0.90      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(Emb)
-==================================================
-  Training meta-learner XGB(Emb)...
-  Predicting with XGB(Emb)...
-Overall Accuracy: 0.9030
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.95      0.96       200
-    cond-mat       0.87      0.92      0.90       200
-          cs       0.92      0.91      0.91       200
-        math       0.94      0.97      0.95       200
-     physics       0.81      0.77      0.79       200
-
-    accuracy                           0.90      1000
-   macro avg       0.90      0.90      0.90      1000
-weighted avg       0.90      0.90      0.90      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(TFIDF)
-==================================================
-  Training meta-learner GNB(TFIDF)...
-  Predicting with GNB(TFIDF)...
-Overall Accuracy: 0.7810
-              precision    recall  f1-score   support
-
-    astro-ph       0.91      0.93      0.92       200
-    cond-mat       0.75      0.79      0.77       200
-          cs       0.80      0.81      0.80       200
-        math       0.89      0.81      0.85       200
-     physics       0.57      0.57      0.57       200
-
-    accuracy                           0.78      1000
-   macro avg       0.78      0.78      0.78      1000
-weighted avg       0.78      0.78      0.78      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(BoW)
-==================================================
-  Training meta-learner GNB(BoW)...
-  Predicting with GNB(BoW)...
-Overall Accuracy: 0.7640
-              precision    recall  f1-score   support
-
-    astro-ph       0.89      0.89      0.89       200
-    cond-mat       0.71      0.77      0.74       200
-          cs       0.80      0.82      0.81       200
-        math       0.88      0.84      0.86       200
-     physics       0.53      0.51      0.52       200
-
-    accuracy                           0.76      1000
-   macro avg       0.76      0.76      0.76      1000
-weighted avg       0.76      0.76      0.76      1000
-
-
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(Emb)
-==================================================
-  Training meta-learner GNB(Emb)...
-  Predicting with GNB(Emb)...
-Overall Accuracy: 0.8700
-              precision    recall  f1-score   support
-
-    astro-ph       0.97      0.94      0.96       200
-    cond-mat       0.81      0.90      0.85       200
-          cs       0.87      0.90      0.89       200
-        math       0.91      0.96      0.94       200
-     physics       0.77      0.65      0.70       200
-
-    accuracy                           0.87      1000
-   macro avg       0.87      0.87      0.87      1000
-weighted avg       0.87      0.87      0.87      1000
-
---- Champion Pipeline (e5-base): Stacking with Various Meta-Learners ---
-run_champion_pipeline_e5.py
-
-2000 samples/category
-
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(TFIDF)
-==================================================
-  Training meta-learner LR(TFIDF)...
-  Predicting with LR(TFIDF)...
-Overall Accuracy: 0.8920
-              precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.96       400
     cond-mat       0.91      0.85      0.88       400
           cs       0.91      0.88      0.89       400
         math       0.90      0.97      0.93       400
      physics       0.78      0.83      0.80       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: LR(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(BoW)
-==================================================
-  Training meta-learner LR(BoW)...
-  Predicting with LR(BoW)...
-Overall Accuracy: 0.8825
+**Overall Accuracy**: 0.8825
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.93      0.95       400
     cond-mat       0.87      0.83      0.85       400
           cs       0.92      0.87      0.89       400
         math       0.90      0.96      0.93       400
      physics       0.76      0.83      0.79       400
-
     accuracy                           0.88      2000
    macro avg       0.89      0.88      0.88      2000
 weighted avg       0.89      0.88      0.88      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: LR(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): LR(Emb)
-==================================================
-  Training meta-learner LR(Emb)...
-  Predicting with LR(Emb)...
-Overall Accuracy: 0.8920
+**Overall Accuracy**: 0.8920
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.95       400
     cond-mat       0.92      0.85      0.88       400
           cs       0.91      0.88      0.89       400
         math       0.90      0.97      0.93       400
      physics       0.78      0.83      0.80       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(TFIDF)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(TFIDF)
-==================================================
-  Training meta-learner XGB(TFIDF)...
-  Predicting with XGB(TFIDF)...
-Overall Accuracy: 0.8940
+**Overall Accuracy**: 0.8940
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.95      0.96       400
     cond-mat       0.92      0.85      0.88       400
           cs       0.90      0.89      0.90       400
         math       0.91      0.94      0.93       400
      physics       0.78      0.84      0.81       400
-
     accuracy                           0.89      2000
    macro avg       0.90      0.89      0.89      2000
 weighted avg       0.90      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(BoW)
-==================================================
-  Training meta-learner XGB(BoW)...
-  Predicting with XGB(BoW)...
-Overall Accuracy: 0.8915
+**Overall Accuracy**: 0.8915
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.94      0.96       400
     cond-mat       0.91      0.84      0.87       400
           cs       0.91      0.90      0.91       400
         math       0.91      0.95      0.93       400
      physics       0.77      0.82      0.80       400
-
     accuracy                           0.89      2000
    macro avg       0.89      0.89      0.89      2000
 weighted avg       0.89      0.89      0.89      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: XGB(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): XGB(Emb)
-==================================================
-  Training meta-learner XGB(Emb)...
-  Predicting with XGB(Emb)...
-Overall Accuracy: 0.8975
+**Overall Accuracy**: 0.8975
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.93      0.95       400
     cond-mat       0.93      0.85      0.89       400
           cs       0.90      0.90      0.90       400
         math       0.92      0.95      0.93       400
      physics       0.79      0.84      0.81       400
-
     accuracy                           0.90      2000
    macro avg       0.90      0.90      0.90      2000
 weighted avg       0.90      0.90      0.90      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(TFIDF)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(TFIDF)
-==================================================
-  Training meta-learner GNB(TFIDF)...
-  Predicting with GNB(TFIDF)...
-Overall Accuracy: 0.7775
+**Overall Accuracy**: 0.7775
+```
               precision    recall  f1-score   support
-
     astro-ph       0.92      0.92      0.92       400
     cond-mat       0.74      0.79      0.76       400
           cs       0.77      0.77      0.77       400
         math       0.89      0.82      0.86       400
      physics       0.57      0.59      0.58       400
-
     accuracy                           0.78      2000
    macro avg       0.78      0.78      0.78      2000
 weighted avg       0.78      0.78      0.78      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(BoW)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(BoW)
-==================================================
-  Training meta-learner GNB(BoW)...
-  Predicting with GNB(BoW)...
-Overall Accuracy: 0.7425
+**Overall Accuracy**: 0.7425
+```
               precision    recall  f1-score   support
-
     astro-ph       0.87      0.91      0.89       400
     cond-mat       0.68      0.79      0.73       400
           cs       0.74      0.76      0.75       400
         math       0.84      0.82      0.83       400
      physics       0.54      0.43      0.48       400
-
     accuracy                           0.74      2000
    macro avg       0.74      0.74      0.74      2000
 weighted avg       0.74      0.74      0.74      2000
+```
+</details>
 
+<details>
+<summary>Meta-Learner: GNB(Emb)</summary>
 
-==================================================
-Evaluating Meta-Learner (e5-base run): GNB(Emb)
-==================================================
-  Training meta-learner GNB(Emb)...
-  Predicting with GNB(Emb)...
-Overall Accuracy: 0.8545
+**Overall Accuracy**: 0.8700
+```
               precision    recall  f1-score   support
+    astro-ph       0.97      0.94      0.96       400
+    cond-mat       0.81      0.90      0.85       400
+          cs       0.87      0.90      0.89       400
+        math       0.91      0.96      0.94       400
+     physics       0.77      0.65      0.70       400
+    accuracy                           0.87      2000
+   macro avg       0.87      0.87      0.87      2000
+weighted avg       0.87      0.87      0.87      2000
+```
+</details>
 
-    astro-ph       0.98      0.91      0.94       400
-    cond-mat       0.86      0.84      0.85       400
-          cs       0.86      0.84      0.85       400
-        math       0.88      0.94      0.91       400
-     physics       0.71      0.73      0.72       400
+---
 
-    accuracy                           0.85      2000
-   macro avg       0.86      0.85      0.86      2000
-weighted avg       0.86      0.85      0.86      2000
+## 8. Single Model Benchmark (LR & XGBoost) (`run_single_LR_XBG.py`)
 
+### 8.1. 1000 Samples per Category
 
+*   **Run Date**: 2025-08-22 14:12:02
 
+<details>
+<summary>LR(BoW)</summary>
 
-
-================================================================================
---- Single Model Benchmark (LR & XGBoost): 2025-08-22 14:12:02 ---
-run_single_LR_XBG.py
-================================================================================
-1000 samples /category
-
---- Detailed Single Model Reports (LR & XGBoost) ---
-
-==================================================
-Evaluating Model: LR(BoW)
-==================================================
-Overall Accuracy: 0.8580
+**Overall Accuracy**: 0.8580
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.91      0.93       200
     cond-mat       0.83      0.86      0.85       200
           cs       0.89      0.84      0.87       200
         math       0.89      0.98      0.93       200
      physics       0.72      0.69      0.71       200
-
     accuracy                           0.86      1000
    macro avg       0.86      0.86      0.86      1000
 weighted avg       0.86      0.86      0.86      1000
+```
+</details>
 
+<details>
+<summary>LR(TFIDF)</summary>
 
-==================================================
-Evaluating Model: LR(TFIDF)
-==================================================
-Overall Accuracy: 0.8700
+**Overall Accuracy**: 0.8700
+```
               precision    recall  f1-score   support
-
     astro-ph       0.97      0.91      0.94       200
     cond-mat       0.85      0.90      0.88       200
           cs       0.87      0.88      0.88       200
         math       0.91      0.95      0.93       200
      physics       0.75      0.70      0.73       200
-
     accuracy                           0.87      1000
    macro avg       0.87      0.87      0.87      1000
 weighted avg       0.87      0.87      0.87      1000
+```
+</details>
 
+<details>
+<summary>LR(Emb)</summary>
 
-==================================================
-Evaluating Model: LR(Emb)
-==================================================
-Overall Accuracy: 0.8560
+**Overall Accuracy**: 0.8560
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.96      0.95       200
     cond-mat       0.80      0.88      0.84       200
           cs       0.85      0.89      0.87       200
         math       0.88      0.95      0.92       200
      physics       0.79      0.59      0.68       200
-
     accuracy                           0.86      1000
    macro avg       0.85      0.86      0.85      1000
 weighted avg       0.85      0.86      0.85      1000
+```
+</details>
 
+<details>
+<summary>XGB(BoW)</summary>
 
-==================================================
-Evaluating Model: XGB(BoW)
-==================================================
-Overall Accuracy: 0.8230
+**Overall Accuracy**: 0.8230
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.94      0.94       200
     cond-mat       0.82      0.86      0.84       200
           cs       0.81      0.79      0.80       200
         math       0.84      0.94      0.89       200
      physics       0.68      0.59      0.63       200
-
     accuracy                           0.82      1000
    macro avg       0.82      0.82      0.82      1000
 weighted avg       0.82      0.82      0.82      1000
+```
+</details>
 
+<details>
+<summary>XGB(TFIDF)</summary>
 
-==================================================
-Evaluating Model: XGB(TFIDF)
-==================================================
-Overall Accuracy: 0.8270
+**Overall Accuracy**: 0.8270
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.94      0.94       200
     cond-mat       0.80      0.85      0.83       200
           cs       0.83      0.83      0.83       200
         math       0.86      0.93      0.89       200
      physics       0.68      0.58      0.63       200
-
     accuracy                           0.83      1000
    macro avg       0.82      0.83      0.82      1000
 weighted avg       0.82      0.83      0.82      1000
+```
+</details>
 
+<details>
+<summary>XGB(Emb)</summary>
 
-==================================================
-Evaluating Model: XGB(Emb)
-==================================================
-Overall Accuracy: 0.8380
+**Overall Accuracy**: 0.8380
+```
               precision    recall  f1-score   support
-
     astro-ph       0.92      0.96      0.94       200
     cond-mat       0.78      0.82      0.80       200
           cs       0.85      0.86      0.86       200
         math       0.90      0.95      0.92       200
      physics       0.71      0.59      0.65       200
-
     accuracy                           0.84      1000
    macro avg       0.83      0.84      0.83      1000
 weighted avg       0.83      0.84      0.83      1000
+```
+</details>
 
+### 8.2. 2000 Samples per Category
 
+*   **Run Date**: 2025-08-22 14:15:16
 
+<details>
+<summary>LR(BoW)</summary>
 
-================================================================================
---- Single Model Benchmark (LR & XGBoost): 2025-08-22 14:15:16 ---
-run_single_LR_XBG.py
-================================================================================
-2000 samples /category
-
---- Detailed Single Model Reports (LR & XGBoost) ---
-
-==================================================
-Evaluating Model: LR(BoW)
-==================================================
-Overall Accuracy: 0.8515
+**Overall Accuracy**: 0.8515
+```
               precision    recall  f1-score   support
-
     astro-ph       0.99      0.90      0.94       400
     cond-mat       0.84      0.81      0.82       400
           cs       0.89      0.83      0.86       400
         math       0.86      0.95      0.91       400
      physics       0.71      0.77      0.74       400
-
     accuracy                           0.85      2000
    macro avg       0.86      0.85      0.85      2000
 weighted avg       0.86      0.85      0.85      2000
+```
+</details>
 
+<details>
+<summary>LR(TFIDF)</summary>
 
-==================================================
-Evaluating Model: LR(TFIDF)
-==================================================
-Overall Accuracy: 0.8710
+**Overall Accuracy**: 0.8710
+```
               precision    recall  f1-score   support
-
     astro-ph       0.98      0.92      0.95       400
     cond-mat       0.88      0.85      0.86       400
           cs       0.89      0.86      0.87       400
         math       0.86      0.95      0.90       400
      physics       0.76      0.78      0.77       400
-
     accuracy                           0.87      2000
    macro avg       0.87      0.87      0.87      2000
 weighted avg       0.87      0.87      0.87      2000
+```
+</details>
 
+<details>
+<summary>LR(Emb)</summary>
 
-==================================================
-Evaluating Model: LR(Emb)
-==================================================
-Overall Accuracy: 0.8400
+**Overall Accuracy**: 0.8400
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.92      0.93       400
     cond-mat       0.83      0.82      0.82       400
           cs       0.86      0.84      0.85       400
         math       0.85      0.94      0.89       400
      physics       0.72      0.68      0.70       400
-
     accuracy                           0.84      2000
    macro avg       0.84      0.84      0.84      2000
 weighted avg       0.84      0.84      0.84      2000
+```
+</details>
 
+<details>
+<summary>XGB(BoW)</summary>
 
-==================================================
-Evaluating Model: XGB(BoW)
-==================================================
-Overall Accuracy: 0.8345
+**Overall Accuracy**: 0.8345
+```
               precision    recall  f1-score   support
-
     astro-ph       0.96      0.90      0.93       400
     cond-mat       0.85      0.79      0.82       400
           cs       0.87      0.83      0.85       400
         math       0.83      0.94      0.88       400
      physics       0.69      0.72      0.70       400
-
     accuracy                           0.83      2000
    macro avg       0.84      0.83      0.84      2000
 weighted avg       0.84      0.83      0.84      2000
+```
+</details>
 
+<details>
+<summary>XGB(TFIDF)</summary>
 
-==================================================
-Evaluating Model: XGB(TFIDF)
-==================================================
-Overall Accuracy: 0.8360
+**Overall Accuracy**: 0.8360
+```
               precision    recall  f1-score   support
-
     astro-ph       0.95      0.88      0.92       400
     cond-mat       0.87      0.81      0.84       400
           cs       0.86      0.81      0.84       400
         math       0.83      0.93      0.88       400
      physics       0.69      0.75      0.72       400
-
     accuracy                           0.84      2000
    macro avg       0.84      0.84      0.84      2000
 weighted avg       0.84      0.84      0.84      2000
+```
+</details>
 
+<details>
+<summary>XGB(Emb)</summary>
 
-==================================================
-Evaluating Model: XGB(Emb)
-==================================================
-Overall Accuracy: 0.8350
+**Overall Accuracy**: 0.8350
+```
               precision    recall  f1-score   support
-
     astro-ph       0.94      0.91      0.92       400
     cond-mat       0.81      0.80      0.80       400
           cs       0.86      0.85      0.86       400
         math       0.86      0.93      0.89       400
      physics       0.70      0.69      0.70       400
-
     accuracy                           0.83      2000
    macro avg       0.83      0.84      0.83      2000
-weighted avg       0.83      0.83      0.83      2000
-
-
+weighted avg       0.83      0.84      0.83      2000
+```
+</details>
 
