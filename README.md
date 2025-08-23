@@ -2,7 +2,7 @@
 
 *Check `benchmark_results.md` for detailed benchmark runs and visualizations of the project*
 
-![alt text](plot_final_summary_charts.png)
+![Final Summary Plot](visualizations/plot_final_summary_charts.png)
 
 ## About This Project
 
