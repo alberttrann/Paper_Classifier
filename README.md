@@ -282,16 +282,12 @@ This is the final, comprehensive bake-off.
 *   **Goal:** Systematically find the absolute best combination of calibrated base model predictions, original features, and meta-learner.
 
 
-#### **Phase 3, Step 5: The "YOLO" Experiments**
-
-These are high-risk, high-reward experiments to be run in parallel or after the main benchmarks.
-
-*   **Sub-step 5.1: Implement the "Confidence-Gated Ensemble."**
-    *   **Action:** Build the cascading ensemble where a meta-learner acts as a "reliability gate."
-    *   **Plan:**
-        1.  Train the tuned `MNB(tfidf)` as the primary model.
-        2.  Train a `LogisticRegression` "gatekeeper" to predict if MNB will be correct.
-        3.  Implement the inference logic to escalate to the tuned, **calibrated** `kNN(SciBERT)` when the gatekeeper is not confident.
+#### **Phase 3, Step 5: Implement the "Confidence-Gated Ensemble."**
+*   **Action:** Build the cascading ensemble where a meta-learner acts as a "reliability gate."
+*   **Plan:**
+    1.  Train the tuned `MNB(tfidf)` as the primary model.
+    2.  Train a `LogisticRegression` "gatekeeper" to predict if MNB will be correct.
+    3.  Implement the inference logic to escalate to the tuned, **calibrated** `kNN(SciBERT)` when the gatekeeper is not confident.
 *   **Goal:** Test if this dynamic, efficiency-focused ensemble can match or beat the accuracy of the more complex stacking models.
 
 ---
