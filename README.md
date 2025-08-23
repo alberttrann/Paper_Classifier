@@ -109,14 +109,14 @@ Check `run_heterogenous_ensembles.py` for code script. Also check `run_embedding
 <details>
 <sumamry>Visualizations for embedding-only ensembles</summary>
 
-![alt text](visualizations\plot_2_embedding_ensembles.png)
+![alt text](visualizations/plot_2_embedding_ensembles.png)
 </details>
 
 
 <details>
 <summary>Visualizations for heterogenous ensembles</summary>
 
-![alt text](visualizations\plot_3_heterogeneous_ensembles.png)
+![alt text](visualizations/plot_3_heterogeneous_ensembles.png)
 </details>
 
 #### 3.3. Experiment 3: Advanced Stacking Ensembles
@@ -187,7 +187,7 @@ Stacking Configuration                            | Accuracy
 <details>
 <summary>Visualizations</summary>
 
-![alt text](visualizations\plot_4_stacking_ensembles.png)
+![alt text](visualizations/plot_4_stacking_ensembles.png)
 </details>
 
 ### **Project Phase 3: Advanced Optimization and Hybrid Modeling**
@@ -327,12 +327,12 @@ This first phase of advanced testing was designed to establish the maximum perfo
 <details>
 <summary>Visualizations</summary>
 
-![alt text](visualizations\plot_5_experiments_comparison_1k.png)
+![alt text](visualizations/plot_5_experiments_comparison_1k.png)
 
 
-![alt text](visualizations\plot_6_experiments_comparison_2k.png)
+![alt text](visualizations/plot_6_experiments_comparison_2k.png)
 
-![alt text](visualizations\plot_6_1_data_scaling_effect.png)
+![alt text](visualizations/plot_6_1_data_scaling_effect.png)
 </details>
 
 ##### 1.2. Implications for Change & The "Champion Pipeline"
@@ -523,11 +523,11 @@ GNB(Emb)                            | 0.8545
 <details>
 <summary>Visualizations</summary>
 
-![alt text](visualizations\plot_7_champion_pipeline_1k.png)
+![alt text](visualizations/plot_7_champion_pipeline_1k.png)
 
-![alt text](visualizations\plot_7_1_champion_pipeline_2k.png)
+![alt text](visualizations/plot_7_1_champion_pipeline_2k.png)
 
-![alt text](visualizations\plot_7_2_champion_scaling_effect.png)
+![alt text](visualizations/plot_7_2_champion_scaling_effect.png)
 
 </details>
 
@@ -588,7 +588,7 @@ XGB(Emb)                  | 0.8350
 <details>
 <summary>Visualizations</summary>
 
-![alt text](visualizations\plot_8_detailed_challenger_benchmark.png)
+![alt text](visualizations/plot_8_detailed_challenger_benchmark.png)
 
 </details>
 
@@ -610,11 +610,11 @@ XGB(Emb)                  | 0.8350
 <details>
 <summary>Summary Benchmarks Visulizations</summary>
 
-![alt text](visualizations\plot_final_summary_charts.png)
+![alt text](visualizations/plot_final_summary_charts.png)
 
-![alt text](visualizations\plot_performance_stairway.png)
+![alt text](visualizations/plot_performance_stairway.png)
 
-![alt text](visualizations\plot_summary_heatmap.png)
+![alt text](visualizations/plot_summary_heatmap.png)
 
-1[alt text](visualizations\plot_Perf_gains_with_Complexity.png)
+1[alt text](visualizations/plot_Perf_gains_with_Complexity.png)
 </details>
