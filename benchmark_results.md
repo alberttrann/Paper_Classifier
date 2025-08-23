@@ -1917,4 +1917,3 @@ weighted avg       0.83      0.83      0.83      2000
 ```
 </details>
 
-![alt text](visualizations/Definitive_Benchmark_Dashboard_v3.png)
