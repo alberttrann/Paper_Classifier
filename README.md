@@ -1,7 +1,14 @@
-## Technical Report: A Systematic Approach to Scientific Abstract Classification using Ensemble Methods
+# Scientific Abstract Classification: A Deep Dive into Ensemble Methods
 
 *Check `benchmark_results.md` for detailed benchmark runs and visualizations of the project*
-*Also check out `visualizations` folder to see some visual graphics if you wish to*
+
+![Final Summary Plot](plot_final_summary_charts.png)
+
+## About This Project
+
+This repository documents a comprehensive journey into the classification of scientific paper abstracts from the arXiv dataset. The project was born from a simple question: **What is the most effective architecture for categorizing high-dimensional, nuanced text?** The initial focus was on a **Decision Tree** classifier, supplemented by **Multinomial Naive Bayes (MNB)** and **k-Nearest Neighbors (kNN)**.
+
+What began as a straightforward comparison quickly evolved into a deep, systematic exploration of the entire machine learning pipeline, confronting and solving numerous real-world challenges along the way.
 
 ### Executive Summary
 
