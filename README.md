@@ -77,6 +77,12 @@ Check `run_single_benchmarks.py` for code script
 *   **kNN(emb) as the Best "Modern" Model:** kNN paired with semantic embeddings was a very strong contender.
 *   **DT's Weakness Confirmed:** The Decision Tree was the weakest supervised learner, confirming its unsuitability for this task in isolation.
 
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations/plot_1_single_model_benchmarks.png)
+</details>
+
 #### 3.2. Experiment 2: Heterogeneous Voting Ensembles
 This experiment tested the hypothesis that an ensemble where each model is paired with its optimal feature set would outperform any single model. A hard-voting (majority rule) approach was used.
 
@@ -92,6 +98,19 @@ Check `run_heterogenous_ensembles.py` for code script. Also check `run_embedding
 **Key Findings:**
 *   **Ensembling Improves Performance:** The top voting ensemble (0.8760) slightly outperformed the best single model (0.8710).
 *   **Value of the "Weak" Learner:** Crucially, the ensemble with the Decision Tree performed better than the ensemble without it. This demonstrates a core principle of ensembling: a weak learner can improve overall performance if its errors are uncorrelated with the errors of the stronger models, providing a valuable "dissenting opinion."
+
+<details>
+<sumamry>Visualizations for embedding-only ensembles</summary>
+
+![alt text](visualizations\plot_2_embedding_ensembles.png)
+</details>
+
+
+<details>
+<summary>Visualizations for heterogenous ensembles</summary>
+
+![alt text](visualizations\plot_3_heterogeneous_ensembles.png)
+</details>
 
 #### 3.3. Experiment 3: Advanced Stacking Ensembles
 This final experiment implemented a stacking classifier. A meta-learner was trained on the out-of-fold predictions of the base models, combined with original features.
@@ -158,7 +177,11 @@ Stacking Configuration                            | Accuracy
 [MNB(b)+kNN(e)] + LR(t)                           | 0.8910
 [MNB(b)+kNN(e)] + LR(e)			                  | 0.8870
 ```
+<details>
+<summary>Visualizations</summary>
 
+![alt text](visualizations\plot_4_stacking_ensembles.png)
+</details>
 
 ### **Project Phase 3: Advanced Optimization and Hybrid Modeling**
 
@@ -166,8 +189,6 @@ Stacking Configuration                            | Accuracy
 
 
 #### **Phase 3, Step 1: Foundational Enhancements (Upgrading the "Ingredients")**
-
-**(No changes here - this step is solid and foundational for everything else)**
 
 *   **Sub-step 1.1:** Enhance Text Cleaning (Custom, Domain-Specific Stop Words).
 *   **Sub-step 1.2:** Enhance TF-IDF Vectorizer (n-grams, `min_df`, `max_df`, `sublinear_tf`).
@@ -299,6 +320,18 @@ This first phase of advanced testing was designed to establish the maximum perfo
     *   The **Confidence-Gated Ensemble** is designed for *efficiency*—it uses a fast model for most cases and escalates only when necessary. Its accuracy (e.g., **0.8800** with e5-base 2k) being competitive with the best models is actually a huge success, suggesting it could be the best choice in a production environment where prediction latency is a concern.
     *   The **Stacking + GNB** model's lower performance is likely due to the strong (and often incorrect) assumption of feature independence that is core to Gaussian Naive Bayes. The probabilistic outputs from the base models are highly correlated, which violates this assumption and limits the GNB meta-learner's effectiveness compared to a discriminative model like Logistic Regression.
 
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_5_experiments_comparison_1k.png)
+
+
+![alt text](visualizations\plot_6_experiments_comparison_2k.png)
+
+![alt text](visualizations\plot_6_1_data_scaling_effect.png)
+</details>
+
 ##### 1.2. Implications for Change & The "Champion Pipeline"
 
 The "Ultimate Benchmark" provided a clear path forward. The results were so strong and consistent that they invalidated some of the assumptions from our very first set of experiments.
@@ -345,7 +378,7 @@ This final set of experiments represents the project's culmination. It took the 
     *   **Hyperparameter Sensitivity:** The hyperparameters tuned on the 10k dataset might have been slightly better suited for that scale than for the 20k dataset. A separate tuning run for the 20k dataset might have yielded a higher score.
     *   **Statistical Noise:** The difference is small (~0.65%), and it's possible it falls within the margin of error of the experiment. However, it strongly suggests that for this problem, significant gains beyond ~10k samples would require more advanced models (like fine-tuning a Transformer) rather than just more data.
 
-### 4. Final Project Conclusion
+### 4. Conclusion
 
 The comprehensive journey of this project, from initial benchmarks to advanced optimizations, culminates in a clear and powerful conclusion. While individual models like `MultinomialNB` with `TF-IDF` provide a remarkably strong baseline, peak performance is achieved through a **heterogeneous stacking ensemble**.
 
@@ -484,6 +517,16 @@ GNB(BoW)                            | 0.7425
 GNB(Emb)                            | 0.8545
 -----------------------------------------------------
 ```
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_7_champion_pipeline_1k.png)
+
+![alt text](visualizations\plot_7_1_champion_pipeline_2k.png)
+
+![alt text](visualizations\plot_7_2_champion_scaling_effect.png)
+
+</details>
 
 ### Final Analysis: The Stacking Classifier Reigns Supreme
 
@@ -504,25 +547,6 @@ This last set of experiments was the ultimate stress test. We took two powerful,
     *   `LR(TFIDF)` @ **0.8710** vs. `XGB(TFIDF)` @ 0.8360
     *   `LR(BoW)` @ **0.8515** vs. `XGB(BoW)` @ 0.8345
 *   **Technical Insight:** This is a classic text classification result. For high-dimensional, sparse data like BoW and TF-IDF, linear models like Logistic Regression and SVMs are incredibly effective and efficient. They are excellent at finding a linear separating hyperplane in that vast feature space. While XGBoost is more powerful in finding complex, non-linear interactions, it can sometimes be more prone to overfitting on sparse text data if not extensively tuned. The simple, robust nature of Logistic Regression made it the better choice here.
-
-**3. The Power of "Just Enough" Features:**
-
-*   **Observation:** The best single model was `LR(TFIDF)`. The model trained on dense embeddings, `LR(Emb)`, performed worse (0.8400).
-*   **Technical Insight:** This reinforces a key theme of our project. While embeddings are powerful for semantic, distance-based tasks (like kNN), for discriminative linear models like Logistic Regression, the explicit keyword signals provided by a well-tuned TF-IDF matrix can be more powerful. The model can directly learn high weights for words like "quantum," "boson," or "superconductivity" that are strongly indicative of a specific class.
-
-### The Final, Definitive "Story"
-
-1.  **The Quest for the Best:** The project's goal was to find the highest-performing classifier for scientific abstracts.
-
-2.  **The Foundation (Initial Benchmarks):** We began by establishing strong baselines. We discovered that traditional models like **`MultinomialNB` on `BoW` features (0.8710)** and modern models like **`kNN` on `SBERT Embeddings` (0.8590)** were the top individual contenders. This immediately highlighted the core tension: lexical vs. semantic features.
-
-3.  **The Rise of Ensembles (Voting):** We proved that combining these diverse experts through a **heterogeneous voting ensemble** improved performance, reaching **0.8760**. This showed that collaboration was better than isolation.
-
-4.  **The Pinnacle (Stacking):** We then implemented a more sophisticated **stacking ensemble**, where a meta-learner was trained to intelligently combine the base models' predictions. This advanced architecture, specifically `Stacking[MNB(t)+kNN(e)+DT(t)] + LR(t)`, achieved a remarkable accuracy of **~0.9040**, establishing itself as the clear champion.
-
-5.  **The Final Challenge (The Gauntlet):** To truly validate the stacking model's superiority, we pitted it against two powerful standalone challengers: `LogisticRegression` and `XGBoost`, armed with our best-engineered features.
-
-6.  **The Verdict:** The results were decisive. The best standalone model, `LR(TFIDF)`, peaked at **0.8710**. The champion stacking model remained untouched at **~0.9040**. This provides conclusive proof that **the synergy created by the stacking architecture—its ability to learn from the nuanced agreements and disagreements of its diverse base models—unlocks a level of predictive power that no single model, no matter how powerful, could achieve on its own.**
 
 ```
 --- Single Model (LR & XGBoost) Summary ---
@@ -552,3 +576,42 @@ XGB(Emb)                  | 0.8350
 -------------------------------------------
 ```
 
+**3. The Power of "Just Enough" Features:**
+
+*   **Observation:** The best single model was `LR(TFIDF)`. The model trained on dense embeddings, `LR(Emb)`, performed worse (0.8400).
+*   **Technical Insight:** This reinforces a key theme of our project. While embeddings are powerful for semantic, distance-based tasks (like kNN), for discriminative linear models like Logistic Regression, the explicit keyword signals provided by a well-tuned TF-IDF matrix can be more powerful. The model can directly learn high weights for words like "quantum," "boson," or "superconductivity" that are strongly indicative of a specific class.
+
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_8_detailed_challenger_benchmark.png)
+
+</details>
+
+### The Final, Definitive "Story"
+
+1.  **The Quest for the Best:** The project's goal was to find the highest-performing classifier for scientific abstracts.
+
+2.  **The Foundation (Initial Benchmarks):** We began by establishing strong baselines. We discovered that traditional models like **`MultinomialNB` on `BoW` features (0.8710)** and modern models like **`kNN` on `SBERT Embeddings` (0.8590)** were the top individual contenders. This immediately highlighted the core tension: lexical vs. semantic features.
+
+3.  **The Rise of Ensembles (Voting):** We proved that combining these diverse experts through a **heterogeneous voting ensemble** improved performance, reaching **0.8760**. This showed that collaboration was better than isolation.
+
+4.  **The Pinnacle (Stacking):** We then implemented a more sophisticated **stacking ensemble**, where a meta-learner was trained to intelligently combine the base models' predictions. This advanced architecture, specifically `Stacking[MNB(t)+kNN(e)+DT(t)] + LR(t)`, achieved a remarkable accuracy of **~0.9040**, establishing itself as the clear champion.
+
+5.  **The Final Challenge (The Gauntlet):** To truly validate the stacking model's superiority, we pitted it against two powerful standalone challengers: `LogisticRegression` and `XGBoost`, armed with our best-engineered features.
+
+6.  **The Verdict:** The results were decisive. The best standalone model, `LR(TFIDF)`, peaked at **0.8710**. The champion stacking model remained untouched at **~0.9040**. This provides conclusive proof that **the synergy created by the stacking architecture—its ability to learn from the nuanced agreements and disagreements of its diverse base models—unlocks a level of predictive power that no single model, no matter how powerful, could achieve on its own.**
+
+
+<details>
+<summary>Summary Benchmarks Visulizations</summary>
+
+![alt text](visualizations\plot_final_summary_charts.png)
+
+![alt text](visualizations\plot_performance_stairway.png)
+
+![alt text](visualizations\plot_summary_heatmap.png)
+
+1[alt text](visualizations\plot_Perf_gains_with_Complexity.png)
+</details>

@@ -234,6 +234,12 @@ weighted avg       0.59      0.73      0.65      1000
 | **DT** | 0.6130 | 0.6200 | 0.5110 |
 | **KMeans**| 0.3880 | 0.6990 | 0.7260 |
 
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations/plot_1_single_model_benchmarks.png)
+</details>
+
 ---
 
 ## 3. Ensemble Model Benchmarks
@@ -276,6 +282,12 @@ Classification Report:
    macro avg       0.83      0.83      0.82      1000
 weighted avg       0.83      0.83      0.82      1000
 ```
+</details>
+
+<details>
+<sumamry>Visualizations</summary>
+
+![alt text](visualizations\plot_2_embedding_ensembles.png)
 </details>
 
 ### 3.2. Heterogeneous Ensembles (`run_heterogenous_ensembles.py`)
@@ -397,6 +409,12 @@ weighted avg       0.87      0.85      0.84      1000
 | MNB(emb) + kNN(emb) | 0.8340 |
 | MNB(bow) + kNN(emb) | 0.8580 |
 | MNB(tfidf) + kNN(emb) | 0.8500 |
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_3_heterogeneous_ensembles.png)
+</details>
 
 ---
 
@@ -607,6 +625,12 @@ weighted avg       0.89      0.89      0.89      1000
 | [MNB(b)+kNN(e)] + LR(b) | 0.8850 |
 | [MNB(b)+kNN(e)] + LR(t) | 0.8910 |
 | [MNB(b)+kNN(e)] + LR(e) | 0.8870 |
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_4_stacking_ensembles.png)
+</details>
 
 ---
 
@@ -969,6 +993,17 @@ weighted avg       0.88      0.88      0.88      2000
    macro avg       0.88      0.88      0.88      2000
 weighted avg       0.88      0.88      0.88      2000
 ```
+</details>
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_5_experiments_comparison_1k.png)
+
+
+![alt text](visualizations\plot_6_experiments_comparison_2k.png)
+
+![alt text](visualizations\plot_6_1_data_scaling_effect.png)
 </details>
 
 ---
@@ -1677,6 +1712,17 @@ weighted avg       0.86      0.85      0.86      2000
 ```
 </details>
 
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_7_champion_pipeline_1k.png)
+
+![alt text](visualizations\plot_7_1_champion_pipeline_2k.png)
+
+![alt text](visualizations\plot_7_2_champion_scaling_effect.png)
+
+</details>
+
 ### **8. Single Model Benchmark (LR & XGBoost) (`run_single_LR_XBG.py`)**
 
 This experiment was conducted to validate the superiority of the ensemble methods by establishing a strong baseline using powerful, well-known single models on the same enhanced feature sets.
@@ -1917,3 +1963,23 @@ weighted avg       0.83      0.83      0.83      2000
 ```
 </details>
 
+
+<details>
+<summary>Visualizations</summary>
+
+![alt text](visualizations\plot_8_detailed_challenger_benchmark.png)
+
+</details>
+
+
+<details>
+<summary>Summary Benchmarks Visulizations</summary>
+
+![alt text](visualizations\plot_final_summary_charts.png)
+
+![alt text](visualizations\plot_performance_stairway.png)
+
+![alt text](visualizations\plot_summary_heatmap.png)
+
+1[alt text](visualizations\plot_Perf_gains_with_Complexity.png)
+</details>
