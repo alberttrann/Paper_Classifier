@@ -1,7 +1,5 @@
 # Scientific Abstract Classification: A Deep Dive into Ensemble Methods
 
-![Final Summary Plot](visualizations/plot_final_summary_charts.png)
-
 ## About This Project
 
 This repository documents a comprehensive journey into the classification of scientific paper abstracts from the arXiv dataset. The project was born from a simple question: **What is the most effective architecture for categorizing high-dimensional, nuanced text?** The initial focus was on a **Decision Tree** classifier, supplemented by **Multinomial Naive Bayes (MNB)** and **k-Nearest Neighbors (kNN)**.
