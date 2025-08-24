@@ -526,7 +526,7 @@ GNB(Emb)                            | 0.8545
 
 </details>
 
-### Final Analysis: The Stacking Classifier Reigns Supreme
+### The Stacking Classifier Reigns Supreme
 
 *Check `run_single_LR_XBG.py` for code*
 
