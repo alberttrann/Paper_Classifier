@@ -2895,4 +2895,4 @@ print(f"\nDeep learning benchmark complete. Results appended to '{LOG_FILE_PATH}
 
 Results: will report back after it's done training :)
 
-![alt text](visualizations/image.png)
+![alt text](visualizations/mid_training.png)
