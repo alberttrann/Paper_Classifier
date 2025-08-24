@@ -762,11 +762,16 @@ This script will:
 **Models to be included in the Final Benchmark:**
 
 *   **Best Single Model Baseline:** `MultinomialNB` with our enhanced TF-IDF features.
-*   **Best "Modern" Single Model Baseline:** `KNeighborsClassifier` (tuned) with our best embedding model (`e5-base`).
+*   **Best "Modern" Single Model Baseline:** `KNeighborsClassifier` (tuned) with our best embedding model (`e5-base`) & the single model `LR(tfidf)`
 *   **Best Voting Ensemble:** The heterogeneous soft-voting ensemble with calibrated probabilities.
-*   **Best Stacking Ensemble:** The champion stacking model `[MNB(t)+kNN(e)+DT(t)] + LR(t)`.
-
-This creates a focused, high-impact final experiment. It pits the very best architectures against each other on a larger, more challenging dataset. This will be the definitive test to crown the ultimate champion model.
+*   **Best Stacking Ensemble(with advanced tfidf tuning, hyperparam tuning with GridSearchCV, and calibrated probabilities):** 
+    * The champion stacking model `[MNB(t)+kNN(e)+DT(t)] + LR(t)`.
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + LR(b)
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + LR(e)
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + XG(t)
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + XG(b)
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + XG(e)
+    * The stacking model `[MNB(t)+kNN(e)+DT(t)]` + GNB(e)
 
 
 <details>
@@ -1023,9 +1028,8 @@ Stack: GNB(Emb)                     | 0.8644
 ```
 </details>
 
----
 
-### **Final Project Report: Analysis of the Grand Champion Benchmark**
+### **Analysis of the Grand Champion Benchmark**
 
 This final phase of the project was designed to be the ultimate test of our modeling strategies. The dataset was expanded to a challenging 8-class problem, with 5,000 samples per category, totaling 40,000 documents. On this new battleground, we deployed our most optimized individual models and our most sophisticated ensemble architectures.
 
@@ -1124,3 +1128,1771 @@ Stack: LR(BoW)        | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇�
 Stack: GNB(Emb)       | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.44%
 --------------------------------------------------
 ```
+---
+**Project Limitation:** By focusing only on single-label entries (using `if len(s['categories'].split(' ')) != 1: continue`), we deliberately simplified the problem. We changed it from a complex "multi-label classification" task into a simpler "multi-class classification" task. This was a necessary and smart simplification for our initial experiments, but it doesn't reflect the true, messy nature of the data where research is often interdisciplinary.
+
+### Approaches for Multi-Label Classification
+
+The core idea is to move away from models that can only output one answer and towards models that can output a **set of answers**.
+
+#### Problem Transformation Methods 
+
+These methods transform the multi-label problem so we can still use standard single-label classifiers like the ones we've already built.
+
+*   **a. Binary Relevance (The Most Common Approach):**
+    *   **How it works:** This is the most popular and intuitive method. You break the problem down into multiple, independent binary classification problems. If you have 8 main categories (`math`, `cs`, `physics`, etc.), you would train **8 separate binary classifiers**:
+        1.  **A "Math" Classifier:** Trained to predict "Is this abstract about math?" (Yes/No).
+        2.  **A "CS" Classifier:** Trained to predict "Is this abstract about CS?" (Yes/No).
+        3.  ...and so on for all 8 categories.
+    *   **Inference:** For a new abstract, you run it through all 8 classifiers. If the "Math", "CS", and "Physics" classifiers all output "Yes", then the final prediction for that abstract is the set `{'math', 'cs', 'physics'}`.
+    *   **Pros:** Very easy to implement. You can use any binary classifier you like (e.g., `LogisticRegression`, `XGBoost`).
+    *   **Cons:** It assumes that the labels are independent (i.e., the probability of a paper being about `cs` has no relationship to it being about `stat`), which is often not true.
+
+*   **b. Classifier Chains:**
+    *   **How it works:** This is an improvement on Binary Relevance that tries to capture label dependencies. You train a chain of binary classifiers.
+        1.  Train the first classifier (e.g., for `math`) on the input features.
+        2.  Train the second classifier (e.g., for `cs`) on the input features **AND the prediction from the first classifier**.
+        3.  Train the third classifier (e.g., for `physics`) on the input features **AND the predictions from the first two classifiers**.
+        4.  ...and so on.
+    *   **Pros:** Can model relationships between labels.
+    *   **Cons:** The order of the chain matters, and errors can propagate down the chain.
+
+*   **c. Label Powerset:**
+    *   **How it works:** You transform the problem into a regular multi-class problem by treating every unique *combination* of labels as a single new class.
+        *   `{'math'}` becomes Class 1.
+        *   `{'cs'}` becomes Class 2.
+        *   `{'physics'}` becomes Class 3.
+        *   **`{'math', 'cs'}` becomes Class 4.**
+        *   **`{'cs', 'physics'}` becomes Class 5.**
+    *   **Pros:** Captures label correlations perfectly.
+    *   **Cons:** Leads to a massive explosion in the number of classes if you have many possible combinations. Not practical for our dataset.
+
+#### The Deep Learning Approach (State-of-the-Art)
+
+This is the most powerful and common approach for modern multi-label text classification.
+
+*   **How it works:** We use a Transformer model (like our SciBERT or e5-base) but modify the final layer.
+    1.  Take the output embedding from the Transformer.
+    2.  Instead of feeding it into a single `softmax` layer (which forces a single choice), we feed it into a dense layer with **N neurons** (where N is your number of classes).
+    3.  You then apply a **`sigmoid` activation function to each of these N neurons independently**.
+    4.  The `sigmoid` function outputs a value between 0 and 1 for each class, representing the probability that the sample belongs to that class, independent of the others.
+    5.  We then set a threshold (e.g., 0.5). Any class whose neuron outputs a probability above this threshold is included in the final prediction set.
+*   This approach allows the model to learn the complex underlying features from the text via the Transformer and then make independent but informed decisions about each possible label. It naturally captures label correlations within the deep layers of the network
+
+### Next Step: A Multi-Label Experiment
+
+The **Binary Relevance** method would be the easiest and most logical next step, as it allows us to reuse almost all of your existing code.
+
+**Quick plan**
+1.  **Data Prep:** Instead of skipping multi-label entries, process them. For 8 target categories, create 8 separate `y` targets (e.g., `y_math`, `y_cs`, etc.). `y_math` would be `1` if `math` is in the sample's categories list, and `0` otherwise.
+2.  **Training:** Train our best models (e.g., `LogisticRegression(TFIDF)`, or the Stacking Classifer, or the Soft Voting Ensembles, etc) eight times, once for each of these binary targets.
+3.  **Inference:** For a new abstract, get a prediction from all eight models and collect all the "Yes" answers to form your final multi-label prediction.
+
+First script, `run_multilabel_championship.py`, benchmarking 3 tiers of models
+1. Tier 1 (Baseline): A fast and robust Binary Relevance with LogisticRegression(TFIDF).
+2. Tier 2 (Advanced Ensemble): A Binary Relevance with Soft-Voting Ensembles, where each binary classifier is a committee of [MNB+kNN+DT].
+3. Tier 3 (State-of-the-Art): A Binary Relevance with Stacking Ensembles, where each binary classifier is a full [MNB+kNN+DT] + LR(TFIDF) stack.
+
+Best Practices: It incorporates all our best practices: enhanced text cleaning, advanced TF-IDF, e5-base embeddings, hyperparameter tuning, and probability calibration.
+
+<details>
+<summary>Code</summary>
+
+```python
+# run_multilabel_championship.py
+
+import os
+import re
+import string
+import time
+import numpy as np
+from datetime import datetime
+from datasets import load_dataset
+from collections import Counter
+
+# NLTK for text cleaning
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# Sentence Transformers for embeddings
+from sentence_transformers import SentenceTransformer
+
+# Scikit-learn for models, vectorizers, and metrics
+from sklearn.model_selection import train_test_split, cross_val_predict, GridSearchCV
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.metrics import accuracy_score, classification_report, hamming_loss
+
+# Other utilities
+from scipy.sparse import hstack, issparse, csr_matrix
+from tqdm.auto import tqdm
+import torch
+
+# --- Configuration ---
+# Data Sampling
+CATEGORIES_TO_SELECT = [
+    'math', 'astro-ph', 'cs', 'cond-mat', 'physics', 
+    'hep-ph', 'quant-ph', 'hep-th'
+]
+# We'll use a slightly smaller sample size to make the multiple stack training feasible
+SAMPLES_PER_CATEGORY_APPEARANCE = 5000 
+# Note: The final dataset size will be larger than 8 * 5000 due to multi-label overlaps
+
+# Models & Vectorizers
+E5_MODEL_NAME = "intfloat/multilingual-e5-base"
+TFIDF_MAX_FEATURES = 10000
+RANDOM_STATE = 42
+CV_FOLDS = 5 # Use 3 folds for faster GridSearchCV and stacking
+BATCH_SIZE = 128
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+LOG_FILE_PATH = "multilabel_benchmarks.txt"
+
+# --- NLTK Downloads ---
+# (Assuming they are already downloaded)
+
+# --- Helper function for logging ---
+def log_message(message, to_console=True):
+    if to_console:
+        print(message)
+    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+        f.write(message + '\n')
+
+# --- Enhanced Text Preprocessing Function ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+domain_specific_stopwords = {
+    'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 
+    'approach', 'propose', 'demonstrate', 'investigate', 'present', 
+    'based', 'using', 'also', 'however', 'provide', 'describe'
+}
+stop_words.update(domain_specific_stopwords)
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)
+    tokens = word_tokenize(text)
+    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words]
+    return " ".join(cleaned_tokens)
+
+# --- Main Execution ---
+log_message("\n\n" + "="*80)
+log_message(f"--- Multi-Label Championship Benchmark: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+log_message("="*80)
+
+# 1. Multi-Label Data Sampling and Preparation
+print("--- Step 1: Multi-Label Data Sampling & Preparation ---")
+category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
+samples = []
+dataset_generator = load_dataset("UniverseTBD/arxiv-abstracts-large", split="train", streaming=True)
+for s in tqdm(dataset_generator, desc="Scanning for samples"):
+    if all(count >= SAMPLES_PER_CATEGORY_APPEARANCE for count in category_counts.values()):
+        break
+    if s['categories'] is None or s['abstract'] is None:
+        continue
+    
+    current_categories = s['categories'].strip().split(' ')
+    parent_categories = {cat.split('.')[0] for cat in current_categories}
+    
+    # Check if the sample contains at least one of our target categories
+    found_target = False
+    for p_cat in parent_categories:
+        if p_cat in CATEGORIES_TO_SELECT and category_counts[p_cat] < SAMPLES_PER_CATEGORY_APPEARANCE:
+            s['parent_categories'] = parent_categories
+            samples.append(s)
+            # Increment count for all found target categories in this sample
+            for cat_to_increment in parent_categories:
+                if cat_to_increment in category_counts:
+                    category_counts[cat_to_increment] += 1
+            break # Move to next sample once it's been added
+
+print(f"Finished sampling. Total samples collected: {len(samples)}")
+abstracts = [sample['abstract'] for sample in samples]
+labels_sets = [sample['parent_categories'] for sample in samples]
+processed_abstracts = [clean_text(abstract) for abstract in tqdm(abstracts, desc="Cleaning Abstracts")]
+
+# Create multi-label indicator matrix Y
+Y = np.zeros((len(samples), len(CATEGORIES_TO_SELECT)), dtype=int)
+cat_to_idx = {cat: i for i, cat in enumerate(CATEGORIES_TO_SELECT)}
+for i, label_set in enumerate(labels_sets):
+    for label in label_set:
+        if label in cat_to_idx:
+            Y[i, cat_to_idx[label]] = 1
+
+train_texts, test_texts, Y_train, Y_test = train_test_split(
+    processed_abstracts, Y, test_size=0.2, random_state=RANDOM_STATE
+)
+
+# 2. Feature Engineering
+print("\n--- Step 2: Enhanced Feature Engineering ---")
+# Advanced TF-IDF
+print("Creating Enhanced TF-IDF features...")
+tfidf_vectorizer = TfidfVectorizer(max_features=TFIDF_MAX_FEATURES, min_df=5, max_df=0.7, sublinear_tf=True, ngram_range=(1, 2))
+X_train_tfidf = tfidf_vectorizer.fit_transform(train_texts)
+X_test_tfidf = tfidf_vectorizer.transform(test_texts)
+# SBERT e5-base Embeddings
+print(f"Creating SBERT Embeddings using {E5_MODEL_NAME}...")
+sbert_model = SentenceTransformer(E5_MODEL_NAME, device=DEVICE)
+X_train_emb = sbert_model.encode(train_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+X_test_emb = sbert_model.encode(test_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+print("All feature sets created.")
+
+# --- Initialize empty results dictionary ---
+results = {}
+
+# --- TIER 1: BINARY RELEVANCE WITH LOGISTIC REGRESSION ---
+print("\n--- Tier 1: Training Binary Relevance with LR(tfidf) ---")
+log_message("\n\n--- Tier 1: Binary Relevance with LR(tfidf) ---")
+lr_classifiers = {}
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    print(f"  Training classifier for: {category}")
+    y_binary_train = Y_train[:, i]
+    model = LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced')
+    model.fit(X_train_tfidf, y_binary_train)
+    lr_classifiers[category] = model
+
+# Predict and evaluate
+Y_pred_lr = np.zeros_like(Y_test)
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    Y_pred_lr[:, i] = lr_classifiers[category].predict(X_test_tfidf)
+
+results['BR_LR(tfidf)_accuracy'] = accuracy_score(Y_test, Y_pred_lr) # Subset accuracy
+results['BR_LR(tfidf)_hamming'] = hamming_loss(Y_test, Y_pred_lr)
+log_message(f"Overall Subset Accuracy: {results['BR_LR(tfidf)_accuracy']:.4f}")
+log_message(f"Hamming Loss: {results['BR_LR(tfidf)_hamming']:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(classification_report(Y_test, Y_pred_lr, target_names=CATEGORIES_TO_SELECT, zero_division=0))
+
+
+# --- TIER 2: BINARY RELEVANCE WITH SOFT VOTING ENSEMBLE ---
+print("\n--- Tier 2: Training Binary Relevance with Soft Voting Ensembles ---")
+log_message("\n\n--- Tier 2: Binary Relevance with Soft Voting Ensembles ---")
+voting_classifiers = {}
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    print(f"  Training SOFT VOTING ensemble for: {category}")
+    y_binary_train = Y_train[:, i]
+    
+    # Define and train base models for this binary task
+    mnb = MultinomialNB(alpha=0.1).fit(X_train_tfidf, y_binary_train)
+    knn = KNeighborsClassifier(n_neighbors=7, weights='distance').fit(X_train_emb, y_binary_train)
+    dt = DecisionTreeClassifier(max_depth=40, min_samples_leaf=1, random_state=RANDOM_STATE).fit(X_train_tfidf, y_binary_train)
+    
+    # Calibrate for better probabilities
+    calibrated_knn = CalibratedClassifierCV(estimator=knn, cv=CV_FOLDS, method='isotonic').fit(X_train_emb, y_binary_train)
+    calibrated_dt = CalibratedClassifierCV(estimator=dt, cv=CV_FOLDS, method='isotonic').fit(X_train_tfidf, y_binary_train)
+
+    voting_classifiers[category] = {
+        'mnb': mnb, 'knn': calibrated_knn, 'dt': calibrated_dt
+    }
+
+# Predict and evaluate
+Y_pred_vote = np.zeros_like(Y_test)
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    models = voting_classifiers[category]
+    mnb_probs = models['mnb'].predict_proba(X_test_tfidf)[:, 1]
+    knn_probs = models['knn'].predict_proba(X_test_emb)[:, 1]
+    dt_probs = models['dt'].predict_proba(X_test_tfidf)[:, 1]
+    
+    # Weighted average for the '1' class probability
+    final_probs = (0.4 * mnb_probs) + (0.4 * knn_probs) + (0.2 * dt_probs)
+    Y_pred_vote[:, i] = (final_probs >= 0.5).astype(int)
+
+results['BR_SoftVote_accuracy'] = accuracy_score(Y_test, Y_pred_vote)
+results['BR_SoftVote_hamming'] = hamming_loss(Y_test, Y_pred_vote)
+log_message(f"Overall Subset Accuracy: {results['BR_SoftVote_accuracy']:.4f}")
+log_message(f"Hamming Loss: {results['BR_SoftVote_hamming']:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(classification_report(Y_test, Y_pred_vote, target_names=CATEGORIES_TO_SELECT, zero_division=0))
+
+
+# --- TIER 3: BINARY RELEVANCE WITH STACKING ENSEMBLE ---
+print("\n--- Tier 3: Training Binary Relevance with Stacking Ensembles (This will be slow) ---")
+log_message("\n\n--- Tier 3: Binary Relevance with Stacking Ensembles ---")
+stacking_classifiers = {}
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    print(f"  Training STACKING ensemble for: {category}")
+    y_binary_train = Y_train[:, i]
+
+    # Define base models
+    mnb = MultinomialNB(alpha=0.1)
+    knn = KNeighborsClassifier(n_neighbors=7, weights='distance')
+    dt = DecisionTreeClassifier(max_depth=40, min_samples_leaf=1, random_state=RANDOM_STATE)
+    
+    # Generate out-of-fold predictions for the meta-learner
+    mnb_meta_train = cross_val_predict(mnb, X_train_tfidf, y_binary_train, cv=CV_FOLDS, method='predict_proba', n_jobs=-1)[:, 1]
+    knn_meta_train = cross_val_predict(knn, X_train_emb, y_binary_train, cv=CV_FOLDS, method='predict_proba', n_jobs=-1)[:, 1]
+    dt_meta_train = cross_val_predict(dt, X_train_tfidf, y_binary_train, cv=CV_FOLDS, method='predict_proba', n_jobs=-1)[:, 1]
+
+    # Create meta-feature set
+    meta_features_train = np.stack([mnb_meta_train, knn_meta_train, dt_meta_train], axis=1)
+    meta_learner_train_X = hstack([csr_matrix(meta_features_train), X_train_tfidf]).tocsr()
+    
+    # Train meta-learner
+    meta_learner = LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced')
+    meta_learner.fit(meta_learner_train_X, y_binary_train)
+
+    # Train base models on full data for final prediction
+    mnb.fit(X_train_tfidf, y_binary_train)
+    knn.fit(X_train_emb, y_binary_train)
+    dt.fit(X_train_tfidf, y_binary_train)
+
+    stacking_classifiers[category] = {
+        'mnb': mnb, 'knn': knn, 'dt': dt, 'meta_learner': meta_learner
+    }
+
+# Predict and evaluate
+Y_pred_stack = np.zeros_like(Y_test)
+for i, category in enumerate(CATEGORIES_TO_SELECT):
+    models = stacking_classifiers[category]
+    mnb_probs_test = models['mnb'].predict_proba(X_test_tfidf)[:, 1]
+    knn_probs_test = models['knn'].predict_proba(X_test_emb)[:, 1]
+    dt_probs_test = models['dt'].predict_proba(X_test_tfidf)[:, 1]
+
+    meta_features_test = np.stack([mnb_probs_test, knn_probs_test, dt_probs_test], axis=1)
+    meta_learner_test_X = hstack([csr_matrix(meta_features_test), X_test_tfidf]).tocsr()
+
+    Y_pred_stack[:, i] = models['meta_learner'].predict(meta_learner_test_X)
+
+results['BR_Stacking_accuracy'] = accuracy_score(Y_test, Y_pred_stack)
+results['BR_Stacking_hamming'] = hamming_loss(Y_test, Y_pred_stack)
+log_message(f"Overall Subset Accuracy: {results['BR_Stacking_accuracy']:.4f}")
+log_message(f"Hamming Loss: {results['BR_Stacking_hamming']:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(classification_report(Y_test, Y_pred_stack, target_names=CATEGORIES_TO_SELECT, zero_division=0))
+
+
+# --- Final Summary ---
+summary_header = f"\n\n--- Multi-Label Championship Summary ---"
+table_header = f"{'Model Architecture':<45} | {'Subset Accuracy':<20} | {'Hamming Loss (Lower is Better)':<30}"
+separator = "-" * len(table_header)
+log_message(summary_header, to_console=True)
+log_message(table_header, to_console=True)
+log_message(separator, to_console=True)
+# LR
+row_str = f"{'Tier 1: Binary Relevance with LR(tfidf)':<45} | {results['BR_LR(tfidf)_accuracy']:<20.4f} | {results['BR_LR(tfidf)_hamming']:<30.4f}"
+log_message(row_str, to_console=True)
+# Soft Voting
+row_str = f"{'Tier 2: Binary Relevance with Soft Voting':<45} | {results['BR_SoftVote_accuracy']:<20.4f} | {results['BR_SoftVote_hamming']:<30.4f}"
+log_message(row_str, to_console=True)
+# Stacking
+row_str = f"{'Tier 3: Binary Relevance with Stacking':<45} | {results['BR_Stacking_accuracy']:<20.4f} | {results['BR_Stacking_hamming']:<30.4f}"
+log_message(row_str, to_console=True)
+log_message(separator, to_console=True)
+
+print(f"\nMulti-label championship complete. Results appended to '{LOG_FILE_PATH}'.")
+```
+
+</details>
+
+<details>
+<summary>Results</summary>
+
+```
+
+
+================================================================================
+--- Multi-Label Championship Benchmark: 2025-08-24 09:56:23 ---
+================================================================================
+
+
+--- Tier 1: Binary Relevance with LR(tfidf) ---
+Overall Subset Accuracy: 0.5624
+Hamming Loss: 0.0747
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.71      0.88      0.79      1354
+    astro-ph       0.84      0.92      0.88      1159
+          cs       0.76      0.91      0.83      1059
+    cond-mat       0.70      0.87      0.78      1233
+     physics       0.51      0.84      0.64      1011
+      hep-ph       0.75      0.89      0.81      1001
+    quant-ph       0.71      0.88      0.78       950
+      hep-th       0.70      0.88      0.78      1055
+
+   micro avg       0.70      0.88      0.78      8822
+   macro avg       0.71      0.88      0.79      8822
+weighted avg       0.71      0.88      0.79      8822
+ samples avg       0.77      0.91      0.81      8822
+
+
+
+--- Tier 2: Binary Relevance with Soft Voting Ensembles ---
+Overall Subset Accuracy: 0.6895
+Hamming Loss: 0.0518
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.87      0.77      0.82      1354
+    astro-ph       0.94      0.86      0.90      1159
+          cs       0.90      0.84      0.87      1059
+    cond-mat       0.89      0.72      0.79      1233
+     physics       0.86      0.48      0.62      1011
+      hep-ph       0.91      0.80      0.85      1001
+    quant-ph       0.90      0.75      0.82       950
+      hep-th       0.86      0.76      0.80      1055
+
+   micro avg       0.89      0.75      0.82      8822
+   macro avg       0.89      0.75      0.81      8822
+weighted avg       0.89      0.75      0.81      8822
+ samples avg       0.81      0.79      0.79      8822
+
+
+
+--- Tier 3: Binary Relevance with Stacking Ensembles ---
+Overall Subset Accuracy: 0.6362
+Hamming Loss: 0.0606
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.77      0.87      0.82      1354
+    astro-ph       0.87      0.94      0.91      1159
+          cs       0.82      0.91      0.86      1059
+    cond-mat       0.74      0.88      0.80      1233
+     physics       0.60      0.85      0.70      1011
+      hep-ph       0.79      0.92      0.85      1001
+    quant-ph       0.76      0.90      0.82       950
+      hep-th       0.71      0.90      0.79      1055
+
+   micro avg       0.75      0.89      0.82      8822
+   macro avg       0.76      0.90      0.82      8822
+weighted avg       0.76      0.89      0.82      8822
+ samples avg       0.82      0.92      0.84      8822
+
+
+
+--- Multi-Label Championship Summary ---
+Model Architecture                            | Subset Accuracy      | Hamming Loss (Lower is Better)
+-----------------------------------------------------------------------------------------------------
+Tier 1: Binary Relevance with LR(tfidf)       | 0.5624               | 0.0747                        
+Tier 2: Binary Relevance with Soft Voting     | 0.6895               | 0.0518                        
+Tier 3: Binary Relevance with Stacking        | 0.6362               | 0.0606                        
+-----------------------------------------------------------------------------------------------------
+
+```
+
+</details>
+
+Second script, focusing on adaptation, providing a comparison to the "Binary Relevance" approach where we had to build multiple separate models.
+
+We will use a RandomForestClassifier instead of a single DecisionTreeClassifier. It works the same way for multi-label data but is much more powerful and robust, making for a stronger and more realistic benchmark. We'll test it on both TF-IDF and Embeddings.
+
+The script reuses our efficient data sampling and feature engineering pipeline.
+
+We will wrap it in a ClassifierChain.
+
+**What is a ClassifierChain, btw?** It's a way to use any standard single-label classifier for a multi-label task. It trains one classifier per label, but in a sequence. The prediction of the first classifier is passed as an input feature to the second, the predictions of the first two are passed to the third, and so on. This allows the model to learn label correlations (e.g., "If a paper is classified as hep-th, it's also more likely to be hep-ph"). Most importantly for our problem, it handles the prediction thresholding in a more robust way than the raw RandomForestClassifier.
+
+<details>
+<summary>Code</summary>
+
+```python
+# run_multilabel_adaptation_benchmark.py
+
+import os
+import re
+import string
+import time
+import numpy as np
+from datetime import datetime
+from datasets import load_dataset
+from collections import Counter
+
+# NLTK for text cleaning
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# Sentence Transformers for embeddings
+from sentence_transformers import SentenceTransformer
+
+# Scikit-learn for models, vectorizers, and metrics
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, hamming_loss
+
+# NEW: Import ClassifierChain from scikit-multilearn
+from skmultilearn.problem_transform import ClassifierChain
+
+from tqdm.auto import tqdm
+import torch
+
+# --- Configuration ---
+# Data Sampling
+CATEGORIES_TO_SELECT = [
+    'math', 'astro-ph', 'cs', 'cond-mat', 'physics', 
+    'hep-ph', 'quant-ph', 'hep-th'
+]
+SAMPLES_PER_CATEGORY_APPEARANCE = 5000 
+
+# Models & Vectorizers
+E5_MODEL_NAME = "intfloat/multilingual-e5-base"
+TFIDF_MAX_FEATURES = 10000
+RANDOM_STATE = 42
+BATCH_SIZE = 128
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+LOG_FILE_PATH = "multilabel_adaptation_benchmarks.txt"
+
+# --- NLTK Downloads ---
+# (Assuming they are already downloaded)
+
+# --- Helper function for logging ---
+def log_message(message, to_console=True):
+    if to_console:
+        print(message)
+    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+        f.write(message + '\n')
+
+# --- Enhanced Text Preprocessing Function ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+domain_specific_stopwords = {
+    'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 
+    'approach', 'propose', 'demonstrate', 'investigate', 'present', 
+    'based', 'using', 'also', 'however', 'provide', 'describe'
+}
+stop_words.update(domain_specific_stopwords)
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)
+    tokens = word_tokenize(text)
+    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words]
+    return " ".join(cleaned_tokens)
+
+# --- Main Execution ---
+log_message("\n\n" + "="*80)
+log_message(f"--- Multi-Label Adaptation Method Benchmark (Corrected): {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+log_message("="*80)
+
+# 1. Multi-Label Data Sampling and Preparation
+print("--- Step 1: Multi-Label Data Sampling & Preparation ---")
+category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
+samples = []
+dataset_generator = load_dataset("UniverseTBD/arxiv-abstracts-large", split="train", streaming=True)
+for s in tqdm(dataset_generator, desc="Scanning for samples"):
+    if all(count >= SAMPLES_PER_CATEGORY_APPEARANCE for count in category_counts.values()):
+        break
+    if s['categories'] is None or s['abstract'] is None:
+        continue
+    
+    current_categories = s['categories'].strip().split(' ')
+    parent_categories = {cat.split('.')[0] for cat in current_categories}
+    
+    found_target = False
+    for p_cat in parent_categories:
+        if p_cat in CATEGORIES_TO_SELECT and category_counts[p_cat] < SAMPLES_PER_CATEGORY_APPEARANCE:
+            s['parent_categories'] = parent_categories
+            samples.append(s)
+            for cat_to_increment in parent_categories:
+                if cat_to_increment in category_counts:
+                    category_counts[cat_to_increment] += 1
+            break
+
+print(f"Finished sampling. Total samples collected: {len(samples)}")
+abstracts = [sample['abstract'] for sample in samples]
+labels_sets = [sample['parent_categories'] for sample in samples]
+processed_abstracts = [clean_text(abstract) for abstract in tqdm(abstracts, desc="Cleaning Abstracts")]
+
+# Create multi-label indicator matrix Y
+Y = np.zeros((len(samples), len(CATEGORIES_TO_SELECT)), dtype=int)
+cat_to_idx = {cat: i for i, cat in enumerate(CATEGORIES_TO_SELECT)}
+for i, label_set in enumerate(labels_sets):
+    for label in label_set:
+        if label in cat_to_idx:
+            Y[i, cat_to_idx[label]] = 1
+
+train_texts, test_texts, Y_train, Y_test = train_test_split(
+    processed_abstracts, Y, test_size=0.2, random_state=RANDOM_STATE
+)
+
+# 2. Feature Engineering
+print("\n--- Step 2: Enhanced Feature Engineering ---")
+# Advanced TF-IDF
+print("Creating Enhanced TF-IDF features...")
+tfidf_vectorizer = TfidfVectorizer(max_features=TFIDF_MAX_FEATURES, min_df=5, max_df=0.7, sublinear_tf=True, ngram_range=(1, 2))
+X_train_tfidf = tfidf_vectorizer.fit_transform(train_texts)
+X_test_tfidf = tfidf_vectorizer.transform(test_texts)
+# SBERT e5-base Embeddings
+print(f"Creating SBERT Embeddings using {E5_MODEL_NAME}...")
+sbert_model = SentenceTransformer(E5_MODEL_NAME, device=DEVICE)
+X_train_emb = sbert_model.encode(train_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+X_test_emb = sbert_model.encode(test_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+print("All feature sets created.")
+
+# --- Initialize empty results dictionary ---
+results = {}
+
+# --- 3. Benchmarking Natively Multi-Label Models ---
+log_message("\n\n--- Detailed Algorithm Adaptation Reports ---")
+
+# a. RandomForest on TF-IDF using ClassifierChain
+print("\n--- Benchmarking RandomForest on TF-IDF (using ClassifierChain) ---")
+# Use ClassifierChain to properly adapt RandomForest for multi-label tasks
+# This will train 8 RandomForest models in a sequence
+chain_rf_tfidf = ClassifierChain(
+    classifier = RandomForestClassifier(random_state=RANDOM_STATE, n_jobs=-1, max_depth=40, class_weight='balanced'),
+    require_dense = [False, True]
+)
+chain_rf_tfidf.fit(X_train_tfidf, Y_train)
+Y_pred_rf_tfidf = chain_rf_tfidf.predict(X_test_tfidf)
+results['RF_Chain(tfidf)_accuracy'] = accuracy_score(Y_test, Y_pred_rf_tfidf)
+results['RF_Chain(tfidf)_hamming'] = hamming_loss(Y_test, Y_pred_rf_tfidf)
+log_message("\n" + "="*50 + "\nModel: ClassifierChain(RandomForest(TF-IDF))\n" + "="*50)
+log_message(f"Overall Subset Accuracy: {results['RF_Chain(tfidf)_accuracy']:.4f}")
+log_message(f"Hamming Loss: {results['RF_Chain(tfidf)_hamming']:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(classification_report(Y_test, Y_pred_rf_tfidf, target_names=CATEGORIES_TO_SELECT, zero_division=0))
+
+# b. RandomForest on Embeddings using ClassifierChain
+print("\n--- Benchmarking RandomForest on Embeddings (using ClassifierChain) ---")
+chain_rf_emb = ClassifierChain(
+    classifier = RandomForestClassifier(random_state=RANDOM_STATE, n_jobs=-1, max_depth=40, class_weight='balanced'),
+    require_dense = [False, True]
+)
+chain_rf_emb.fit(X_train_emb, Y_train)
+Y_pred_rf_emb = chain_rf_emb.predict(X_test_emb)
+results['RF_Chain(emb)_accuracy'] = accuracy_score(Y_test, Y_pred_rf_emb)
+results['RF_Chain(emb)_hamming'] = hamming_loss(Y_test, Y_pred_rf_emb)
+log_message("\n" + "="*50 + "\nModel: ClassifierChain(RandomForest(Embeddings))\n" + "="*50)
+log_message(f"Overall Subset Accuracy: {results['RF_Chain(emb)_accuracy']:.4f}")
+log_message(f"Hamming Loss: {results['RF_Chain(emb)_hamming']:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(classification_report(Y_test, Y_pred_rf_emb, target_names=CATEGORIES_TO_SELECT, zero_division=0))
+
+
+# --- Final Summary ---
+summary_header = f"\n\n--- Multi-Label Adaptation Methods Summary ---"
+table_header = f"{'Model Architecture':<45} | {'Subset Accuracy':<20} | {'Hamming Loss (Lower is Better)':<30}"
+separator = "-" * len(table_header)
+log_message(summary_header, to_console=True)
+log_message(table_header, to_console=True)
+log_message(separator, to_console=True)
+
+# RandomForest TFIDF
+row_str = f"{'ClassifierChain(RandomForest(TF-IDF))':<45} | {results['RF_Chain(tfidf)_accuracy']:<20.4f} | {results['RF_Chain(tfidf)_hamming']:<30.4f}"
+log_message(row_str, to_console=True)
+# RandomForest Embeddings
+row_str = f"{'ClassifierChain(RandomForest(Embeddings))':<45} | {results['RF_Chain(emb)_accuracy']:<20.4f} | {results['RF_Chain(emb)_hamming']:<30.4f}"
+log_message(row_str, to_console=True)
+
+log_message(separator, to_console=True)
+print(f"\nMulti-label adaptation benchmark complete. Results appended to '{LOG_FILE_PATH}'.")
+```
+
+</details>
+
+<details>
+<summary>Results</summary>
+
+```
+
+================================================================================
+--- Multi-Label Adaptation Method Benchmark: 2025-08-24 11:01:23 ---
+================================================================================
+--- Detailed Algorithm Adaptation Reports ---
+
+==================================================
+Model: ClassifierChain(RandomForest(TF-IDF))
+==================================================
+Overall Subset Accuracy: 0.6150
+Hamming Loss: 0.0708
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.67      0.80      0.73      1354
+    astro-ph       0.92      0.84      0.88      1159
+          cs       0.77      0.83      0.80      1059
+    cond-mat       0.74      0.76      0.75      1233
+     physics       0.65      0.51      0.58      1011
+      hep-ph       0.86      0.78      0.82      1001
+    quant-ph       0.81      0.74      0.77       950
+      hep-th       0.82      0.74      0.78      1055
+
+   micro avg       0.77      0.76      0.76      8822
+   macro avg       0.78      0.75      0.76      8822
+weighted avg       0.78      0.76      0.76      8822
+ samples avg       0.78      0.79      0.77      8822
+
+
+==================================================
+Model: ClassifierChain(RandomForest(Embeddings))
+==================================================
+Overall Subset Accuracy: 0.3419
+Hamming Loss: 0.1042
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.93      0.36      0.52      1354
+    astro-ph       0.98      0.60      0.75      1159
+          cs       0.92      0.39      0.55      1059
+    cond-mat       0.91      0.33      0.49      1233
+     physics       0.82      0.01      0.03      1011
+      hep-ph       0.96      0.35      0.52      1001
+    quant-ph       0.93      0.34      0.49       950
+      hep-th       0.93      0.26      0.41      1055
+
+   micro avg       0.94      0.34      0.50      8822
+   macro avg       0.92      0.33      0.47      8822
+weighted avg       0.92      0.34      0.48      8822
+ samples avg       0.40      0.37      0.38      8822
+
+
+
+--- Multi-Label Adaptation Methods Summary ---
+Model Architecture                            | Subset Accuracy      | Hamming Loss (Lower is Better)
+-----------------------------------------------------------------------------------------------------
+ClassifierChain(RandomForest(TF-IDF))         | 0.6150               | 0.0708                        
+ClassifierChain(RandomForest(Embeddings))     | 0.3419               | 0.1042                        
+-----------------------------------------------------------------------------------------------------
+
+```
+</details>
+
+**Temporary Clear Winner: Binary Relevance with Soft Voting Ensembles**
+
+*   **Observation:** The **Tier 2: Binary Relevance with Soft Voting Ensembles** is the undisputed champion, achieving the highest **Subset Accuracy of 0.6895** and the lowest (best) **Hamming Loss of 0.0518**.
+*   **Technical Interpretation:** This result is incredibly insightful. It shows that for a complex multi-label task, the best approach was to break it down into a series of smaller, independent binary problems (`Binary Relevance`) and then solve each of those problems with a powerful, robust committee of models (`Soft Voting Ensemble`).
+    *   **Why it beat Tier 1 (LR only):** The ensemble's diversity (`MNB`, `kNN`, `DT`) allowed it to create a much more nuanced decision boundary for each binary task than a single `LogisticRegression` model could. This is evident in the much higher "micro avg" precision (0.89 vs. 0.70), showing the ensemble made fewer false positive errors.
+    *   **Why it beat Tier 3 (Stacking):** This is the most fascinating result. While stacking was the champion in the single-label task, it was outperformed by the simpler soft-voting ensemble here. A likely reason is that stacking, being more complex, is more prone to overfitting. For a binary task (e.g., "is this `physics` or not?"), the dataset can be highly imbalanced. The simpler, calibrated soft-voting average might be a more robust and generalizable signal than what a meta-learner overfits to in this binary context. This demonstrates that the most complex model is not always the best.
+
+**Analysis of Algorithm Adaptation Methods**
+
+*   **Observation:** The `ClassifierChain(RandomForest(TF-IDF))` performed respectably with a Subset Accuracy of **0.6150** and a low Hamming Loss of **0.0708**. However, the `RandomForest(Embeddings)` performed very poorly.
+*   **Technical Interpretation:**
+    *   The `ClassifierChain(RF)` was a strong contender. Its performance being close to the Tier 3 Stacking model shows that natively adapting powerful models is a valid and effective strategy. The chaining mechanism, which learns label correlations, clearly provides a strong signal.
+    *   The complete failure of `RandomForest` with embeddings is a powerful echo of our initial benchmark findings. Tree-based models like RandomForest fundamentally struggle with the high-dimensional, dense, and non-sparse nature of SBERT embeddings. They cannot easily find clean, axis-aligned splits in that complex semantic space. This confirms that **TF-IDF is the superior feature representation for tree-based models** in this domain.
+
+**Comparing the Temporary Winning Architectures**
+
+*   **Single-Label Champion:** `Stacking[MNB+kNN+DT] + LR(t)` @ **~90% Accuracy**.
+*   **Multi-Label Champion:** `Binary Relevance (Soft Voting Ensemble)` @ **~69% Subset Accuracy**.
+
+It's crucial to understand why the multi-label score is lower. **Subset Accuracy** is an extremely strict metric. It only gives a score of "1" if the model predicts the *entire set* of labels perfectly. If the true labels are `['cs', 'math']` and the model predicts `['cs']`, the subset accuracy is 0.
+
+A better way to compare is the **Hamming Loss**, which measures the fraction of misclassified labels. A Hamming Loss of **0.0518** means that on average, only **~5.2%** of the label predictions were wrong across the entire test set. This is an excellent score and indicates a very high-performing model.
+
+**Some Lessons Now we Know** 
+
+
+1.  **Problem Decomposition is a Powerful Strategy:** The best-performing model (`Binary Relevance`) succeeded by decomposing a single, hard multi-label problem into a series of simpler, independent binary problems. This is a core strategy in engineering and computer science.
+
+2.  **The "Best" Architecture is Task-Dependent:** Stacking was the undisputed king of the multi-class (single-label) problem. However, for the multi-label task, the simpler and more robust **Soft Voting Ensemble** proved superior for each binary sub-problem. This shows that there is no universal "best model"; the optimal architecture depends on the specific structure of the problem you are trying to solve.
+
+3.  **Feature Engineering Remains Paramount:** Once again, the results show that pairing models with the right features is critical. The failure of `RandomForest(Embeddings)` provides a stark final reminder that even powerful models are ineffective if their underlying assumptions do not match the structure of the data they are given.
+
+---
+
+Final script is an ultimate "Battle Royale" script for the multi-label problem - a massive benchmark that pits all of our top-performing architectures against each other, using each one as a binary classifier within the Binary Relevance framework.
+
+This is the most ambitious script yet. It will be **extremely computationally intensive and will take a very long time to run**, as it involves training multiple ensembles and stacks for *each* of the 8 categories. However, the results will be the most comprehensive and definitive data of the entire project.
+
+**The Plan: `run_multilabel_grand_prix.py`**
+
+This script will be a monumental effort. It will benchmark **17 different model architectures** as binary classifiers for our 8-category multi-label problem.
+
+**Architectures to be Benchmarked:**
+1.  **Heterogeneous Voting Ensemble 1:** `MNB(bow) + kNN(emb) + DT(tfidf)`
+2.  **Heterogeneous Voting Ensemble 2:** `MNB(tfidf) + kNN(emb) + DT(tfidf)`
+3.  **Single XGBoost (TF-IDF)**
+4.  **Single XGBoost (Embeddings)**
+5.  **Single XGBoost (BoW)**
+6.  **Single kNN (Embeddings)**
+7.  **Single GaussianNB (TF-IDF)**
+8.  **Single GaussianNB (BoW)**
+9.  **Single GaussianNB (Embeddings)**
+10. **Stacking Ensemble 1:** `[MNB(b)+kNN(e)+DT(t)] + LR(t)`
+11. **Single XGBoost (TF-IDF)** 
+12. **Single XGBoost (BoW)** 
+13. **Single XGBoost (Embeddings)** 
+14. **Single LogisticRegression (BoW)**
+15. **Single LogisticRegression (Embeddings)**
+16. **Single K-Means (Embeddings)**
+17. **"Pure" Stacking Ensemble 2:** `[MNB(t)+kNN(e)+DT(t)] + LR` (meta-learner sees probabilities only)
+
+**Key Features of the Script:**
+*   It will perform the multi-label data sampling for our 8 target categories.
+*   It will create all three enhanced feature sets (`BoW`, `TF-IDF`, `Embeddings`).
+*   For each of the 8 categories, it will train all 17 of these architectures.
+*   It incorporates all our best practices: hyperparameter tuning (`GridSearchCV`), probability calibration, etc.
+
+<details>
+<summary>Code</summary>
+
+```python
+# run_multilabel_grand_prix.py
+
+import os
+import re
+import string
+import time
+import numpy as np
+from datetime import datetime
+from datasets import load_dataset
+from collections import Counter
+
+# NLTK for text cleaning
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# Sentence Transformers for embeddings
+from sentence_transformers import SentenceTransformer
+
+# Scikit-learn for models, vectorizers, and metrics
+from sklearn.model_selection import train_test_split, cross_val_predict, GridSearchCV
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB, GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.cluster import KMeans
+from sklearn.metrics import accuracy_score, classification_report, hamming_loss
+
+# XGBoost
+import xgboost as xgb
+
+# Other utilities
+from scipy.sparse import hstack, issparse, csr_matrix
+from tqdm.auto import tqdm
+import torch
+
+# --- Configuration ---
+CATEGORIES_TO_SELECT = ['math', 'astro-ph', 'cs', 'cond-mat', 'physics', 'hep-ph', 'quant-ph', 'hep-th']
+SAMPLES_PER_CATEGORY_APPEARANCE = 5000 # Reduced slightly to manage extreme runtime
+
+E5_MODEL_NAME = "intfloat/multilingual-e5-base"
+TFIDF_MAX_FEATURES = 10000
+RANDOM_STATE = 42
+CV_FOLDS = 5 # Use 5 folds for faster tuning and stacking
+BATCH_SIZE = 128
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+LOG_FILE_PATH = "multilabel_grand_prix.txt"
+
+# --- Helper function for logging ---
+def log_message(message, to_console=True):
+    if to_console:
+        print(message)
+    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+        f.write(message + '\n')
+
+# --- Enhanced Text Preprocessing Function ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+domain_specific_stopwords = {'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 'approach', 'propose', 'demonstrate', 'investigate'}
+stop_words.update(domain_specific_stopwords)
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)
+    tokens = word_tokenize(text)
+    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words]
+    return " ".join(cleaned_tokens)
+
+# --- K-Means for Classification Function ---
+def train_and_predict_kmeans(X_train, y_train, X_test):
+    kmeans = KMeans(n_clusters=2, random_state=RANDOM_STATE, n_init=10)
+    cluster_ids_train = kmeans.fit_predict(X_train)
+    
+    # Assign a class label to each cluster (0 or 1)
+    cluster_to_label = {}
+    for cluster_id in [0, 1]:
+        labels_in_cluster = y_train[cluster_ids_train == cluster_id]
+        if len(labels_in_cluster) == 0:
+            most_common_label = Counter(y_train).most_common(1)[0][0]
+        else:
+            most_common_label = Counter(labels_in_cluster).most_common(1)[0][0]
+        cluster_to_label[cluster_id] = most_common_label
+        
+    cluster_ids_test = kmeans.predict(X_test)
+    predictions = np.array([cluster_to_label.get(cid, 0) for cid in cluster_ids_test])
+    return predictions
+
+# --- Main Execution ---
+log_message("\n\n" + "="*80)
+log_message(f"--- Multi-Label Grand Prix Benchmark: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+log_message("="*80)
+
+# 1. Multi-Label Data Sampling and Preparation
+print("--- Step 1: Multi-Label Data Sampling & Preparation ---")
+# ... (Same as before) ...
+category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
+samples = []
+dataset_generator = load_dataset("UniverseTBD/arxiv-abstracts-large", split="train", streaming=True)
+for s in tqdm(dataset_generator, desc="Scanning for samples"):
+    if all(count >= SAMPLES_PER_CATEGORY_APPEARANCE for count in category_counts.values()):
+        break
+    if s['categories'] is None or s['abstract'] is None: continue
+    parent_categories = {cat.split('.')[0] for cat in s['categories'].strip().split(' ')}
+    if any(p in CATEGORIES_TO_SELECT for p in parent_categories):
+        samples.append(s)
+        for p_cat in parent_categories:
+            if p_cat in category_counts:
+                category_counts[p_cat] += 1
+print(f"Finished sampling. Total samples collected: {len(samples)}")
+abstracts = [sample['abstract'] for sample in samples]
+labels_sets = [{cat.split('.')[0] for cat in sample['categories'].strip().split(' ')} for sample in samples]
+processed_abstracts = [clean_text(abstract) for abstract in tqdm(abstracts, desc="Cleaning Abstracts")]
+Y = np.zeros((len(samples), len(CATEGORIES_TO_SELECT)), dtype=int)
+cat_to_idx = {cat: i for i, cat in enumerate(CATEGORIES_TO_SELECT)}
+for i, label_set in enumerate(labels_sets):
+    for label in label_set:
+        if label in cat_to_idx:
+            Y[i, cat_to_idx[label]] = 1
+train_texts, test_texts, Y_train, Y_test = train_test_split(processed_abstracts, Y, test_size=0.2, random_state=RANDOM_STATE)
+
+# 2. Feature Engineering
+print("\n--- Step 2: Enhanced Feature Engineering ---")
+# ... (Same as before) ...
+tfidf_vectorizer = TfidfVectorizer(max_features=TFIDF_MAX_FEATURES, min_df=5, max_df=0.7, sublinear_tf=True, ngram_range=(1, 2))
+X_train_tfidf = tfidf_vectorizer.fit_transform(train_texts)
+X_test_tfidf = tfidf_vectorizer.transform(test_texts)
+bow_vectorizer = CountVectorizer(vocabulary=tfidf_vectorizer.vocabulary_)
+X_train_bow = bow_vectorizer.fit_transform(train_texts)
+X_test_bow = bow_vectorizer.transform(test_texts)
+sbert_model = SentenceTransformer(E5_MODEL_NAME, device=DEVICE)
+X_train_emb = sbert_model.encode(train_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+X_test_emb = sbert_model.encode(test_texts, batch_size=BATCH_SIZE, show_progress_bar=True)
+print("All feature sets created.")
+
+# 3. Define Benchmark Architectures
+architectures = {
+    # Singles
+    "LR(TFIDF)": {"type": "single", "model": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced'), "X_train": X_train_tfidf, "X_test": X_test_tfidf},
+    "LR(BoW)": {"type": "single", "model": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced'), "X_train": X_train_bow, "X_test": X_test_bow},
+    "LR(Emb)": {"type": "single", "model": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced'), "X_train": X_train_emb, "X_test": X_test_emb},
+    "XGB(TFIDF)": {"type": "single", "model": xgb.XGBClassifier(random_state=RANDOM_STATE), "X_train": X_train_tfidf, "X_test": X_test_tfidf},
+    "XGB(BoW)": {"type": "single", "model": xgb.XGBClassifier(random_state=RANDOM_STATE), "X_train": X_train_bow, "X_test": X_test_bow},
+    "XGB(Emb)": {"type": "single", "model": xgb.XGBClassifier(random_state=RANDOM_STATE), "X_train": X_train_emb, "X_test": X_test_emb},
+    "kNN(Emb)": {"type": "single", "model": KNeighborsClassifier(n_neighbors=7, weights='distance'), "X_train": X_train_emb, "X_test": X_test_emb},
+    "GNB(TFIDF)": {"type": "single", "model": GaussianNB(), "X_train": X_train_tfidf.toarray(), "X_test": X_test_tfidf.toarray()},
+    "GNB(BoW)": {"type": "single", "model": GaussianNB(), "X_train": X_train_bow.toarray(), "X_test": X_test_bow.toarray()},
+    "GNB(Emb)": {"type": "single", "model": GaussianNB(), "X_train": X_train_emb, "X_test": X_test_emb},
+    "KMeans(Emb)": {"type": "kmeans", "X_train": X_train_emb, "X_test": X_test_emb},
+    # Voting Ensembles
+    "VoteEns_1": {"type": "vote", "components": ["MNB(bow)", "kNN(emb)", "DT(tfidf)"]},
+    "VoteEns_2": {"type": "vote", "components": ["MNB(tfidf)", "kNN(emb)", "DT(tfidf)"]},
+    # Stacking Ensembles
+    "Stack_LR(t)": {"type": "stack", "meta_learner": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced'), "meta_X_train": X_train_tfidf, "meta_X_test": X_test_tfidf},
+    "Pure_Stack_LR": {"type": "stack", "meta_learner": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000, class_weight='balanced'), "meta_X_train": None, "meta_X_test": None}
+}
+results = {}
+
+# 4. Run the Grand Prix
+log_message("\n\n--- Detailed Grand Prix Reports ---")
+for arch_name, config in architectures.items():
+    print(f"\n--- Benchmarking Architecture: {arch_name} ---")
+    log_message("\n" + "="*50 + f"\nArchitecture: {arch_name}\n" + "="*50)
+    Y_pred = np.zeros_like(Y_test)
+
+    for i, category in enumerate(CATEGORIES_TO_SELECT):
+        print(f"  Training for category: {category}")
+        y_binary_train = Y_train[:, i]
+        y_binary_test = Y_test[:, i]
+        
+        # --- PREDICTION LOGIC ---
+        if config["type"] == "single":
+            model = config["model"]
+            model.fit(config["X_train"], y_binary_train)
+            Y_pred[:, i] = model.predict(config["X_test"])
+        
+        elif config["type"] == "kmeans":
+            Y_pred[:, i] = train_and_predict_kmeans(config["X_train"], y_binary_train, config["X_test"])
+        
+        else: # Ensembles (Voting or Stacking)
+            # Define and tune base models for this binary task
+            mnb_bow = MultinomialNB(alpha=0.1).fit(X_train_bow, y_binary_train)
+            mnb_tfidf = MultinomialNB(alpha=0.1).fit(X_train_tfidf, y_binary_train)
+            knn_emb = KNeighborsClassifier(n_neighbors=7, weights='distance').fit(X_train_emb, y_binary_train)
+            dt_tfidf = DecisionTreeClassifier(max_depth=40, random_state=RANDOM_STATE, class_weight='balanced').fit(X_train_tfidf, y_binary_train)
+            
+            calibrated_knn = CalibratedClassifierCV(estimator=knn_emb, cv=CV_FOLDS).fit(X_train_emb, y_binary_train)
+            calibrated_dt = CalibratedClassifierCV(estimator=dt_tfidf, cv=CV_FOLDS).fit(X_train_tfidf, y_binary_train)
+
+            if config["type"] == "vote":
+                base_preds = {
+                    "MNB(bow)": mnb_bow.predict_proba(X_test_bow)[:, 1],
+                    "MNB(tfidf)": mnb_tfidf.predict_proba(X_test_tfidf)[:, 1],
+                    "kNN(emb)": calibrated_knn.predict_proba(X_test_emb)[:, 1],
+                    "DT(tfidf)": calibrated_dt.predict_proba(X_test_tfidf)[:, 1]
+                }
+                # Weighted average of probabilities
+                probs = np.mean([base_preds[comp] for comp in config["components"]], axis=0)
+                Y_pred[:, i] = (probs >= 0.5).astype(int)
+
+            elif config["type"] == "stack":
+                # Stacking logic
+                base_models_for_stacking = {'MNB_tfidf': mnb_tfidf, 'kNN_emb': knn_emb, 'DT_tfidf': dt_tfidf}
+                meta_features_train = []
+                meta_features_test = []
+                
+                for name, model in base_models_for_stacking.items():
+                    feature_type = name.split('_')[1]
+                    X_for_model_train = X_train_tfidf if feature_type == 'tfidf' else X_train_emb
+                    X_for_model_test = X_test_tfidf if feature_type == 'tfidf' else X_test_emb
+                    
+                    meta_features_train.append(cross_val_predict(model, X_for_model_train, y_binary_train, cv=CV_FOLDS, method='predict_proba', n_jobs=-1)[:, 1])
+                    meta_features_test.append(model.predict_proba(X_for_model_test)[:, 1])
+                
+                meta_features_train = np.stack(meta_features_train, axis=1)
+                meta_features_test = np.stack(meta_features_test, axis=1)
+
+                if config["meta_X_train"] is not None:
+                    is_sparse = issparse(config["meta_X_train"])
+                    meta_learner_train_X = hstack([csr_matrix(meta_features_train), config["meta_X_train"]]).tocsr() if is_sparse else np.hstack([meta_features_train, config["meta_X_train"]])
+                    meta_learner_test_X = hstack([csr_matrix(meta_features_test), config["meta_X_test"]]).tocsr() if is_sparse else np.hstack([meta_features_test, config["meta_X_test"]])
+                else: # Pure stack
+                    meta_learner_train_X = meta_features_train
+                    meta_learner_test_X = meta_features_test
+                
+                meta_learner = config["meta_learner"]
+                meta_learner.fit(meta_learner_train_X, y_binary_train)
+                Y_pred[:, i] = meta_learner.predict(meta_learner_test_X)
+
+    # Evaluate the architecture
+    acc = accuracy_score(Y_test, Y_pred)
+    ham = hamming_loss(Y_test, Y_pred)
+    report = classification_report(Y_test, Y_pred, target_names=CATEGORIES_TO_SELECT, zero_division=0)
+    
+    results[arch_name] = {'accuracy': acc, 'hamming': ham}
+    log_message(f"Overall Subset Accuracy: {acc:.4f}")
+    log_message(f"Hamming Loss: {ham:.4f}\n" + report)
+
+# 5. Final Summary Table
+summary_header = f"\n\n--- Multi-Label Grand Prix Summary ---"
+table_header = f"{'Model Architecture':<45} | {'Subset Accuracy':<20} | {'Hamming Loss (Lower is Better)':<30}"
+separator = "-" * len(table_header)
+log_message(summary_header, to_console=True)
+log_message(table_header, to_console=True)
+log_message(separator, to_console=True)
+# Sort results by subset accuracy for a ranked list
+sorted_results = sorted(results.items(), key=lambda item: item[1]['accuracy'], reverse=True)
+for name, metrics in sorted_results:
+    row_str = f"{name:<45} | {metrics['accuracy']:<20.4f} | {metrics['hamming']:<30.4f}"
+    log_message(row_str, to_console=True)
+log_message(separator, to_console=True)
+
+print(f"\nMulti-label Grand Prix complete. Results appended to '{LOG_FILE_PATH}'.")
+```
+
+</details>
+
+<details>
+<summary>Results</summary>
+
+```
+
+
+================================================================================
+--- Multi-Label Grand Prix Benchmark: 2025-08-24 13:07:23 ---
+================================================================================
+
+
+--- Detailed Grand Prix Reports ---
+
+==================================================
+Architecture: LR(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.6490
+Hamming Loss: 0.0582
+              precision    recall  f1-score   support
+
+        math       0.88      0.95      0.91      4441
+    astro-ph       0.92      0.95      0.93      3378
+          cs       0.57      0.91      0.71       950
+    cond-mat       0.81      0.93      0.87      3213
+     physics       0.42      0.84      0.56      1365
+      hep-ph       0.70      0.91      0.79      1543
+    quant-ph       0.59      0.88      0.70      1102
+      hep-th       0.64      0.90      0.75      1564
+
+   micro avg       0.73      0.92      0.82     17556
+   macro avg       0.69      0.91      0.78     17556
+weighted avg       0.77      0.92      0.83     17556
+ samples avg       0.82      0.94      0.85     17556
+
+
+==================================================
+Architecture: LR(BoW)
+==================================================
+Overall Subset Accuracy: 0.6451
+Hamming Loss: 0.0630
+              precision    recall  f1-score   support
+
+        math       0.85      0.93      0.89      4441
+    astro-ph       0.90      0.93      0.92      3378
+          cs       0.63      0.81      0.71       950
+    cond-mat       0.81      0.89      0.85      3213
+     physics       0.42      0.71      0.53      1365
+      hep-ph       0.69      0.85      0.76      1543
+    quant-ph       0.56      0.78      0.65      1102
+      hep-th       0.62      0.84      0.71      1564
+
+   micro avg       0.73      0.87      0.80     17556
+   macro avg       0.69      0.84      0.75     17556
+weighted avg       0.76      0.87      0.81     17556
+ samples avg       0.80      0.90      0.82     17556
+
+
+==================================================
+Architecture: LR(Emb)
+==================================================
+Overall Subset Accuracy: 0.4835
+Hamming Loss: 0.0928
+              precision    recall  f1-score   support
+
+        math       0.82      0.93      0.87      4441
+    astro-ph       0.86      0.95      0.90      3378
+          cs       0.46      0.93      0.62       950
+    cond-mat       0.73      0.92      0.81      3213
+     physics       0.30      0.83      0.44      1365
+      hep-ph       0.54      0.90      0.68      1543
+    quant-ph       0.44      0.88      0.59      1102
+      hep-th       0.48      0.89      0.63      1564
+
+   micro avg       0.62      0.91      0.74     17556
+   macro avg       0.58      0.90      0.69     17556
+weighted avg       0.67      0.91      0.76     17556
+ samples avg       0.71      0.93      0.78     17556
+
+
+==================================================
+Architecture: XGB(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.7138
+Hamming Loss: 0.0476
+              precision    recall  f1-score   support
+
+        math       0.91      0.87      0.89      4441
+    astro-ph       0.96      0.90      0.93      3378
+          cs       0.81      0.61      0.69       950
+    cond-mat       0.90      0.80      0.84      3213
+     physics       0.71      0.29      0.41      1365
+      hep-ph       0.88      0.74      0.80      1543
+    quant-ph       0.81      0.62      0.71      1102
+      hep-th       0.84      0.67      0.75      1564
+
+   micro avg       0.89      0.76      0.82     17556
+   macro avg       0.85      0.69      0.75     17556
+weighted avg       0.88      0.76      0.81     17556
+ samples avg       0.80      0.79      0.79     17556
+
+
+==================================================
+Architecture: XGB(BoW)
+==================================================
+Overall Subset Accuracy: 0.7104
+Hamming Loss: 0.0479
+              precision    recall  f1-score   support
+
+        math       0.90      0.87      0.89      4441
+    astro-ph       0.96      0.90      0.93      3378
+          cs       0.82      0.61      0.70       950
+    cond-mat       0.90      0.78      0.84      3213
+     physics       0.74      0.28      0.41      1365
+      hep-ph       0.88      0.73      0.80      1543
+    quant-ph       0.81      0.61      0.69      1102
+      hep-th       0.84      0.66      0.74      1564
+
+   micro avg       0.89      0.75      0.82     17556
+   macro avg       0.86      0.68      0.75     17556
+weighted avg       0.88      0.75      0.81     17556
+ samples avg       0.80      0.79      0.78     17556
+
+
+==================================================
+Architecture: XGB(Emb)
+==================================================
+Overall Subset Accuracy: 0.6895
+Hamming Loss: 0.0536
+              precision    recall  f1-score   support
+
+        math       0.89      0.87      0.88      4441
+    astro-ph       0.94      0.89      0.92      3378
+          cs       0.81      0.62      0.70       950
+    cond-mat       0.86      0.79      0.82      3213
+     physics       0.64      0.24      0.35      1365
+      hep-ph       0.86      0.66      0.75      1543
+    quant-ph       0.82      0.52      0.64      1102
+      hep-th       0.81      0.56      0.66      1564
+
+   micro avg       0.87      0.73      0.79     17556
+   macro avg       0.83      0.64      0.72     17556
+weighted avg       0.86      0.73      0.78     17556
+ samples avg       0.77      0.77      0.76     17556
+
+
+==================================================
+Architecture: kNN(Emb)
+==================================================
+Overall Subset Accuracy: 0.7825
+Hamming Loss: 0.0394
+              precision    recall  f1-score   support
+
+        math       0.93      0.89      0.91      4441
+    astro-ph       0.95      0.94      0.94      3378
+          cs       0.91      0.65      0.76       950
+    cond-mat       0.87      0.89      0.88      3213
+     physics       0.83      0.39      0.53      1365
+      hep-ph       0.87      0.81      0.84      1543
+    quant-ph       0.86      0.69      0.76      1102
+      hep-th       0.84      0.73      0.78      1564
+
+   micro avg       0.90      0.81      0.85     17556
+   macro avg       0.88      0.75      0.80     17556
+weighted avg       0.90      0.81      0.85     17556
+ samples avg       0.87      0.85      0.85     17556
+
+
+==================================================
+Architecture: GNB(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.3151
+Hamming Loss: 0.1920
+              precision    recall  f1-score   support
+
+        math       0.66      0.95      0.78      4441
+    astro-ph       0.76      0.96      0.85      3378
+          cs       0.28      0.83      0.42       950
+    cond-mat       0.49      0.96      0.65      3213
+     physics       0.20      0.90      0.33      1365
+      hep-ph       0.39      0.89      0.54      1543
+    quant-ph       0.21      0.82      0.34      1102
+      hep-th       0.28      0.89      0.42      1564
+
+   micro avg       0.42      0.93      0.58     17556
+   macro avg       0.41      0.90      0.54     17556
+weighted avg       0.51      0.93      0.63     17556
+ samples avg       0.57      0.94      0.66     17556
+
+
+==================================================
+Architecture: GNB(BoW)
+==================================================
+Overall Subset Accuracy: 0.2701
+Hamming Loss: 0.2506
+              precision    recall  f1-score   support
+
+        math       0.64      0.95      0.77      4441
+    astro-ph       0.60      0.96      0.74      3378
+          cs       0.21      0.89      0.34       950
+    cond-mat       0.45      0.96      0.61      3213
+     physics       0.16      0.92      0.28      1365
+      hep-ph       0.31      0.91      0.46      1543
+    quant-ph       0.18      0.86      0.30      1102
+      hep-th       0.24      0.92      0.38      1564
+
+   micro avg       0.35      0.94      0.51     17556
+   macro avg       0.35      0.92      0.48     17556
+weighted avg       0.44      0.94      0.58     17556
+ samples avg       0.51      0.95      0.61     17556
+
+
+==================================================
+Architecture: GNB(Emb)
+==================================================
+Overall Subset Accuracy: 0.3819
+Hamming Loss: 0.1145
+              precision    recall  f1-score   support
+
+        math       0.76      0.90      0.82      4441
+    astro-ph       0.84      0.87      0.86      3378
+          cs       0.38      0.92      0.54       950
+    cond-mat       0.69      0.88      0.77      3213
+     physics       0.25      0.76      0.38      1365
+      hep-ph       0.50      0.86      0.63      1543
+    quant-ph       0.40      0.82      0.54      1102
+      hep-th       0.45      0.87      0.60      1564
+
+   micro avg       0.56      0.87      0.68     17556
+   macro avg       0.53      0.86      0.64     17556
+weighted avg       0.63      0.87      0.71     17556
+ samples avg       0.64      0.89      0.71     17556
+
+
+==================================================
+Architecture: KMeans(Emb)
+==================================================
+Overall Subset Accuracy: 0.1670
+Hamming Loss: 0.1321
+              precision    recall  f1-score   support
+
+        math       0.00      0.00      0.00      4441
+    astro-ph       0.63      0.84      0.72      3378
+          cs       0.00      0.00      0.00       950
+    cond-mat       0.00      0.00      0.00      3213
+     physics       0.00      0.00      0.00      1365
+      hep-ph       0.00      0.00      0.00      1543
+    quant-ph       0.00      0.00      0.00      1102
+      hep-th       0.00      0.00      0.00      1564
+
+   micro avg       0.63      0.16      0.26     17556
+   macro avg       0.08      0.11      0.09     17556
+weighted avg       0.12      0.16      0.14     17556
+ samples avg       0.18      0.17      0.18     17556
+
+
+==================================================
+Architecture: VoteEns_1
+==================================================
+Overall Subset Accuracy: 0.7603
+Hamming Loss: 0.0405
+              precision    recall  f1-score   support
+
+        math       0.87      0.93      0.90      4441
+    astro-ph       0.96      0.92      0.94      3378
+          cs       0.84      0.79      0.81       950
+    cond-mat       0.85      0.90      0.88      3213
+     physics       0.74      0.51      0.61      1365
+      hep-ph       0.82      0.84      0.83      1543
+    quant-ph       0.79      0.77      0.78      1102
+      hep-th       0.79      0.80      0.80      1564
+
+   micro avg       0.86      0.85      0.86     17556
+   macro avg       0.83      0.81      0.82     17556
+weighted avg       0.86      0.85      0.85     17556
+ samples avg       0.87      0.89      0.86     17556
+
+
+==================================================
+Architecture: VoteEns_2
+==================================================
+Overall Subset Accuracy: 0.7712
+Hamming Loss: 0.0387
+              precision    recall  f1-score   support
+
+        math       0.91      0.91      0.91      4441
+    astro-ph       0.96      0.92      0.94      3378
+          cs       0.91      0.69      0.78       950
+    cond-mat       0.91      0.86      0.88      3213
+     physics       0.91      0.26      0.41      1365
+      hep-ph       0.91      0.78      0.84      1543
+    quant-ph       0.90      0.63      0.74      1102
+      hep-th       0.90      0.70      0.79      1564
+
+   micro avg       0.92      0.79      0.85     17556
+   macro avg       0.91      0.72      0.79     17556
+weighted avg       0.92      0.79      0.84     17556
+ samples avg       0.85      0.83      0.83     17556
+
+
+==================================================
+Architecture: Stack_LR(t)
+==================================================
+Overall Subset Accuracy: 0.7104
+Hamming Loss: 0.0475
+              precision    recall  f1-score   support
+
+        math       0.90      0.95      0.92      4441
+    astro-ph       0.92      0.96      0.94      3378
+          cs       0.66      0.91      0.77       950
+    cond-mat       0.84      0.94      0.89      3213
+     physics       0.51      0.83      0.63      1365
+      hep-ph       0.73      0.92      0.81      1543
+    quant-ph       0.64      0.88      0.74      1102
+      hep-th       0.67      0.90      0.77      1564
+
+   micro avg       0.78      0.93      0.85     17556
+   macro avg       0.73      0.91      0.81     17556
+weighted avg       0.80      0.93      0.85     17556
+ samples avg       0.85      0.95      0.88     17556
+
+
+==================================================
+Architecture: Pure_Stack_LR
+==================================================
+Overall Subset Accuracy: 0.6902
+Hamming Loss: 0.0500
+              precision    recall  f1-score   support
+
+        math       0.89      0.94      0.92      4441
+    astro-ph       0.93      0.96      0.94      3378
+          cs       0.63      0.93      0.75       950
+    cond-mat       0.83      0.93      0.88      3213
+     physics       0.48      0.82      0.61      1365
+      hep-ph       0.73      0.91      0.81      1543
+    quant-ph       0.64      0.88      0.74      1102
+      hep-th       0.67      0.90      0.77      1564
+
+   micro avg       0.77      0.92      0.84     17556
+   macro avg       0.73      0.91      0.80     17556
+weighted avg       0.79      0.92      0.85     17556
+ samples avg       0.84      0.95      0.87     17556
+
+
+
+--- Multi-Label Grand Prix Summary ---
+Model Architecture                            | Subset Accuracy      | Hamming Loss (Lower is Better)
+-----------------------------------------------------------------------------------------------------
+kNN(Emb)                                      | 0.7825               | 0.0394                        
+VoteEns_2                                     | 0.7712               | 0.0387                        
+VoteEns_1                                     | 0.7603               | 0.0405                        
+XGB(TFIDF)                                    | 0.7138               | 0.0476                        
+XGB(BoW)                                      | 0.7104               | 0.0479                        
+Stack_LR(t)                                   | 0.7104               | 0.0475                        
+Pure_Stack_LR                                 | 0.6902               | 0.0500                        
+XGB(Emb)                                      | 0.6895               | 0.0536                        
+LR(TFIDF)                                     | 0.6490               | 0.0582                        
+LR(BoW)                                       | 0.6451               | 0.0630                        
+LR(Emb)                                       | 0.4835               | 0.0928                        
+GNB(Emb)                                      | 0.3819               | 0.1145                        
+GNB(TFIDF)                                    | 0.3151               | 0.1920                        
+GNB(BoW)                                      | 0.2701               | 0.2506                        
+KMeans(Emb)                                   | 0.1670               | 0.1321                        
+-----------------------------------------------------------------------------------------------------
+
+```
+</details>
+
+
+### **Final Analysis: The Multi-Label Grand Prix**
+
+This final, comprehensive benchmark tested a wide array of architectures on the complex, 8-category multi-label problem. The results are surprising and reveal a different set of winning principles compared to the single-label task.
+
+#### 1. The Surprising Champion: A Single kNN Model
+
+*   **Observation:** The undisputed winner, by a clear margin in the all-important **Subset Accuracy**, is the single, well-tuned **`kNN(Emb)` model at 0.7825**. It also achieved a very strong (second best) Hamming Loss of 0.0394.
+*   **Technical Interpretation:** This is a powerful and unexpected result. It suggests that for this multi-label problem, the semantic information captured by the **e5-base embeddings is so powerful and well-organized** that a simple, non-parametric, distance-based algorithm can outperform much more complex ensembles. The SBERT embeddings likely place documents in the vector space such that an abstract's nearest neighbors are the single best source of information about its complete set of labels. The complexity of voting and stacking, in this case, appears to have introduced more noise than signal, failing to improve upon this strong semantic foundation.
+
+#### 2. The Power of Simple Voting Ensembles
+
+*   **Observation:** The two **Heterogeneous Voting Ensembles** (`VoteEns_2` and `VoteEns_1`) are the clear runners-up, achieving the **best Hamming Loss (0.0387)** and the second-highest Subset Accuracy (0.7712).
+*   **Technical Interpretation:** This confirms that combining diverse, calibrated models is an extremely robust strategy. While they didn't quite reach the peak Subset Accuracy of the single kNN model, they made, on average, the **fewest individual label errors** (lowest Hamming Loss). This means they are exceptionally reliable on a per-label basis. The soft-voting mechanism successfully averages out the individual weaknesses of the base models.
+
+#### 3. Stacking's Surprising Underperformance
+
+*   **Observation:** In a complete reversal from the single-label task, the **Stacking Ensembles performed significantly worse** than both the single kNN model and the voting ensembles. The best stack (`Stack_LR(t)`) only reached a Subset Accuracy of 0.7104.
+*   **Technical Interpretation:** This is the most critical insight of this benchmark. The stacking architecture, which was the champion for the single-label "which one?" problem, is less effective for the multi-label "which ones?" problem *when implemented within a Binary Relevance framework*. For each of the 8 binary tasks (e.g., "is this `cs` or not?"), the dataset is naturally imbalanced. Training a complex meta-learner on the out-of-fold predictions in this imbalanced binary context appears to be prone to overfitting, leading to a less generalizable model than the simpler voting average or the direct kNN search.
+
+#### 4. XGBoost vs. Logistic Regression
+
+*   **Observation:** As binary classifiers, `XGBoost` consistently outperformed `LogisticRegression` on every feature set. `XGB(TFIDF)` was the best single-model challenger to `kNN(Emb)`.
+*   **Technical Interpretation:** This shows the power of `XGBoost`. For a binary classification task, its ability to find complex, non-linear relationships allowed it to create more effective decision boundaries than the linear `LogisticRegression`. This makes it a top-tier choice for Binary Relevance implementations.
+
+#### 5. Final Hierarchy of Approaches for This Multi-Label Task
+
+Based on all the data from our experiments, a clear hierarchy emerges:
+
+1.  **Tier 1 (The Champion):** A single, well-tuned **`kNN` on high-quality semantic embeddings**. It is simple, powerful, and achieves the highest accuracy in predicting the exact set of correct labels.
+2.  **Tier 2 (The Most Reliable):** A **heterogeneous soft-voting ensemble**. It may not get the perfect label set as often, but it makes the fewest individual mistakes (lowest Hamming Loss). This would be the preferred model in a risk-averse scenario.
+3.  **Tier 3 (Strong Contenders):** A Binary Relevance framework using a powerful single model like **`XGBoost(TFIDF)`**.
+4.  **Tier 4 (Underperforming):** **Stacking Ensembles** and **Algorithm Adaptation methods** like `ClassifierChain(RandomForest)`. Their complexity did not translate into top-tier performance on this specific multi-label task.
+5.  **Tier 5 (Not Recommended):** Simple linear models on embeddings, GNB, and K-Means, which were clearly not suited for this problem.
+
+![alt text](visualizations/accuracy_multilabel_comparison.png)
+
+![alt text](visualizations/hamming_loss_comparison.png)
+
+![alt text](visualizations/accuracy_vs_loss_tradeoff.png)
+
+---
+## Phase 3
+
+Now comes the final frontier for our project - moving to a fine-tuning approach with a deep learning model 
+
+Instead of using a pre-trained model to *extract features* and then feeding those features to a separate scikit-learn model, we will **load a pre-trained Transformer and continue training its internal weights** to make it an expert on our specific multi-label task.
+
+### The Plan: Fine-Tuning a Transformer for Multi-Label Classification
+
+**1. The Model Architecture:**
+*   We will load our champion embedding model, `intfloat/multilingual-e5-base`, as the core feature extractor.
+*   We will add a "classification head" on top: a simple linear layer with 8 output neurons (one for each of our categories).
+*   Crucially, the final activation function will be **Sigmoid**, not Softmax. This allows each of the 8 neurons to output an independent probability (from 0 to 1), enabling the model to predict multiple labels simultaneously.
+
+**2. The Data Preparation:**
+*   We will use the same multi-label data sampling as before.
+*   The text needs to be tokenized specifically for the Transformer model using its own `tokenizer`.
+*   We'll wrap our data in a PyTorch `Dataset` and `DataLoader` for efficient, batched training.
+
+**3. The Training Process:**
+*   **Loss Function:** We can't use standard Cross-Entropy. The correct loss function for this multi-label setup is **Binary Cross-Entropy with Logits Loss (`BCEWithLogitsLoss`)**. This function essentially treats our 8-class problem as 8 independent binary classification problems and sums the losses, which is exactly what we want.
+*   **Optimizer:** We'll use `AdamW`, the standard, highly effective optimizer for training Transformer models.
+*   **Fine-Tuning:** We will train the model for a few epochs (3-5 is typical). During this process, the gradients will flow back through the entire network, slightly adjusting the pre-trained weights of the e5-base model to make it better at our specific task.
+
+<details>
+<summary>Code for running on Colab</summary>
+
+```python
+# multilabel_deep_learning.py
+
+import os
+import re
+import string
+import time
+import numpy as np
+from datetime import datetime
+from datasets import load_dataset
+from collections import Counter
+
+# NLTK for text cleaning
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# --- NEW: PyTorch and Transformers Imports ---
+import torch
+from torch.utils.data import DataLoader, Dataset
+from transformers import AutoTokenizer, AutoModel
+from torch.optim import AdamW
+
+# Scikit-learn for metrics and data splitting
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, hamming_loss
+
+from tqdm.auto import tqdm
+
+# --- Configuration ---
+# Data Sampling
+CATEGORIES_TO_SELECT = [
+    'math', 'astro-ph', 'cs', 'cond-mat', 'physics',
+    'hep-ph', 'quant-ph', 'hep-th'
+]
+SAMPLES_PER_CATEGORY_APPEARANCE = 5000
+
+# Model & Training
+E5_MODEL_NAME = "intfloat/multilingual-e5-base"
+RANDOM_STATE = 42
+BATCH_SIZE = 8 # Reduced batch size to mitigate OOM error, bigger will cause Colab crash
+EPOCHS = 4
+LEARNING_RATE = 2e-5 
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+LOG_FILE_PATH = "deep_learning_multilabel.txt"
+
+# --- NLTK Downloads (run once if not already downloaded) ---
+try:
+    stopwords.words('english')
+except LookupError:
+    import nltk
+    nltk.download('stopwords')
+try:
+    word_tokenize("test")
+except LookupError:
+    import nltk
+    nltk.download('punkt')
+try:
+    WordNetLemmatizer().lemmatize("test")
+except LookupError:
+    import nltk
+    nltk.download('wordnet')
+    nltk.download('omw-1.4')
+try:
+    import nltk
+    nltk.data.find('tokenizers/punkt_tab/english/')
+except LookupError:
+    import nltk
+    nltk.download('punkt_tab')
+
+
+# --- Helper function for logging ---
+def log_message(message, to_console=True):
+    if to_console:
+        print(message)
+    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+        f.write(message + '\n')
+
+# --- Enhanced Text Preprocessing Function ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+domain_specific_stopwords = {'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 'approach', 'propose', 'demonstrate', 'investigate'}
+stop_words.update(domain_specific_stopwords)
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)
+    tokens = word_tokenize(text)
+    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words]
+    return " ".join(cleaned_tokens)
+
+# --- NEW: PyTorch Dataset Class ---
+class ArxivMultiLabelDataset(Dataset):
+    def __init__(self, texts, labels, tokenizer, max_len=512):
+        self.texts = texts
+        self.labels = labels
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, item_idx):
+        text = self.texts[item_idx]
+        label = self.labels[item_idx]
+
+        encoding = self.tokenizer.encode_plus(
+            text,
+            add_special_tokens=True,
+            max_length=self.max_len,
+            return_token_type_ids=False,
+            padding='max_length',
+            truncation=True,
+            return_attention_mask=True,
+            return_tensors='pt',
+        )
+
+        return {
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
+            'labels': torch.FloatTensor(label)
+        }
+
+# --- Custom Transformer Model for Multi-Label Classification ---
+class MultiLabelTransformer(torch.nn.Module):
+    def __init__(self, base_model_name, n_classes):
+        super(MultiLabelTransformer, self).__init__()
+        self.transformer = AutoModel.from_pretrained(base_model_name)
+        # Add a dropout layer for regularization
+        self.dropout = torch.nn.Dropout(0.2)
+        # The final linear layer that maps the embedding to our 8 classes
+        self.classifier = torch.nn.Linear(self.transformer.config.hidden_size, n_classes)
+
+    def forward(self, input_ids, attention_mask):
+        # Get the embeddings from the base transformer
+        transformer_output = self.transformer(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        # Use the embedding of the [CLS] token for classification
+        pooled_output = transformer_output.pooler_output
+
+        # Apply dropout and the final classification layer
+        output = self.dropout(pooled_output)
+        logits = self.classifier(output)
+        return logits
+
+# --- NEW: Training and Evaluation Functions ---
+def train_epoch(model, data_loader, loss_fn, optimizer, device):
+    model.train()
+    total_loss = 0
+    for batch in tqdm(data_loader, desc="Training"):
+        input_ids = batch["input_ids"].to(device)
+        attention_mask = batch["attention_mask"].to(device)
+        labels = batch["labels"].to(device)
+
+        optimizer.zero_grad()
+
+        logits = model(input_ids, attention_mask)
+
+        loss = loss_fn(logits, labels)
+        total_loss += loss.item()
+
+        loss.backward()
+        optimizer.step()
+
+    return total_loss / len(data_loader)
+
+def eval_model(model, data_loader, device, threshold=0.5):
+    model.eval()
+    all_preds = []
+    all_labels = []
+
+    with torch.no_grad():
+        for batch in tqdm(data_loader, desc="Evaluating"):
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["labels"].to(device)
+
+            logits = model(input_ids, attention_mask)
+            # Apply sigmoid to get probabilities, then apply threshold
+            probs = torch.sigmoid(logits)
+            preds = (probs > threshold).cpu().numpy()
+
+            all_preds.extend(preds)
+            all_labels.extend(labels.cpu().numpy())
+
+    return np.array(all_preds), np.array(all_labels)
+
+# --- Main Execution ---
+log_message("\n\n" + "="*80)
+log_message(f"--- Deep Learning Multi-Label Benchmark: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+log_message("="*80)
+
+# 1. Multi-Label Data Sampling and Preparation
+print("--- Step 1: Multi-Label Data Sampling & Preparation ---")
+category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
+samples = []
+dataset_generator = load_dataset("UniverseTBD/arxiv-abstracts-large", split="train", streaming=True)
+for s in tqdm(dataset_generator, desc="Scanning for samples"):
+    if all(count >= SAMPLES_PER_CATEGORY_APPEARANCE for count in category_counts.values()):
+        break
+    if s['categories'] is None or s['abstract'] is None: continue
+    parent_categories = {cat.split('.')[0] for cat in s['categories'].strip().split(' ')}
+    if any(p in CATEGORIES_TO_SELECT for p in parent_categories):
+        samples.append({'abstract': s['abstract'], 'parent_categories': parent_categories})
+        for p_cat in parent_categories:
+            if p_cat in category_counts:
+                category_counts[p_cat] += 1
+print(f"Finished sampling. Total samples collected: {len(samples)}")
+abstracts = [sample['abstract'] for sample in samples]
+labels_sets = [sample['parent_categories'] for sample in samples]
+processed_abstracts = [clean_text(abstract) for abstract in tqdm(abstracts, desc="Cleaning Abstracts")]
+Y = np.zeros((len(samples), len(CATEGORIES_TO_SELECT)), dtype=int)
+cat_to_idx = {cat: i for i, cat in enumerate(CATEGORIES_TO_SELECT)}
+for i, label_set in enumerate(labels_sets):
+    for label in label_set:
+        if label in cat_to_idx:
+            Y[i, cat_to_idx[label]] = 1
+
+train_texts, test_texts, Y_train, Y_test = train_test_split(
+    processed_abstracts, Y, test_size=0.2, random_state=RANDOM_STATE
+)
+
+# 2. Tokenization and Dataset Creation
+print("\n--- Step 2: Tokenizing Text and Creating PyTorch Datasets ---")
+tokenizer = AutoTokenizer.from_pretrained(E5_MODEL_NAME)
+train_dataset = ArxivMultiLabelDataset(train_texts, Y_train, tokenizer)
+test_dataset = ArxivMultiLabelDataset(test_texts, Y_test, tokenizer)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
+
+# 3. Model Initialization
+print("\n--- Step 3: Initializing Model, Loss Function, and Optimizer ---")
+model = MultiLabelTransformer(E5_MODEL_NAME, n_classes=len(CATEGORIES_TO_SELECT))
+model = model.to(DEVICE)
+# Use BCEWithLogitsLoss for multi-label classification
+loss_fn = torch.nn.BCEWithLogitsLoss()
+optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)
+
+# 4. Training Loop
+print("\n--- Step 4: Starting Fine-Tuning Loop ---")
+for epoch in range(EPOCHS):
+    print(f"\n--- Epoch {epoch + 1}/{EPOCHS} ---")
+    train_loss = train_epoch(model, train_loader, loss_fn, optimizer, DEVICE)
+    print(f"  Train loss: {train_loss:.4f}")
+
+# 5. Final Evaluation
+print("\n--- Step 5: Final Evaluation on Test Set ---")
+Y_pred, Y_true = eval_model(model, test_loader, DEVICE)
+
+# Log results
+accuracy = accuracy_score(Y_true, Y_pred)
+hamming = hamming_loss(Y_true, Y_pred)
+report = classification_report(Y_true, Y_pred, target_names=CATEGORIES_TO_SELECT, zero_division=0)
+
+log_message("\n" + "="*50 + f"\nModel: Fine-Tuned Transformer ({E5_MODEL_NAME})\n" + "="*50)
+log_message(f"Overall Subset Accuracy: {accuracy:.4f}")
+log_message(f"Hamming Loss: {hamming:.4f}\n")
+log_message("Per-Category Performance:")
+log_message(report)
+
+print(f"\nDeep learning benchmark complete. Results appended to '{LOG_FILE_PATH}'.")
+```
+</details>
+
+Results: will report back after it's done training :)
+
+![alt text](visualizations/image.png)

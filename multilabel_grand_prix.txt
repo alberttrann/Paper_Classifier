@@ -1,0 +1,359 @@
+
+
+================================================================================
+--- Multi-Label Grand Prix Benchmark: 2025-08-24 13:07:23 ---
+================================================================================
+
+
+--- Detailed Grand Prix Reports ---
+
+==================================================
+Architecture: LR(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.6490
+Hamming Loss: 0.0582
+              precision    recall  f1-score   support
+
+        math       0.88      0.95      0.91      4441
+    astro-ph       0.92      0.95      0.93      3378
+          cs       0.57      0.91      0.71       950
+    cond-mat       0.81      0.93      0.87      3213
+     physics       0.42      0.84      0.56      1365
+      hep-ph       0.70      0.91      0.79      1543
+    quant-ph       0.59      0.88      0.70      1102
+      hep-th       0.64      0.90      0.75      1564
+
+   micro avg       0.73      0.92      0.82     17556
+   macro avg       0.69      0.91      0.78     17556
+weighted avg       0.77      0.92      0.83     17556
+ samples avg       0.82      0.94      0.85     17556
+
+
+==================================================
+Architecture: LR(BoW)
+==================================================
+Overall Subset Accuracy: 0.6451
+Hamming Loss: 0.0630
+              precision    recall  f1-score   support
+
+        math       0.85      0.93      0.89      4441
+    astro-ph       0.90      0.93      0.92      3378
+          cs       0.63      0.81      0.71       950
+    cond-mat       0.81      0.89      0.85      3213
+     physics       0.42      0.71      0.53      1365
+      hep-ph       0.69      0.85      0.76      1543
+    quant-ph       0.56      0.78      0.65      1102
+      hep-th       0.62      0.84      0.71      1564
+
+   micro avg       0.73      0.87      0.80     17556
+   macro avg       0.69      0.84      0.75     17556
+weighted avg       0.76      0.87      0.81     17556
+ samples avg       0.80      0.90      0.82     17556
+
+
+==================================================
+Architecture: LR(Emb)
+==================================================
+Overall Subset Accuracy: 0.4835
+Hamming Loss: 0.0928
+              precision    recall  f1-score   support
+
+        math       0.82      0.93      0.87      4441
+    astro-ph       0.86      0.95      0.90      3378
+          cs       0.46      0.93      0.62       950
+    cond-mat       0.73      0.92      0.81      3213
+     physics       0.30      0.83      0.44      1365
+      hep-ph       0.54      0.90      0.68      1543
+    quant-ph       0.44      0.88      0.59      1102
+      hep-th       0.48      0.89      0.63      1564
+
+   micro avg       0.62      0.91      0.74     17556
+   macro avg       0.58      0.90      0.69     17556
+weighted avg       0.67      0.91      0.76     17556
+ samples avg       0.71      0.93      0.78     17556
+
+
+==================================================
+Architecture: XGB(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.7138
+Hamming Loss: 0.0476
+              precision    recall  f1-score   support
+
+        math       0.91      0.87      0.89      4441
+    astro-ph       0.96      0.90      0.93      3378
+          cs       0.81      0.61      0.69       950
+    cond-mat       0.90      0.80      0.84      3213
+     physics       0.71      0.29      0.41      1365
+      hep-ph       0.88      0.74      0.80      1543
+    quant-ph       0.81      0.62      0.71      1102
+      hep-th       0.84      0.67      0.75      1564
+
+   micro avg       0.89      0.76      0.82     17556
+   macro avg       0.85      0.69      0.75     17556
+weighted avg       0.88      0.76      0.81     17556
+ samples avg       0.80      0.79      0.79     17556
+
+
+==================================================
+Architecture: XGB(BoW)
+==================================================
+Overall Subset Accuracy: 0.7104
+Hamming Loss: 0.0479
+              precision    recall  f1-score   support
+
+        math       0.90      0.87      0.89      4441
+    astro-ph       0.96      0.90      0.93      3378
+          cs       0.82      0.61      0.70       950
+    cond-mat       0.90      0.78      0.84      3213
+     physics       0.74      0.28      0.41      1365
+      hep-ph       0.88      0.73      0.80      1543
+    quant-ph       0.81      0.61      0.69      1102
+      hep-th       0.84      0.66      0.74      1564
+
+   micro avg       0.89      0.75      0.82     17556
+   macro avg       0.86      0.68      0.75     17556
+weighted avg       0.88      0.75      0.81     17556
+ samples avg       0.80      0.79      0.78     17556
+
+
+==================================================
+Architecture: XGB(Emb)
+==================================================
+Overall Subset Accuracy: 0.6895
+Hamming Loss: 0.0536
+              precision    recall  f1-score   support
+
+        math       0.89      0.87      0.88      4441
+    astro-ph       0.94      0.89      0.92      3378
+          cs       0.81      0.62      0.70       950
+    cond-mat       0.86      0.79      0.82      3213
+     physics       0.64      0.24      0.35      1365
+      hep-ph       0.86      0.66      0.75      1543
+    quant-ph       0.82      0.52      0.64      1102
+      hep-th       0.81      0.56      0.66      1564
+
+   micro avg       0.87      0.73      0.79     17556
+   macro avg       0.83      0.64      0.72     17556
+weighted avg       0.86      0.73      0.78     17556
+ samples avg       0.77      0.77      0.76     17556
+
+
+==================================================
+Architecture: kNN(Emb)
+==================================================
+Overall Subset Accuracy: 0.7825
+Hamming Loss: 0.0394
+              precision    recall  f1-score   support
+
+        math       0.93      0.89      0.91      4441
+    astro-ph       0.95      0.94      0.94      3378
+          cs       0.91      0.65      0.76       950
+    cond-mat       0.87      0.89      0.88      3213
+     physics       0.83      0.39      0.53      1365
+      hep-ph       0.87      0.81      0.84      1543
+    quant-ph       0.86      0.69      0.76      1102
+      hep-th       0.84      0.73      0.78      1564
+
+   micro avg       0.90      0.81      0.85     17556
+   macro avg       0.88      0.75      0.80     17556
+weighted avg       0.90      0.81      0.85     17556
+ samples avg       0.87      0.85      0.85     17556
+
+
+==================================================
+Architecture: GNB(TFIDF)
+==================================================
+Overall Subset Accuracy: 0.3151
+Hamming Loss: 0.1920
+              precision    recall  f1-score   support
+
+        math       0.66      0.95      0.78      4441
+    astro-ph       0.76      0.96      0.85      3378
+          cs       0.28      0.83      0.42       950
+    cond-mat       0.49      0.96      0.65      3213
+     physics       0.20      0.90      0.33      1365
+      hep-ph       0.39      0.89      0.54      1543
+    quant-ph       0.21      0.82      0.34      1102
+      hep-th       0.28      0.89      0.42      1564
+
+   micro avg       0.42      0.93      0.58     17556
+   macro avg       0.41      0.90      0.54     17556
+weighted avg       0.51      0.93      0.63     17556
+ samples avg       0.57      0.94      0.66     17556
+
+
+==================================================
+Architecture: GNB(BoW)
+==================================================
+Overall Subset Accuracy: 0.2701
+Hamming Loss: 0.2506
+              precision    recall  f1-score   support
+
+        math       0.64      0.95      0.77      4441
+    astro-ph       0.60      0.96      0.74      3378
+          cs       0.21      0.89      0.34       950
+    cond-mat       0.45      0.96      0.61      3213
+     physics       0.16      0.92      0.28      1365
+      hep-ph       0.31      0.91      0.46      1543
+    quant-ph       0.18      0.86      0.30      1102
+      hep-th       0.24      0.92      0.38      1564
+
+   micro avg       0.35      0.94      0.51     17556
+   macro avg       0.35      0.92      0.48     17556
+weighted avg       0.44      0.94      0.58     17556
+ samples avg       0.51      0.95      0.61     17556
+
+
+==================================================
+Architecture: GNB(Emb)
+==================================================
+Overall Subset Accuracy: 0.3819
+Hamming Loss: 0.1145
+              precision    recall  f1-score   support
+
+        math       0.76      0.90      0.82      4441
+    astro-ph       0.84      0.87      0.86      3378
+          cs       0.38      0.92      0.54       950
+    cond-mat       0.69      0.88      0.77      3213
+     physics       0.25      0.76      0.38      1365
+      hep-ph       0.50      0.86      0.63      1543
+    quant-ph       0.40      0.82      0.54      1102
+      hep-th       0.45      0.87      0.60      1564
+
+   micro avg       0.56      0.87      0.68     17556
+   macro avg       0.53      0.86      0.64     17556
+weighted avg       0.63      0.87      0.71     17556
+ samples avg       0.64      0.89      0.71     17556
+
+
+==================================================
+Architecture: KMeans(Emb)
+==================================================
+Overall Subset Accuracy: 0.1670
+Hamming Loss: 0.1321
+              precision    recall  f1-score   support
+
+        math       0.00      0.00      0.00      4441
+    astro-ph       0.63      0.84      0.72      3378
+          cs       0.00      0.00      0.00       950
+    cond-mat       0.00      0.00      0.00      3213
+     physics       0.00      0.00      0.00      1365
+      hep-ph       0.00      0.00      0.00      1543
+    quant-ph       0.00      0.00      0.00      1102
+      hep-th       0.00      0.00      0.00      1564
+
+   micro avg       0.63      0.16      0.26     17556
+   macro avg       0.08      0.11      0.09     17556
+weighted avg       0.12      0.16      0.14     17556
+ samples avg       0.18      0.17      0.18     17556
+
+
+==================================================
+Architecture: VoteEns_1
+==================================================
+Overall Subset Accuracy: 0.7603
+Hamming Loss: 0.0405
+              precision    recall  f1-score   support
+
+        math       0.87      0.93      0.90      4441
+    astro-ph       0.96      0.92      0.94      3378
+          cs       0.84      0.79      0.81       950
+    cond-mat       0.85      0.90      0.88      3213
+     physics       0.74      0.51      0.61      1365
+      hep-ph       0.82      0.84      0.83      1543
+    quant-ph       0.79      0.77      0.78      1102
+      hep-th       0.79      0.80      0.80      1564
+
+   micro avg       0.86      0.85      0.86     17556
+   macro avg       0.83      0.81      0.82     17556
+weighted avg       0.86      0.85      0.85     17556
+ samples avg       0.87      0.89      0.86     17556
+
+
+==================================================
+Architecture: VoteEns_2
+==================================================
+Overall Subset Accuracy: 0.7712
+Hamming Loss: 0.0387
+              precision    recall  f1-score   support
+
+        math       0.91      0.91      0.91      4441
+    astro-ph       0.96      0.92      0.94      3378
+          cs       0.91      0.69      0.78       950
+    cond-mat       0.91      0.86      0.88      3213
+     physics       0.91      0.26      0.41      1365
+      hep-ph       0.91      0.78      0.84      1543
+    quant-ph       0.90      0.63      0.74      1102
+      hep-th       0.90      0.70      0.79      1564
+
+   micro avg       0.92      0.79      0.85     17556
+   macro avg       0.91      0.72      0.79     17556
+weighted avg       0.92      0.79      0.84     17556
+ samples avg       0.85      0.83      0.83     17556
+
+
+==================================================
+Architecture: Stack_LR(t)
+==================================================
+Overall Subset Accuracy: 0.7104
+Hamming Loss: 0.0475
+              precision    recall  f1-score   support
+
+        math       0.90      0.95      0.92      4441
+    astro-ph       0.92      0.96      0.94      3378
+          cs       0.66      0.91      0.77       950
+    cond-mat       0.84      0.94      0.89      3213
+     physics       0.51      0.83      0.63      1365
+      hep-ph       0.73      0.92      0.81      1543
+    quant-ph       0.64      0.88      0.74      1102
+      hep-th       0.67      0.90      0.77      1564
+
+   micro avg       0.78      0.93      0.85     17556
+   macro avg       0.73      0.91      0.81     17556
+weighted avg       0.80      0.93      0.85     17556
+ samples avg       0.85      0.95      0.88     17556
+
+
+==================================================
+Architecture: Pure_Stack_LR
+==================================================
+Overall Subset Accuracy: 0.6902
+Hamming Loss: 0.0500
+              precision    recall  f1-score   support
+
+        math       0.89      0.94      0.92      4441
+    astro-ph       0.93      0.96      0.94      3378
+          cs       0.63      0.93      0.75       950
+    cond-mat       0.83      0.93      0.88      3213
+     physics       0.48      0.82      0.61      1365
+      hep-ph       0.73      0.91      0.81      1543
+    quant-ph       0.64      0.88      0.74      1102
+      hep-th       0.67      0.90      0.77      1564
+
+   micro avg       0.77      0.92      0.84     17556
+   macro avg       0.73      0.91      0.80     17556
+weighted avg       0.79      0.92      0.85     17556
+ samples avg       0.84      0.95      0.87     17556
+
+
+
+--- Multi-Label Grand Prix Summary ---
+Model Architecture                            | Subset Accuracy      | Hamming Loss (Lower is Better)
+-----------------------------------------------------------------------------------------------------
+kNN(Emb)                                      | 0.7825               | 0.0394                        
+VoteEns_2                                     | 0.7712               | 0.0387                        
+VoteEns_1                                     | 0.7603               | 0.0405                        
+XGB(TFIDF)                                    | 0.7138               | 0.0476                        
+XGB(BoW)                                      | 0.7104               | 0.0479                        
+Stack_LR(t)                                   | 0.7104               | 0.0475                        
+Pure_Stack_LR                                 | 0.6902               | 0.0500                        
+XGB(Emb)                                      | 0.6895               | 0.0536                        
+LR(TFIDF)                                     | 0.6490               | 0.0582                        
+LR(BoW)                                       | 0.6451               | 0.0630                        
+LR(Emb)                                       | 0.4835               | 0.0928                        
+GNB(Emb)                                      | 0.3819               | 0.1145                        
+GNB(TFIDF)                                    | 0.3151               | 0.1920                        
+GNB(BoW)                                      | 0.2701               | 0.2506                        
+KMeans(Emb)                                   | 0.1670               | 0.1321                        
+-----------------------------------------------------------------------------------------------------

@@ -1,0 +1,61 @@
+
+================================================================================
+--- Multi-Label Adaptation Method Benchmark: 2025-08-24 11:01:23 ---
+================================================================================
+--- Detailed Algorithm Adaptation Reports ---
+
+==================================================
+Model: ClassifierChain(RandomForest(TF-IDF))
+==================================================
+Overall Subset Accuracy: 0.6150
+Hamming Loss: 0.0708
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.67      0.80      0.73      1354
+    astro-ph       0.92      0.84      0.88      1159
+          cs       0.77      0.83      0.80      1059
+    cond-mat       0.74      0.76      0.75      1233
+     physics       0.65      0.51      0.58      1011
+      hep-ph       0.86      0.78      0.82      1001
+    quant-ph       0.81      0.74      0.77       950
+      hep-th       0.82      0.74      0.78      1055
+
+   micro avg       0.77      0.76      0.76      8822
+   macro avg       0.78      0.75      0.76      8822
+weighted avg       0.78      0.76      0.76      8822
+ samples avg       0.78      0.79      0.77      8822
+
+
+==================================================
+Model: ClassifierChain(RandomForest(Embeddings))
+==================================================
+Overall Subset Accuracy: 0.3419
+Hamming Loss: 0.1042
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.93      0.36      0.52      1354
+    astro-ph       0.98      0.60      0.75      1159
+          cs       0.92      0.39      0.55      1059
+    cond-mat       0.91      0.33      0.49      1233
+     physics       0.82      0.01      0.03      1011
+      hep-ph       0.96      0.35      0.52      1001
+    quant-ph       0.93      0.34      0.49       950
+      hep-th       0.93      0.26      0.41      1055
+
+   micro avg       0.94      0.34      0.50      8822
+   macro avg       0.92      0.33      0.47      8822
+weighted avg       0.92      0.34      0.48      8822
+ samples avg       0.40      0.37      0.38      8822
+
+
+
+--- Multi-Label Adaptation Methods Summary ---
+Model Architecture                            | Subset Accuracy      | Hamming Loss (Lower is Better)
+-----------------------------------------------------------------------------------------------------
+ClassifierChain(RandomForest(TF-IDF))         | 0.6150               | 0.0708                        
+ClassifierChain(RandomForest(Embeddings))     | 0.3419               | 0.1042                        
+-----------------------------------------------------------------------------------------------------
