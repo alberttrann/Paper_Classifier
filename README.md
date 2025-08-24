@@ -1070,4 +1070,57 @@ While well-tuned individual models like `LogisticRegression(TFIDF)` provide a st
 
 However, the ultimate performance is achieved through a **heterogeneous stacking architecture**. By training a `LogisticRegression` meta-learner on the calibrated, out-of-fold predictions of three distinct base models (each paired with its optimal feature set) and augmenting this with the original TF-IDF features for context, we achieved a peak accuracy of **89.6%**.
 
-This result proves that the highest levels of performance are unlocked not by a single "magic" algorithm, but by the intelligent synthesis of multiple models and feature types. The champion model stands as a testament to the power of stacking—an architecture that creates a final expert by teaching it to learn from the collective wisdom, and the collective mistakes, of a diverse team of specialists.
+This result proves that the highest levels of performance are unlocked not by a single "magic" algorithm, but by the intelligent synthesis of multiple models and feature types. 
+
+```
+Model Architecture & Configuration           Accuracy
+--------------------------------------------------------------------------------
+Stack: LR(TFIDF)                         | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.56%
+Stack: XGB(TFIDF)                        | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.41%
+Stack: LR(Emb)                           | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Stack: XGB(BoW)                          | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Stack: XGB(Emb)                          | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Soft Voting Ensemble                     | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 88.82%
+Stack: LR(BoW)                           | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 87.66%
+Single Model: LR(tfidf)                  | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.84%
+Stack: GNB(Emb)                          | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.44%
+Single Model: Tuned kNN(emb)             | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 85.99%
+Single Model: Tuned MNB(tfidf)           | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 85.96%
+--------------------------------------------------------------------------------
+```
+
+```
+Model Architecture                                 Accuracy
+----------------------------------------------------------------------
+Best Single Model (LR on TFIDF)      | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.84%
+Soft Voting Ensemble                 | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 88.82%
+Top Stacking Ensemble (LR on TFIDF)  | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.56%
+----------------------------------------------------------------------
+```
+
+```
+Category         | Best Single (LR) | Soft Voting | Stacking Champion
+--------------------------------------------------------------------------
+astro-ph         | ■■■■■■■■■■ 94%    | ■■■■■■■■■■ 95%   | ■■■■■■■■■■ 96%
+cond-mat         | ■■■■■■■■ 83%      | ■■■■■■■■■ 85%    | ■■■■■■■■■ 86%
+cs               | ■■■■■■■■■ 87%     | ■■■■■■■■■■ 90%   | ■■■■■■■■■■ 91%
+hep-ph           | ■■■■■■■■■■ 93%    | ■■■■■■■■■■ 94%   | ■■■■■■■■■■ 94%
+hep-th           | ■■■■■■■■■■ 91%    | ■■■■■■■■■■ 92%   | ■■■■■■■■■■ 92%
+math             | ■■■■■■■■■■ 90%    | ■■■■■■■■■■ 92%   | ■■■■■■■■■■ 93%
+physics          | ■■■■■■■ 71%       | ■■■■■■■ 75%      | ■■■■■■■ 76%
+quant-ph         | ■■■■■■■■■ 86%     | ■■■■■■■■■ 88%    | ■■■■■■■■■ 88%
+--------------------------------------------------------------------------
+```
+
+```
+Meta-Learner Configuration        Accuracy
+--------------------------------------------------
+Stack: LR(TFIDF)      | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.56%
+Stack: XGB(TFIDF)     | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.41%
+Stack: LR(Emb)        | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Stack: XGB(Emb)       | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Stack: XGB(BoW)       | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.35%
+Stack: LR(BoW)        | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 87.66%
+Stack: GNB(Emb)       | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.44%
+--------------------------------------------------
+```
