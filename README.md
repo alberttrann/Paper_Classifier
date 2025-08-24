@@ -618,3 +618,456 @@ XGB(Emb)                  | 0.8350
 
 1[alt text](visualizations/plot_Perf_gains_with_Complexity.png)
 </details>
+
+---
+## PHASE 2
+
+We analyze the datasets to see if any more sample and category could be picked for stress-testing the model
+```
+(.venv) PS E:\AIO\PRJ_3.1> python e:\AIO\PRJ_3.1\analyze_categories.py
+Analyzing categories for dataset: UniverseTBD/arxiv-abstracts-large (split: train)
+This may take a few minutes as it iterates through all 2.29M samples...
+Scanning samples: 100%|███████████████████████████████████████████████████████████████████| 2292057/2292057 [39:51<00:00, 958.50it/s]
+
+================================================================================
+Analysis Complete. Here are the results:
+================================================================================
+
+--- Counts for SINGLE-LABEL Primary Categories ---
+Primary Category          | Number of Samples
+--------------------------------------------------
+math                      | 264800
+astro-ph                  | 204267
+cs                        | 190329
+cond-mat                  | 167272
+physics                   | 81840
+hep-ph                    | 79303
+quant-ph                  | 64677
+hep-th                    | 57406
+gr-qc                     | 29167
+nucl-th                   | 18899
+stat                      | 17987
+hep-ex                    | 17133
+q-bio                     | 11131
+hep-lat                   | 9959
+eess                      | 9077
+nlin                      | 8830
+nucl-ex                   | 7322
+q-fin                     | 3903
+econ                      | 1876
+--------------------------------------------------
+Found 19 unique primary categories in single-label entries.
+
+
+--- Counts for ALL Primary Categories (including multi-label entries) ---
+This shows the overall prevalence of each topic in the entire dataset.
+
+Primary Category          | Total Appearances
+--------------------------------------------------
+math                      | 599954
+cs                        | 532110
+cond-mat                  | 352674
+astro-ph                  | 325879
+physics                   | 235085
+hep-ph                    | 172920
+hep-th                    | 159433
+quant-ph                  | 136852
+stat                      | 109325
+gr-qc                     | 101130
+math-ph                   | 74943
+eess                      | 68768
+nucl-th                   | 54641
+hep-ex                    | 50799
+q-bio                     | 41924
+nlin                      | 40696
+hep-lat                   | 26842
+nucl-ex                   | 24534
+q-fin                     | 17179
+econ                      | 7965
+chao-dyn                  | 2398
+q-alg                     | 1578
+alg-geom                  | 1423
+solv-int                  | 1413
+cmp-lg                    | 894
+dg-ga                     | 732
+patt-sol                  | 650
+adap-org                  | 584
+funct-an                  | 427
+mtrl-th                   | 262
+chem-ph                   | 251
+comp-gas                  | 221
+supr-con                  | 175
+atom-ph                   | 123
+acc-phys                  | 49
+plasm-ph                  | 38
+ao-sci                    | 17
+bayes-an                  | 16
+--------------------------------------------------
+Found 38 unique primary categories in total.
+```
+
+### Analysis of the Category Data
+
+**1. Our Initial 5 Categories were a Good, but Incomplete, Choice:**
+*   `math`, `astro-ph`, `cs`, and `cond-mat` are the top 4 most common single-label categories, which is great.
+*   `physics` is the 5th most common, but it has significantly fewer "clean" single-label samples (`81,840`) compared to the top 4. This might explain why it was sometimes harder for our models to learn its specific patterns.
+
+**2. There Are Other "High-Quality" Categories Available:**
+*   The results reveal several other categories with a very high number of clean, single-label samples that we could use to create a more diverse and challenging benchmark.
+*   **Top Candidates for Addition:**
+    *   `hep-ph` (High Energy Physics - Phenomenology): **79,303** samples. Almost as many as `physics`.
+    *   `quant-ph` (Quantum Physics): **64,677** samples. A very substantial and distinct field.
+    *   `hep-th` (High Energy Physics - Theory): **57,406** samples.
+
+**3. The Dataset is Richly Interdisciplinary:**
+*   Comparing the two tables is very insightful.
+    *   `math`: Jumps from `264k` single-label to `600k` total appearances. This means `math` is a foundational language that appears in many multi-label papers.
+    *   `cs`: Jumps from `190k` to `532k`. The same is true for Computer Science.
+    *   `stat` (Statistics): A massive jump from `18k` single-label to `109k` total appearances, confirming its role as a key methodology across many scientific fields.
+
+### A Strategic Plan for a "Phase 2" Benchmark
+
+Based on this data, we can design a new benchmark that is both more challenging and more representative of the dataset's diversity. This will be a true test of our champion models.
+
+**The Goal:** Create a new, larger, and more diverse 8-class classification problem.
+
+**The New `CATEGORIES_TO_SELECT`:**
+Let's select the **Top 8 most frequent single-label categories**. This gives us a fantastic balance of high sample counts and topic diversity.
+
+Our new category list will be:
+```python
+CATEGORIES_TO_SELECT = [
+    'math', 
+    'astro-ph', 
+    'cs', 
+    'cond-mat', 
+    'physics', 
+    'hep-ph', 
+    'quant-ph', 
+    'hep-th'
+]
+```
+
+**The New `SAMPLES_PER_CATEGORY`:**
+*   The rarest category in our new list is `hep-th` with **57,406** clean samples. This is our new upper limit for creating a perfectly balanced dataset.
+*   We don't need to use all 57k. A sample size of **5,000 samples per category** would be a massive step up from our previous experiments (40,000 total samples vs. 10,000 before) and will create a very robust benchmark.
+
+### The Plan: A New "Grand Champion" Benchmark Script
+
+This script will:
+1.  **Use the new 8-category list.**
+2.  **Use 5,000 samples per category.**
+3.  **Run only the top-performing models and architectures** that we've identified through our entire journey. There's no need to re-test things we know are suboptimal (like single Decision Trees or K-Means).
+
+**Models to be included in the Final Benchmark:**
+
+*   **Best Single Model Baseline:** `MultinomialNB` with our enhanced TF-IDF features.
+*   **Best "Modern" Single Model Baseline:** `KNeighborsClassifier` (tuned) with our best embedding model (`e5-base`).
+*   **Best Voting Ensemble:** The heterogeneous soft-voting ensemble with calibrated probabilities.
+*   **Best Stacking Ensemble:** The champion stacking model `[MNB(t)+kNN(e)+DT(t)] + LR(t)`.
+
+This creates a focused, high-impact final experiment. It pits the very best architectures against each other on a larger, more challenging dataset. This will be the definitive test to crown the ultimate champion model.
+
+
+<details>
+<summary>Benchmark Results</summary>
+
+```
+================================================================================
+--- Grand Champion Benchmark Run: 2025-08-24 08:23:44 ---
+--- Dataset: 8 categories, 5000 samples/cat ---
+================================================================================
+Best MNB params: {'alpha': 0.01}
+Best kNN params: {'n_neighbors': 7, 'weights': 'distance'}
+Best DT params: {'max_depth': 40, 'min_samples_leaf': 1}
+
+
+--- Grand Champion: Single Model Baselines ---
+
+==================================================
+Model: Tuned MNB(tfidf)
+==================================================
+Overall Accuracy: 0.8596
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.90      0.94      1000
+    cond-mat       0.83      0.82      0.82      1000
+          cs       0.85      0.89      0.87      1000
+      hep-ph       0.95      0.90      0.92      1000
+      hep-th       0.87      0.94      0.90      1000
+        math       0.89      0.92      0.91      1000
+     physics       0.65      0.71      0.68      1000
+    quant-ph       0.89      0.80      0.84      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.86      0.86      0.86      8000
+weighted avg       0.86      0.86      0.86      8000
+
+
+==================================================
+Model: Tuned kNN(emb)
+==================================================
+Overall Accuracy: 0.8599
+              precision    recall  f1-score   support
+
+    astro-ph       0.93      0.95      0.94      1000
+    cond-mat       0.79      0.85      0.82      1000
+          cs       0.92      0.85      0.88      1000
+      hep-ph       0.90      0.92      0.91      1000
+      hep-th       0.83      0.93      0.88      1000
+        math       0.89      0.88      0.89      1000
+     physics       0.78      0.63      0.70      1000
+    quant-ph       0.83      0.87      0.85      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.86      0.86      0.86      8000
+weighted avg       0.86      0.86      0.86      8000
+
+
+==================================================
+Model: LR(tfidf)
+==================================================
+Overall Accuracy: 0.8684
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.92      0.94      1000
+    cond-mat       0.83      0.83      0.83      1000
+          cs       0.86      0.88      0.87      1000
+      hep-ph       0.94      0.91      0.93      1000
+      hep-th       0.90      0.92      0.91      1000
+        math       0.87      0.94      0.90      1000
+     physics       0.70      0.72      0.71      1000
+    quant-ph       0.88      0.83      0.86      1000
+
+    accuracy                           0.87      8000
+   macro avg       0.87      0.87      0.87      8000
+weighted avg       0.87      0.87      0.87      8000
+
+
+==================================================
+Model: Soft Voting Ensemble
+==================================================
+Overall Accuracy: 0.8882
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.85      0.86      0.85      1000
+          cs       0.89      0.90      0.90      1000
+      hep-ph       0.95      0.93      0.94      1000
+      hep-th       0.89      0.94      0.92      1000
+        math       0.90      0.94      0.92      1000
+     physics       0.75      0.74      0.75      1000
+    quant-ph       0.90      0.86      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: LR(TFIDF)
+==================================================
+Overall Accuracy: 0.8956
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.94      0.96      1000
+    cond-mat       0.85      0.86      0.86      1000
+          cs       0.92      0.91      0.91      1000
+      hep-ph       0.95      0.94      0.94      1000
+      hep-th       0.91      0.94      0.92      1000
+        math       0.91      0.94      0.93      1000
+     physics       0.76      0.76      0.76      1000
+    quant-ph       0.89      0.88      0.88      1000
+
+    accuracy                           0.90      8000
+   macro avg       0.90      0.90      0.90      8000
+weighted avg       0.90      0.90      0.90      8000
+
+
+==================================================
+Model: Stack: LR(BoW)
+==================================================
+Overall Accuracy: 0.8766
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.83      0.85      0.84      1000
+          cs       0.89      0.88      0.89      1000
+      hep-ph       0.94      0.93      0.93      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.90      0.93      0.91      1000
+     physics       0.72      0.73      0.73      1000
+    quant-ph       0.87      0.84      0.85      1000
+
+    accuracy                           0.88      8000
+   macro avg       0.88      0.88      0.88      8000
+weighted avg       0.88      0.88      0.88      8000
+
+
+==================================================
+Model: Stack: LR(Emb)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.96      1000
+    cond-mat       0.85      0.85      0.85      1000
+          cs       0.92      0.90      0.91      1000
+      hep-ph       0.96      0.94      0.95      1000
+      hep-th       0.90      0.93      0.92      1000
+        math       0.91      0.94      0.92      1000
+     physics       0.75      0.77      0.76      1000
+    quant-ph       0.89      0.87      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(TFIDF)
+==================================================
+Overall Accuracy: 0.8941
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.86      0.85      0.85      1000
+          cs       0.90      0.92      0.91      1000
+      hep-ph       0.94      0.94      0.94      1000
+      hep-th       0.92      0.93      0.92      1000
+        math       0.92      0.93      0.92      1000
+     physics       0.76      0.76      0.76      1000
+    quant-ph       0.88      0.88      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(BoW)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.86      0.85      0.85      1000
+          cs       0.90      0.91      0.91      1000
+      hep-ph       0.94      0.94      0.94      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.91      0.94      0.93      1000
+     physics       0.75      0.76      0.76      1000
+    quant-ph       0.89      0.87      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(Emb)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.85      0.84      0.85      1000
+          cs       0.91      0.92      0.91      1000
+      hep-ph       0.95      0.94      0.94      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.92      0.94      0.93      1000
+     physics       0.75      0.76      0.75      1000
+    quant-ph       0.89      0.88      0.89      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: GNB(Emb)
+==================================================
+Overall Accuracy: 0.8644
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.81      0.84      0.83      1000
+          cs       0.87      0.88      0.87      1000
+      hep-ph       0.95      0.91      0.93      1000
+      hep-th       0.91      0.92      0.91      1000
+        math       0.88      0.94      0.91      1000
+     physics       0.65      0.66      0.66      1000
+    quant-ph       0.89      0.84      0.87      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.87      0.86      0.86      8000
+weighted avg       0.87      0.86      0.86      8000
+
+
+
+--- Grand Champion Benchmark Summary (5000 samples/cat) ---
+Model Configuration                 | Accuracy       
+-----------------------------------------------------
+MNB(tfidf)                          | 0.8596         
+kNN(emb)                            | 0.8599         
+LR(tfidf)                           | 0.8684         
+Soft Voting                         | 0.8882         
+Stack: LR(TFIDF)                    | 0.8956         
+Stack: LR(BoW)                      | 0.8766         
+Stack: LR(Emb)                      | 0.8935         
+Stack: XGB(TFIDF)                   | 0.8941         
+Stack: XGB(BoW)                     | 0.8935         
+Stack: XGB(Emb)                     | 0.8935         
+Stack: GNB(Emb)                     | 0.8644         
+-----------------------------------------------------
+```
+</details>
+
+---
+
+### **Final Project Report: Analysis of the Grand Champion Benchmark**
+
+This final phase of the project was designed to be the ultimate test of our modeling strategies. The dataset was expanded to a challenging 8-class problem, with 5,000 samples per category, totaling 40,000 documents. On this new battleground, we deployed our most optimized individual models and our most sophisticated ensemble architectures.
+
+#### 1. Analysis of the Single Model Baselines
+
+Even on this larger and more diverse dataset, the individual models performed admirably, establishing strong baselines.
+
+*   **Top Performer:** `LogisticRegression` with enhanced TF-IDF features (`LR(tfidf)`) emerged as the best single model with an accuracy of **0.8684**. This reaffirms that a robust linear model paired with strong, keyword-based features is a formidable baseline in text classification.
+*   **Close Contenders:** The tuned `MultinomialNB(tfidf)` and `kNN(emb)` were practically tied for second place at **0.8596** and **0.8599**, respectively. This three-way tie at the top highlights that there is no single "best" algorithm; performance is a function of both the model's inductive bias and the nature of the features it's given.
+*   **The `physics` Challenge:** A consistent theme is the lower performance on the `physics` category across all models (F1-scores of 0.68-0.71). This strongly suggests that the language used in general physics abstracts is less distinct and has more lexical and semantic overlap with the other categories (like `cond-mat`, `quant-ph`, and `astro-ph`) than, for example, `math` or `cs`.
+
+#### 2. Analysis of the Ensemble Architectures
+
+This is where the most significant performance gains were realized, validating the core hypothesis of the project.
+
+*   **Soft Voting Shows Its Value:** The soft voting ensemble, which averages the calibrated probabilities of the three tuned base models, achieved an accuracy of **0.8882**. This represents a significant jump of nearly 2 percentage points over the best single model. This proves that combining the diverse "opinions" of the lexical (MNB), semantic (kNN), and rule-based (DT) models leads to a more robust and accurate decision.
+
+*   **Stacking is Crowned the Undisputed Champion:** The stacking architecture consistently outperformed all other approaches.
+    *   **The Winning Model:** The ultimate champion of the entire project is the **`Stack: LR(TFIDF)`** model, achieving a final accuracy of **0.8956**.
+    *   **The Margin of Victory:** This represents a nearly **2.7 percentage point improvement** over the best single model and a **0.7 percentage point improvement** over the strong soft voting ensemble. This is a clear and decisive victory.
+
+#### 3. Deep Dive: Why the Champion Stacking Model Won
+
+The `Stack: LR(TFIDF)` model's success is a perfect case study in advanced ensemble design. Its architecture is: `[Tuned MNB(tfidf) + Calibrated kNN(emb) + Calibrated DT(tfidf)] + LR(tfidf)`.
+
+1.  **It Uses the Best of All Worlds (Heterogeneous Base):** It doesn't force a single feature type. It allows each base model to use its optimal input:
+    *   `MNB` gets the enhanced TF-IDF features it thrives on.
+    *   `kNN` gets the dense, semantic e5-base embeddings where it excels.
+    *   `DT` gets the TF-IDF features where it performs best.
+
+2.  **It Trusts but Verifies (Calibration):** The predictions from the kNN and DT models are calibrated. This ensures that when they output a probability of "90% confident," that score is statistically reliable and can be fairly compared to the probabilities from the naturally well-calibrated MNB.
+
+3.  **It Employs a Smart Judge (The Meta-Learner):**
+    *   The `LogisticRegression` meta-learner is a simple, robust model that is excellent at finding the optimal linear weights for the inputs it receives.
+    *   Crucially, it receives both the **"experts' opinions"** (the probability predictions from the three base models) and the **"raw evidence"** (the original enhanced TF-IDF features).
+    *   This combination is key. The meta-learner can learn complex rules like: *"The base models are disagreeing on whether this is `cond-mat` or `physics`. However, I see the phrase 'quantum hall effect' in the original TF-IDF features, so I will weigh the `cond-mat` prediction more heavily."* This ability to reference the original text to resolve ambiguities is what pushes its performance to the top.
+
+4.  **XGBoost as a Close Second:** The `Stack: XGB(TFIDF)` model was right behind at **0.8941**. The fact that this powerful non-linear model performed almost identically to the linear Logistic Regression suggests that the primary gains come from the stacking architecture itself, and the final decision boundary is likely quite linear within the rich feature space provided to the meta-learner.
+
+---
+While well-tuned individual models like `LogisticRegression(TFIDF)` provide a strong baseline accuracy of **86.8%**, they are fundamentally limited by their single perspective on the data. A simple **soft-voting ensemble** that combines diverse models improves upon this, reaching **88.8%**.
+
+However, the ultimate performance is achieved through a **heterogeneous stacking architecture**. By training a `LogisticRegression` meta-learner on the calibrated, out-of-fold predictions of three distinct base models (each paired with its optimal feature set) and augmenting this with the original TF-IDF features for context, we achieved a peak accuracy of **89.6%**.
+
+This result proves that the highest levels of performance are unlocked not by a single "magic" algorithm, but by the intelligent synthesis of multiple models and feature types. The champion model stands as a testament to the power of stacking—an architecture that creates a final expert by teaching it to learn from the collective wisdom, and the collective mistakes, of a diverse team of specialists.

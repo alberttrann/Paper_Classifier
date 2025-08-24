@@ -1001,7 +1001,7 @@ weighted avg       0.88      0.88      0.88      2000
 ![alt text](visualizations/plot_5_experiments_comparison_1k.png)
 
 
-![alt text](visualizations/plot_2_embedding_ensembles.pngplot_6_experiments_comparison_2k.png)
+![alt text](visualizations/plot_6_experiments_comparison_2k.png)
 
 ![alt text](visualizations/plot_6_1_data_scaling_effect.png)
 </details>
@@ -1967,7 +1967,7 @@ weighted avg       0.83      0.83      0.83      2000
 <details>
 <summary>Visualizations</summary>
 
-![alt text](visualizations/lot_8_detailed_challenger_benchmark.png)
+![alt text](visualizations/plot_8_detailed_challenger_benchmark.png)
 
 </details>
 

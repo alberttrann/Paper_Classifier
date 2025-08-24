@@ -1,0 +1,249 @@
+
+
+================================================================================
+--- Grand Champion Benchmark Run: 2025-08-24 08:23:44 ---
+--- Dataset: 8 categories, 5000 samples/cat ---
+================================================================================
+Best MNB params: {'alpha': 0.01}
+Best kNN params: {'n_neighbors': 7, 'weights': 'distance'}
+Best DT params: {'max_depth': 40, 'min_samples_leaf': 1}
+
+
+--- Grand Champion: Single Model Baselines ---
+
+==================================================
+Model: Tuned MNB(tfidf)
+==================================================
+Overall Accuracy: 0.8596
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.90      0.94      1000
+    cond-mat       0.83      0.82      0.82      1000
+          cs       0.85      0.89      0.87      1000
+      hep-ph       0.95      0.90      0.92      1000
+      hep-th       0.87      0.94      0.90      1000
+        math       0.89      0.92      0.91      1000
+     physics       0.65      0.71      0.68      1000
+    quant-ph       0.89      0.80      0.84      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.86      0.86      0.86      8000
+weighted avg       0.86      0.86      0.86      8000
+
+
+==================================================
+Model: Tuned kNN(emb)
+==================================================
+Overall Accuracy: 0.8599
+              precision    recall  f1-score   support
+
+    astro-ph       0.93      0.95      0.94      1000
+    cond-mat       0.79      0.85      0.82      1000
+          cs       0.92      0.85      0.88      1000
+      hep-ph       0.90      0.92      0.91      1000
+      hep-th       0.83      0.93      0.88      1000
+        math       0.89      0.88      0.89      1000
+     physics       0.78      0.63      0.70      1000
+    quant-ph       0.83      0.87      0.85      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.86      0.86      0.86      8000
+weighted avg       0.86      0.86      0.86      8000
+
+
+==================================================
+Model: LR(tfidf)
+==================================================
+Overall Accuracy: 0.8684
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.92      0.94      1000
+    cond-mat       0.83      0.83      0.83      1000
+          cs       0.86      0.88      0.87      1000
+      hep-ph       0.94      0.91      0.93      1000
+      hep-th       0.90      0.92      0.91      1000
+        math       0.87      0.94      0.90      1000
+     physics       0.70      0.72      0.71      1000
+    quant-ph       0.88      0.83      0.86      1000
+
+    accuracy                           0.87      8000
+   macro avg       0.87      0.87      0.87      8000
+weighted avg       0.87      0.87      0.87      8000
+
+
+==================================================
+Model: Soft Voting Ensemble
+==================================================
+Overall Accuracy: 0.8882
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.85      0.86      0.85      1000
+          cs       0.89      0.90      0.90      1000
+      hep-ph       0.95      0.93      0.94      1000
+      hep-th       0.89      0.94      0.92      1000
+        math       0.90      0.94      0.92      1000
+     physics       0.75      0.74      0.75      1000
+    quant-ph       0.90      0.86      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: LR(TFIDF)
+==================================================
+Overall Accuracy: 0.8956
+              precision    recall  f1-score   support
+
+    astro-ph       0.98      0.94      0.96      1000
+    cond-mat       0.85      0.86      0.86      1000
+          cs       0.92      0.91      0.91      1000
+      hep-ph       0.95      0.94      0.94      1000
+      hep-th       0.91      0.94      0.92      1000
+        math       0.91      0.94      0.93      1000
+     physics       0.76      0.76      0.76      1000
+    quant-ph       0.89      0.88      0.88      1000
+
+    accuracy                           0.90      8000
+   macro avg       0.90      0.90      0.90      8000
+weighted avg       0.90      0.90      0.90      8000
+
+
+==================================================
+Model: Stack: LR(BoW)
+==================================================
+Overall Accuracy: 0.8766
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.83      0.85      0.84      1000
+          cs       0.89      0.88      0.89      1000
+      hep-ph       0.94      0.93      0.93      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.90      0.93      0.91      1000
+     physics       0.72      0.73      0.73      1000
+    quant-ph       0.87      0.84      0.85      1000
+
+    accuracy                           0.88      8000
+   macro avg       0.88      0.88      0.88      8000
+weighted avg       0.88      0.88      0.88      8000
+
+
+==================================================
+Model: Stack: LR(Emb)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.94      0.96      1000
+    cond-mat       0.85      0.85      0.85      1000
+          cs       0.92      0.90      0.91      1000
+      hep-ph       0.96      0.94      0.95      1000
+      hep-th       0.90      0.93      0.92      1000
+        math       0.91      0.94      0.92      1000
+     physics       0.75      0.77      0.76      1000
+    quant-ph       0.89      0.87      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(TFIDF)
+==================================================
+Overall Accuracy: 0.8941
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.86      0.85      0.85      1000
+          cs       0.90      0.92      0.91      1000
+      hep-ph       0.94      0.94      0.94      1000
+      hep-th       0.92      0.93      0.92      1000
+        math       0.92      0.93      0.92      1000
+     physics       0.76      0.76      0.76      1000
+    quant-ph       0.88      0.88      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(BoW)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.86      0.85      0.85      1000
+          cs       0.90      0.91      0.91      1000
+      hep-ph       0.94      0.94      0.94      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.91      0.94      0.93      1000
+     physics       0.75      0.76      0.76      1000
+    quant-ph       0.89      0.87      0.88      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: XGB(Emb)
+==================================================
+Overall Accuracy: 0.8935
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.95      0.96      1000
+    cond-mat       0.85      0.84      0.85      1000
+          cs       0.91      0.92      0.91      1000
+      hep-ph       0.95      0.94      0.94      1000
+      hep-th       0.91      0.93      0.92      1000
+        math       0.92      0.94      0.93      1000
+     physics       0.75      0.76      0.75      1000
+    quant-ph       0.89      0.88      0.89      1000
+
+    accuracy                           0.89      8000
+   macro avg       0.89      0.89      0.89      8000
+weighted avg       0.89      0.89      0.89      8000
+
+
+==================================================
+Model: Stack: GNB(Emb)
+==================================================
+Overall Accuracy: 0.8644
+              precision    recall  f1-score   support
+
+    astro-ph       0.97      0.93      0.95      1000
+    cond-mat       0.81      0.84      0.83      1000
+          cs       0.87      0.88      0.87      1000
+      hep-ph       0.95      0.91      0.93      1000
+      hep-th       0.91      0.92      0.91      1000
+        math       0.88      0.94      0.91      1000
+     physics       0.65      0.66      0.66      1000
+    quant-ph       0.89      0.84      0.87      1000
+
+    accuracy                           0.86      8000
+   macro avg       0.87      0.86      0.86      8000
+weighted avg       0.87      0.86      0.86      8000
+
+
+
+--- Grand Champion Benchmark Summary (5000 samples/cat) ---
+Model Configuration                 | Accuracy       
+-----------------------------------------------------
+MNB(tfidf)                          | 0.8596         
+kNN(emb)                            | 0.8599         
+LR(tfidf)                           | 0.8684         
+Soft Voting                         | 0.8882         
+Stack: LR(TFIDF)                    | 0.8956         
+Stack: LR(BoW)                      | 0.8766         
+Stack: LR(Emb)                      | 0.8935         
+Stack: XGB(TFIDF)                   | 0.8941         
+Stack: XGB(BoW)                     | 0.8935         
+Stack: XGB(Emb)                     | 0.8935         
+Stack: GNB(Emb)                     | 0.8644         
+-----------------------------------------------------
