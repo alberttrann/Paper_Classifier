@@ -1,7 +1,5 @@
 # Scientific Abstract Classification: A Deep Dive into Ensemble Methods
 
-*Check `benchmark_results.md` for detailed benchmark runs and visualizations of the project*
-
 ![Final Summary Plot](visualizations/plot_final_summary_charts.png)
 
 ## About This Project
@@ -24,7 +22,9 @@ The champion model, achieving **90.4% accuracy**, was a stacking ensemble built 
 
 The project successfully navigated significant technical hurdles—including memory constraints with large datasets, model compliance issues with scikit-learn, and extreme class cardinality requiring strategic data pruning—demonstrating that state-of-the-art performance is achieved not by a single silver-bullet algorithm, but through a deliberate synergy of optimized feature engineering, data-driven model selection, and advanced ensembling techniques.
 
-### 1. Introduction
+### Phase 1 - the 5 most frequent categories 
+
+*Check `benchmark_results.md` for detailed benchmark runs and visualizations of this phase*
 
 #### 1.1. Problem Statement
 The task was to build a robust multi-class classifier to automatically assign a category to a scientific paper based on the content of its abstract. The project utilized the `UniverseTBD/arxiv-abstracts-large` dataset, containing over 2.29 million samples across more than 30,000 distinct categories.
@@ -190,12 +190,12 @@ Stacking Configuration                            | Accuracy
 ![alt text](visualizations/plot_4_stacking_ensembles.png)
 </details>
 
-### **Project Phase 3: Advanced Optimization and Hybrid Modeling**
+### **Advanced Optimization and Hybrid Modeling**
 
 **Core Principle:** All experiments will be conducted on the targeted, balanced subset of data to ensure rapid iteration and clear, comparable results. We will build a new, comprehensive benchmarking script that executes this entire plan.
 
 
-#### **Phase 3, Step 1: Foundational Enhancements (Upgrading the "Ingredients")**
+#### **Step 1: Foundational Enhancements (Upgrading the "Ingredients")**
 
 *   **Sub-step 1.1:** Enhance Text Cleaning (Custom, Domain-Specific Stop Words).
 *   **Sub-step 1.2:** Enhance TF-IDF Vectorizer (n-grams, `min_df`, `max_df`, `sublinear_tf`).
@@ -203,7 +203,7 @@ Stacking Configuration                            | Accuracy
 *   **Sub-step 1.4:** Hyperparameter Tuning of Base Models (`MNB`, `DT`, `kNN`) using `GridSearchCV`.
 
 
-#### **Phase 3, Step 2: Advanced Feature Engineering (Creating New Signals)**
+#### **Step 2: Advanced Feature Engineering (Creating New Signals)**
 
 We will now create a diverse portfolio of feature sets.
 
@@ -216,7 +216,7 @@ We will now create a diverse portfolio of feature sets.
     *   **Goal:** Test if a single strong model can outperform ensembles when given access to all features at once.
 
 
-#### **Phase 3, Step 3: Advanced Single Model Benchmarks**
+#### **Step 3: Advanced Single Model Benchmarks**
 
 Before moving to the final ensembles, we'll test our new combined feature sets.
 
@@ -226,7 +226,7 @@ Before moving to the final ensembles, we'll test our new combined feature sets.
 *   **Goal:** To establish a new "state-of-the-art" single model baseline. It's possible this combination could turn out powerful
 
 
-#### **Phase 3, Step 4: Advanced Ensemble and Stacking Benchmarks**
+#### **Step 4: Advanced Ensemble and Stacking Benchmarks**
 
 This is the final, comprehensive bake-off.
 
@@ -282,7 +282,7 @@ This is the final, comprehensive bake-off.
 *   **Goal:** Systematically find the absolute best combination of calibrated base model predictions, original features, and meta-learner.
 
 
-#### **Phase 3, Step 5: Implement the "Confidence-Gated Ensemble."**
+#### **Step 5: Implement the "Confidence-Gated Ensemble."**
 *   **Action:** Build the cascading ensemble where a meta-learner acts as a "reliability gate."
 *   **Plan:**
     1.  Train the tuned `MNB(tfidf)` as the primary model.
@@ -387,10 +387,7 @@ The comprehensive journey of this project, from initial benchmarks to advanced o
 
 The champion architecture, achieving **90.4% accuracy**, leverages the principle of "using the right tool for the right job" at every level. It combines the lexical precision of a tuned **Multinomial Naive Bayes** on n-gram TF-IDF features with the semantic nuance of a tuned, calibrated **k-Nearest Neighbors** on state-of-the-art **e5-base embeddings**, using a diverse **Decision Tree** to resolve ambiguities. The final verdict is rendered by a **Logistic Regression meta-learner**, which weighs the advice of these experts while also reviewing the raw TF-IDF evidence for itself.
 
-This project demonstrates conclusively that through systematic experimentation, data-driven refinement, and the intelligent combination of diverse feature representations and advanced ensemble techniques, it is possible to build a classifier that is significantly more powerful than the sum of its individual parts.
-
 #### Recap
-
 
 **Table 1: SciBERT - 1000 Samples per Category**
 
@@ -592,7 +589,7 @@ XGB(Emb)                  | 0.8350
 
 </details>
 
-### The Final, Definitive "Story"
+### Key Points
 
 1.  **The Quest for the Best:** The project's goal was to find the highest-performing classifier for scientific abstracts.
 
@@ -1031,7 +1028,7 @@ Stack: GNB(Emb)                     | 0.8644
 
 ### **Analysis of the Grand Champion Benchmark**
 
-This final phase of the project was designed to be the ultimate test of our modeling strategies. The dataset was expanded to a challenging 8-class problem, with 5,000 samples per category, totaling 40,000 documents. On this new battleground, we deployed our most optimized individual models and our most sophisticated ensemble architectures.
+This phase of the project was designed to be the ultimate test of our modeling strategies. The dataset was expanded to a challenging 8-class problem, with 5,000 samples per category, totaling 40,000 documents. On this new battleground, we deployed our most optimized individual models and our most sophisticated ensemble architectures.
 
 #### 1. Analysis of the Single Model Baselines
 
