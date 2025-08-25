@@ -1,1 +1,4 @@
 .venv/
+e5_finetuned_multilabel/
+final_datasets/
+stacking_champion_model/
