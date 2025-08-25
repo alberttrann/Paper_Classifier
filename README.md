@@ -3229,4 +3229,8 @@ The fine-tuned e5 model is the undisputed, overall champion. It not only proved 
     *   The stacking model is a multi-stage pipeline. Each stage (base model training, meta-learner training) is optimized independently. This is powerful but can lead to "local optima" where the best possible solution for one stage isn't the best for the overall system.
     *   The fine-tuned model is an **end-to-end** system. A single loss function (BCEWithLogitsLoss) sends a corrective signal all the way back through the entire network. Every single parameter, from the first embedding layer to the final classification neuron, is adjusted with the single, unified goal of improving the final classification. This holistic optimization process allows it to find a better overall solution (a "global optimum").
 
+![alt text](visualizations/final_model_hierarchy.png)
 
+![alt text](visualizations/champion_f1_score_comparison.png)
+
+![alt text](visualizations/project_journey_performance.png)
