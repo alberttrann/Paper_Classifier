@@ -2891,3 +2891,37 @@ print(f"\nDeep learning benchmark complete. Results appended to '{LOG_FILE_PATH}
 Results: will report back after it's done training :)
 
 ![alt text](visualizations/mid_training.png)
+
+Got slapped with a paywall mid-training on Colab, so have to switch to Kaggle
+
+![alt text](visualizations/paywall.png)
+
+![alt text](visualizations/kaggle.png)
+
+
+### **Final Analysis: The Deep Learning Champion**
+
+This experiment tested the state-of-the-art approach: fine-tuning a powerful pre-trained Transformer model (`e5-base`) specifically for our multi-label classification task. The results are a resounding success and clearly establish a new champion.
+
+#### 1. A New King is Crowned: The Fine-Tuned Transformer
+
+*   **Observation:** The fine-tuned Transformer model achieved a **Subset Accuracy of 0.7962** and a **Hamming Loss of 0.0370**.
+*   **Analysis:** 
+    *   **Highest Subset Accuracy:** The score of **0.7962** decisively surpasses the previous best model, `kNN(Emb)`, which scored **0.7825**. This means the fine-tuned model is the most accurate at predicting the *exact, complete set* of labels for any given abstract. It is the undisputed champion on the project's most challenging metric.
+    *   **Lowest (Best) Hamming Loss:** The score of **0.0370** is also the best we have ever seen, narrowly beating the previous best, `VoteEns_2`, which scored **0.0387**. This indicates that the fine-tuned model makes the fewest individual label errors on average. It is not only the most accurate but also the most reliable model overall.
+
+#### 2. Why the Deep Learning Approach Won
+
+*   **End-to-End Learning:** Unlike our stacking ensembles, which involved multiple separate stages (feature extraction, base model training, meta-learner training), the fine-tuning process is **end-to-end**. The model learns to both *create the features* (by adjusting its internal embeddings) and *make the classification decision* (with its final layer) simultaneously. This allows it to create feature representations that are **perfectly optimized** for the specific multi-label classification task.
+
+*   **Implicit Correlation Modeling:** The Binary Relevance approach, which we used for our ensembles, explicitly assumes that the labels are independent. The fine-tuned Transformer has no such limitation. The deep, interconnected layers of the network can learn the subtle, non-linear relationships between categories. For example, it can learn that the presence of certain phrases strongly suggests `hep-th`, which in turn increases the probability of `hep-ph`, all within a single, unified architecture.
+
+*   **Superior Feature Representation:** The `e5-base` model started with a powerful general understanding of language. By fine-tuning it on 62,000 of our scientific abstracts, we created a new, specialized **"arXiv-e5-base"** model. Its internal embeddings are now experts at representing the specific nuances of scientific writing, making the final classification task much easier.
+
+#### 3. Comparing Architectures: The Final Hierarchy
+
+1.  **Tier 1 (State-of-the-Art):** **Fine-Tuned Transformer (Accuracy: 0.7962, Hamming Loss: 0.0370)**. The clear champion. Its end-to-end, deep learning architecture provides the most powerful and accurate solution.
+2.  **Tier 2 (Excellent, Non-DL alternative):** A **Single `kNN` on pre-trained `e5-base` Embeddings (Accuracy: 0.7825, Hamming Loss: 0.0394)**. This surprisingly simple approach remains the best choice if you cannot afford the computational cost of fine-tuning. It highlights the incredible quality of the base e5 embeddings.
+3.  **Tier 3 (Robust & Reliable):** **Binary Relevance with a Soft-Voting Ensemble (Accuracy: ~0.77, Hamming Loss: ~0.0387)**. While not the most accurate, it makes the fewest errors on average and is a highly robust and interpretable ensemble method.
+4.  **Tier 4 (Underperforming):** Stacking Ensembles and other single-model approaches, which were all surpassed by the top 3 architectures.
+

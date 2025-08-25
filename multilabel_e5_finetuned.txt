@@ -1,0 +1,29 @@
+
+
+================================================================================
+--- Deep Learning Multi-Label Benchmark: 2025-08-24 16:53:38 ---
+================================================================================
+
+==================================================
+Model: Fine-Tuned Transformer (intfloat/multilingual-e5-base)
+==================================================
+Overall Subset Accuracy: 0.7962
+Hamming Loss: 0.0370
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.93      0.91      0.92      4441
+    astro-ph       0.97      0.92      0.95      3378
+          cs       0.86      0.78      0.82       950
+    cond-mat       0.91      0.87      0.89      3213
+     physics       0.76      0.57      0.65      1365
+      hep-ph       0.87      0.83      0.85      1543
+    quant-ph       0.70      0.84      0.77      1102
+      hep-th       0.78      0.81      0.79      1564
+
+   micro avg       0.88      0.85      0.87     17556
+   macro avg       0.85      0.82      0.83     17556
+weighted avg       0.88      0.85      0.87     17556
+ samples avg       0.89      0.89      0.88     17556
+
