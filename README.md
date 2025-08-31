@@ -3246,6 +3246,7 @@ The result is meh, I think it's because of using wrong chat format, will work on
 <details>
 <summary>The meh result</summary>
 
+```
 ==================================================
 --- Gemma Fine-Tuning Results (LoRA model) ---
 ==================================================
@@ -3268,4 +3269,5 @@ Per-Category Performance:
    macro avg       0.09      0.75      0.16      4824
 weighted avg       0.11      0.66      0.18      4824
  samples avg       0.13      0.67      0.21      4824
+ ```
 </details>
