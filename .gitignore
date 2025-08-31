@@ -2,3 +2,5 @@
 e5_finetuned_multilabel/
 final_datasets/
 stacking_champion_model/
+gemma_classifier_lora/
+unsloth_compiled_cache/
