@@ -347,9 +347,8 @@ This led directly to the design of the **"Champion Pipeline"** experiments, whic
 --> Focus on improving the highest previous pipeline of ensemble , integrating 
 1. Enhanced Text Cleaning (Custom, Domain-Specific Stop Words).
 2. Enhanced TF-IDF Vectorizer (n-grams, min_df, max_df, sublinear_tf).
-3. Enhanced SBERT Embeddings (Switch to SciBERT).
-4. Hyperparameter Tuning of Base Models (MNB, DT, kNN) using GridSearchCV.
-5. Try switching LR(tfidf) with XBGClassifier(TFIDF, BoW, Embedding) and GaussianNB(TFIDF, BoW, Embedding)
+3. Hyperparameter Tuning of Base Models (MNB, DT, kNN) using GridSearchCV.
+4. Try switching LR(tfidf) with XBGClassifier(TFIDF, BoW, Embedding) and GaussianNB(TFIDF, BoW, Embedding)
 
 ---
 
@@ -1135,16 +1134,16 @@ The core idea is to move away from models that can only output one answer and to
 These methods transform the multi-label problem so we can still use standard single-label classifiers like the ones we've already built.
 
 *   **a. Binary Relevance (The Most Common Approach):**
-    *   **How it works:** This is the most popular and intuitive method. You break the problem down into multiple, independent binary classification problems. If you have 8 main categories (`math`, `cs`, `physics`, etc.), you would train **8 separate binary classifiers**:
+    *   **How it works:** This is the most popular and intuitive method - break the problem down into multiple, independent binary classification problems. If we have 8 main categories (`math`, `cs`, `physics`, etc.), we would train **8 separate binary classifiers**:
         1.  **A "Math" Classifier:** Trained to predict "Is this abstract about math?" (Yes/No).
         2.  **A "CS" Classifier:** Trained to predict "Is this abstract about CS?" (Yes/No).
         3.  ...and so on for all 8 categories.
-    *   **Inference:** For a new abstract, you run it through all 8 classifiers. If the "Math", "CS", and "Physics" classifiers all output "Yes", then the final prediction for that abstract is the set `{'math', 'cs', 'physics'}`.
-    *   **Pros:** Very easy to implement. You can use any binary classifier you like (e.g., `LogisticRegression`, `XGBoost`).
+    *   **Inference:** For a new abstract, we run it through all 8 classifiers. If the "Math", "CS", and "Physics" classifiers all output "Yes", then the final prediction for that abstract is the set `{'math', 'cs', 'physics'}`.
+    *   **Pros:** Very easy to implement. We can use any binary classifier we like (e.g., `LogisticRegression`, `XGBoost`).
     *   **Cons:** It assumes that the labels are independent (i.e., the probability of a paper being about `cs` has no relationship to it being about `stat`), which is often not true.
 
 *   **b. Classifier Chains:**
-    *   **How it works:** This is an improvement on Binary Relevance that tries to capture label dependencies. You train a chain of binary classifiers.
+    *   **How it works:** This is an improvement on Binary Relevance that tries to capture label dependencies. We train a chain of binary classifiers.
         1.  Train the first classifier (e.g., for `math`) on the input features.
         2.  Train the second classifier (e.g., for `cs`) on the input features **AND the prediction from the first classifier**.
         3.  Train the third classifier (e.g., for `physics`) on the input features **AND the predictions from the first two classifiers**.
@@ -1153,14 +1152,14 @@ These methods transform the multi-label problem so we can still use standard sin
     *   **Cons:** The order of the chain matters, and errors can propagate down the chain.
 
 *   **c. Label Powerset:**
-    *   **How it works:** You transform the problem into a regular multi-class problem by treating every unique *combination* of labels as a single new class.
+    *   **How it works:** We transform the problem into a regular multi-class problem by treating every unique *combination* of labels as a single new class.
         *   `{'math'}` becomes Class 1.
         *   `{'cs'}` becomes Class 2.
         *   `{'physics'}` becomes Class 3.
         *   **`{'math', 'cs'}` becomes Class 4.**
         *   **`{'cs', 'physics'}` becomes Class 5.**
     *   **Pros:** Captures label correlations perfectly.
-    *   **Cons:** Leads to a massive explosion in the number of classes if you have many possible combinations. Not practical for our dataset.
+    *   **Cons:** Leads to a massive explosion in the number of classes if we have many possible combinations. Not practical for our dataset.
 
 #### The Deep Learning Approach (State-of-the-Art)
 
@@ -1169,7 +1168,7 @@ This is the most powerful and common approach for modern multi-label text classi
 *   **How it works:** We use a Transformer model (like our SciBERT or e5-base) but modify the final layer.
     1.  Take the output embedding from the Transformer.
     2.  Instead of feeding it into a single `softmax` layer (which forces a single choice), we feed it into a dense layer with **N neurons** (where N is your number of classes).
-    3.  You then apply a **`sigmoid` activation function to each of these N neurons independently**.
+    3.  WE then apply a **`sigmoid` activation function to each of these N neurons independently**.
     4.  The `sigmoid` function outputs a value between 0 and 1 for each class, representing the probability that the sample belongs to that class, independent of the others.
     5.  We then set a threshold (e.g., 0.5). Any class whose neuron outputs a probability above this threshold is included in the final prediction set.
 *   This approach allows the model to learn the complex underlying features from the text via the Transformer and then make independent but informed decisions about each possible label. It naturally captures label correlations within the deep layers of the network
@@ -1884,7 +1883,7 @@ A better way to compare is the **Hamming Loss**, which measures the fraction of 
 
 1.  **Problem Decomposition is a Powerful Strategy:** The best-performing model (`Binary Relevance`) succeeded by decomposing a single, hard multi-label problem into a series of simpler, independent binary problems. This is a core strategy in engineering and computer science.
 
-2.  **The "Best" Architecture is Task-Dependent:** Stacking was the undisputed king of the multi-class (single-label) problem. However, for the multi-label task, the simpler and more robust **Soft Voting Ensemble** proved superior for each binary sub-problem. This shows that there is no universal "best model"; the optimal architecture depends on the specific structure of the problem you are trying to solve.
+2.  **The "Best" Architecture is Task-Dependent:** Stacking was the undisputed king of the multi-class (single-label) problem. However, for the multi-label task, the simpler and more robust **Soft Voting Ensemble** proved superior for each binary sub-problem. This shows that there is no universal "best model"; the optimal architecture depends on the specific structure of the problem we are trying to solve.
 
 3.  **Feature Engineering Remains Paramount:** Once again, the results show that pairing models with the right features is critical. The failure of `RandomForest(Embeddings)` provides a stark final reminder that even powerful models are ineffective if their underlying assumptions do not match the structure of the data they are given.
 
@@ -2619,10 +2618,10 @@ Instead of using a pre-trained model to *extract features* and then feeding thos
 *   **Fine-Tuning:** We will train the model for a few epochs (3-5 is typical). During this process, the gradients will flow back through the entire network, slightly adjusting the pre-trained weights of the e5-base model to make it better at our specific task.
 
 <details>
-<summary>Code for running on Colab</summary>
+<summary>Code for running on Kaggle</summary>
 
 ```python
-# multilabel_deep_learning.py
+# run_deep_learning_multilabel.py
 
 import os
 import re
@@ -2632,19 +2631,17 @@ import numpy as np
 from datetime import datetime
 from datasets import load_dataset
 from collections import Counter
+import copy # For deep copying the best model state
 
-# NLTK for text cleaning
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-# --- NEW: PyTorch and Transformers Imports ---
 import torch
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, AutoModel
 from torch.optim import AdamW
 
-# Scikit-learn for metrics and data splitting
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, hamming_loss
 
@@ -2661,11 +2658,14 @@ SAMPLES_PER_CATEGORY_APPEARANCE = 5000
 # Model & Training
 E5_MODEL_NAME = "intfloat/multilingual-e5-base"
 RANDOM_STATE = 42
-BATCH_SIZE = 8 # Reduced batch size to mitigate OOM error, bigger will cause Colab crash
-EPOCHS = 4
-LEARNING_RATE = 2e-5 
+BATCH_SIZE = 8
+EPOCHS = 9
+EARLY_STOPPING_PATIENCE = 2 # Stop if validation score doesn't improve for 2 consecutive epochs
+LEARNING_RATE = 2e-5
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LOG_FILE_PATH = "deep_learning_multilabel.txt"
+# NEW: Path to save the best model checkpoint
+BEST_MODEL_PATH = "./e5_finetuned_best_checkpoint"
 
 # --- NLTK Downloads (run once if not already downloaded) ---
 try:
@@ -2691,15 +2691,12 @@ except LookupError:
     import nltk
     nltk.download('punkt_tab')
 
-
 # --- Helper function for logging ---
 def log_message(message, to_console=True):
     if to_console:
         print(message)
     with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
         f.write(message + '\n')
-
-# --- Enhanced Text Preprocessing Function ---
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 domain_specific_stopwords = {'result', 'study', 'show', 'paper', 'model', 'analysis', 'method', 'approach', 'propose', 'demonstrate', 'investigate'}
@@ -2713,63 +2710,41 @@ def clean_text(text):
     cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words]
     return " ".join(cleaned_tokens)
 
-# --- NEW: PyTorch Dataset Class ---
+# --- PyTorch Dataset and Model Classes (Same as before) ---
 class ArxivMultiLabelDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_len=512):
         self.texts = texts
         self.labels = labels
         self.tokenizer = tokenizer
         self.max_len = max_len
-
     def __len__(self):
         return len(self.texts)
-
     def __getitem__(self, item_idx):
         text = self.texts[item_idx]
         label = self.labels[item_idx]
-
         encoding = self.tokenizer.encode_plus(
-            text,
-            add_special_tokens=True,
-            max_length=self.max_len,
-            return_token_type_ids=False,
-            padding='max_length',
-            truncation=True,
-            return_attention_mask=True,
-            return_tensors='pt',
+            text, add_special_tokens=True, max_length=self.max_len,
+            return_token_type_ids=False, padding='max_length',
+            truncation=True, return_attention_mask=True, return_tensors='pt',
         )
+        return {'input_ids': encoding['input_ids'].flatten(),
+                'attention_mask': encoding['attention_mask'].flatten(),
+                'labels': torch.FloatTensor(label)}
 
-        return {
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'labels': torch.FloatTensor(label)
-        }
-
-# --- Custom Transformer Model for Multi-Label Classification ---
 class MultiLabelTransformer(torch.nn.Module):
     def __init__(self, base_model_name, n_classes):
         super(MultiLabelTransformer, self).__init__()
         self.transformer = AutoModel.from_pretrained(base_model_name)
-        # Add a dropout layer for regularization
         self.dropout = torch.nn.Dropout(0.2)
-        # The final linear layer that maps the embedding to our 8 classes
         self.classifier = torch.nn.Linear(self.transformer.config.hidden_size, n_classes)
-
     def forward(self, input_ids, attention_mask):
-        # Get the embeddings from the base transformer
-        transformer_output = self.transformer(
-            input_ids=input_ids,
-            attention_mask=attention_mask
-        )
-        # Use the embedding of the [CLS] token for classification
+        transformer_output = self.transformer(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = transformer_output.pooler_output
-
-        # Apply dropout and the final classification layer
         output = self.dropout(pooled_output)
         logits = self.classifier(output)
         return logits
 
-# --- NEW: Training and Evaluation Functions ---
+# --- Training and Evaluation Functions (Same as before) ---
 def train_epoch(model, data_loader, loss_fn, optimizer, device):
     model.train()
     total_loss = 0
@@ -2777,47 +2752,37 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device):
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
         labels = batch["labels"].to(device)
-
         optimizer.zero_grad()
-
         logits = model(input_ids, attention_mask)
-
         loss = loss_fn(logits, labels)
         total_loss += loss.item()
-
         loss.backward()
         optimizer.step()
-
     return total_loss / len(data_loader)
 
 def eval_model(model, data_loader, device, threshold=0.5):
     model.eval()
-    all_preds = []
-    all_labels = []
-
+    all_preds, all_labels = [], []
     with torch.no_grad():
         for batch in tqdm(data_loader, desc="Evaluating"):
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
             labels = batch["labels"].to(device)
-
             logits = model(input_ids, attention_mask)
-            # Apply sigmoid to get probabilities, then apply threshold
             probs = torch.sigmoid(logits)
             preds = (probs > threshold).cpu().numpy()
-
             all_preds.extend(preds)
             all_labels.extend(labels.cpu().numpy())
-
     return np.array(all_preds), np.array(all_labels)
 
 # --- Main Execution ---
 log_message("\n\n" + "="*80)
-log_message(f"--- Deep Learning Multi-Label Benchmark: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
+log_message(f"--- Deep Learning w/ Early Stopping: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
 log_message("="*80)
 
 # 1. Multi-Label Data Sampling and Preparation
 print("--- Step 1: Multi-Label Data Sampling & Preparation ---")
+# ... (Same as before) ...
 category_counts = {cat: 0 for cat in CATEGORIES_TO_SELECT}
 samples = []
 dataset_generator = load_dataset("UniverseTBD/arxiv-abstracts-large", split="train", streaming=True)
@@ -2842,35 +2807,75 @@ for i, label_set in enumerate(labels_sets):
         if label in cat_to_idx:
             Y[i, cat_to_idx[label]] = 1
 
-train_texts, test_texts, Y_train, Y_test = train_test_split(
+# Split into (train + val) and test
+train_val_texts, test_texts, Y_train_val, Y_test = train_test_split(
     processed_abstracts, Y, test_size=0.2, random_state=RANDOM_STATE
+)
+# Then, split (train + val) into train and val
+train_texts, val_texts, Y_train, Y_val = train_test_split(
+    train_val_texts, Y_train_val, test_size=0.1, random_state=RANDOM_STATE # 10% of the 80% for validation
 )
 
 # 2. Tokenization and Dataset Creation
 print("\n--- Step 2: Tokenizing Text and Creating PyTorch Datasets ---")
 tokenizer = AutoTokenizer.from_pretrained(E5_MODEL_NAME)
 train_dataset = ArxivMultiLabelDataset(train_texts, Y_train, tokenizer)
+val_dataset = ArxivMultiLabelDataset(val_texts, Y_val, tokenizer)
 test_dataset = ArxivMultiLabelDataset(test_texts, Y_test, tokenizer)
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
 # 3. Model Initialization
 print("\n--- Step 3: Initializing Model, Loss Function, and Optimizer ---")
 model = MultiLabelTransformer(E5_MODEL_NAME, n_classes=len(CATEGORIES_TO_SELECT))
 model = model.to(DEVICE)
-# Use BCEWithLogitsLoss for multi-label classification
 loss_fn = torch.nn.BCEWithLogitsLoss()
 optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)
 
-# 4. Training Loop
-print("\n--- Step 4: Starting Fine-Tuning Loop ---")
+# 4. Training Loop with Early Stopping
+print("\n--- Step 4: Starting Fine-Tuning Loop with Early Stopping ---")
+best_val_accuracy = 0
+epochs_no_improve = 0
+best_model_state = None
+
 for epoch in range(EPOCHS):
     print(f"\n--- Epoch {epoch + 1}/{EPOCHS} ---")
     train_loss = train_epoch(model, train_loader, loss_fn, optimizer, DEVICE)
     print(f"  Train loss: {train_loss:.4f}")
 
-# 5. Final Evaluation
+    # Evaluate on validation set
+    print("  Evaluating on validation set...")
+    Y_pred_val, Y_true_val = eval_model(model, val_loader, DEVICE)
+    val_accuracy = accuracy_score(Y_true_val, Y_pred_val)
+    val_hamming = hamming_loss(Y_true_val, Y_pred_val)
+    print(f"  Validation Subset Accuracy: {val_accuracy:.4f}")
+    print(f"  Validation Hamming Loss: {val_hamming:.4f}")
+
+    # Early stopping logic
+    if val_accuracy > best_val_accuracy:
+        best_val_accuracy = val_accuracy
+        # Save the best model state in memory
+        best_model_state = copy.deepcopy(model.state_dict())
+        epochs_no_improve = 0
+        print(f"  New best validation accuracy! Saving model state.")
+    else:
+        epochs_no_improve += 1
+        print(f"  Validation accuracy did not improve. Patience: {epochs_no_improve}/{EARLY_STOPPING_PATIENCE}")
+
+    if epochs_no_improve >= EARLY_STOPPING_PATIENCE:
+        print(f"\nEarly stopping triggered after {epoch + 1} epochs.")
+        break
+
+# 5. Final Evaluation on Test Set using the Best Model
 print("\n--- Step 5: Final Evaluation on Test Set ---")
+# Load the best model state from the training loop
+if best_model_state:
+    model.load_state_dict(best_model_state)
+    print("Loaded best model checkpoint for final evaluation.")
+else:
+    print("No improvement found during training. Using model from the last epoch.")
+
 Y_pred, Y_true = eval_model(model, test_loader, DEVICE)
 
 # Log results
@@ -2878,58 +2883,55 @@ accuracy = accuracy_score(Y_true, Y_pred)
 hamming = hamming_loss(Y_true, Y_pred)
 report = classification_report(Y_true, Y_pred, target_names=CATEGORIES_TO_SELECT, zero_division=0)
 
-log_message("\n" + "="*50 + f"\nModel: Fine-Tuned Transformer ({E5_MODEL_NAME})\n" + "="*50)
+log_message("\n" + "="*50 + f"\nModel: Fine-Tuned Transformer (w/ Early Stopping)\n" + "="*50)
 log_message(f"Overall Subset Accuracy: {accuracy:.4f}")
 log_message(f"Hamming Loss: {hamming:.4f}\n")
 log_message("Per-Category Performance:")
 log_message(report)
 
+# 6. Save the BEST performing model
+print(f"\n--- Saving the best performing model to '{BEST_MODEL_PATH}' ---")
+os.makedirs(BEST_MODEL_PATH, exist_ok=True)
+# Ensure the model to save is the best one
+if best_model_state:
+    model.load_state_dict(best_model_state)
+# Save the underlying transformer and the classifier head
+model.transformer.save_pretrained(BEST_MODEL_PATH)
+torch.save(model.classifier.state_dict(), os.path.join(BEST_MODEL_PATH, "classifier_weights.bin"))
+tokenizer.save_pretrained(BEST_MODEL_PATH)
+print("Best model saved successfully.")
+
 print(f"\nDeep learning benchmark complete. Results appended to '{LOG_FILE_PATH}'.")
 ```
 </details>
 
-Results: will report back after it's done training :)
-
-![alt text](visualizations/mid_training.png)
-
-Got slapped with a paywall mid-training on Colab, so have to switch to Kaggle
-
-![alt text](visualizations/paywall.png)
-
-![alt text](visualizations/kaggle.png)
 
 <details>
 <summary>Results</summary>
 
 ```
-
-
-================================================================================
---- Deep Learning Multi-Label Benchmark: 2025-08-24 16:53:38 ---
-================================================================================
-
 ==================================================
-Model: Fine-Tuned Transformer (intfloat/multilingual-e5-base)
+Model: Fine-Tuned Transformer (w/ Early Stopping)
 ==================================================
-Overall Subset Accuracy: 0.7962
-Hamming Loss: 0.0370
+Overall Subset Accuracy: 0.8063
+Hamming Loss: 0.0353
 
 Per-Category Performance:
               precision    recall  f1-score   support
 
-        math       0.93      0.91      0.92      4441
-    astro-ph       0.97      0.92      0.95      3378
-          cs       0.86      0.78      0.82       950
-    cond-mat       0.91      0.87      0.89      3213
-     physics       0.76      0.57      0.65      1365
-      hep-ph       0.87      0.83      0.85      1543
-    quant-ph       0.70      0.84      0.77      1102
-      hep-th       0.78      0.81      0.79      1564
+        math       0.94      0.91      0.92      4441
+    astro-ph       0.95      0.95      0.95      3378
+          cs       0.89      0.76      0.82       950
+    cond-mat       0.88      0.91      0.89      3213
+     physics       0.69      0.66      0.68      1365
+      hep-ph       0.89      0.81      0.85      1543
+    quant-ph       0.82      0.77      0.79      1102
+      hep-th       0.83      0.79      0.81      1564
 
-   micro avg       0.88      0.85      0.87     17556
-   macro avg       0.85      0.82      0.83     17556
-weighted avg       0.88      0.85      0.87     17556
- samples avg       0.89      0.89      0.88     17556
+   micro avg       0.89      0.86      0.87     17556
+   macro avg       0.86      0.82      0.84     17556
+weighted avg       0.89      0.86      0.87     17556
+ samples avg       0.90      0.90      0.89     17556
 
 ```
 </details>
@@ -2940,10 +2942,10 @@ This experiment tested the state-of-the-art approach: fine-tuning a powerful pre
 
 #### 1. A New King is Crowned: The Fine-Tuned Transformer
 
-*   **Observation:** The fine-tuned Transformer model achieved a **Subset Accuracy of 0.7962** and a **Hamming Loss of 0.0370**.
+*   **Observation:** The fine-tuned Transformer model achieved a **Subset Accuracy of 0.8063** and a **Hamming Loss of 0.0353**.
 *   **Analysis:** 
-    *   **Highest Subset Accuracy:** The score of **0.7962** decisively surpasses the previous best model, `kNN(Emb)`, which scored **0.7825**. This means the fine-tuned model is the most accurate at predicting the *exact, complete set* of labels for any given abstract. It is the undisputed champion on the project's most challenging metric.
-    *   **Lowest (Best) Hamming Loss:** The score of **0.0370** is also the best we have ever seen, narrowly beating the previous best, `VoteEns_2`, which scored **0.0387**. This indicates that the fine-tuned model makes the fewest individual label errors on average. It is not only the most accurate but also the most reliable model overall.
+    *   **Highest Subset Accuracy:** The score of **0.8063** decisively surpasses the previous best model, `kNN(Emb)`, which scored **0.0353**. This means the fine-tuned model is the most accurate at predicting the *exact, complete set* of labels for any given abstract. It is the undisputed champion on the project's most challenging metric.
+    *   **Lowest (Best) Hamming Loss:** The score of **0.0353** is also the best we have ever seen, narrowly beating the previous best, `VoteEns_2`, which scored **0.0387**. This indicates that the fine-tuned model makes the fewest individual label errors on average. It is not only the most accurate but also the most reliable model overall.
 
 #### 2. Why the Deep Learning Approach Won
 
@@ -2955,8 +2957,8 @@ This experiment tested the state-of-the-art approach: fine-tuning a powerful pre
 
 #### 3. Comparing Architectures: The Final Hierarchy
 
-1.  **Tier 1 (State-of-the-Art):** **Fine-Tuned Transformer (Accuracy: 0.7962, Hamming Loss: 0.0370)**. The clear champion. Its end-to-end, deep learning architecture provides the most powerful and accurate solution.
-2.  **Tier 2 (Excellent, Non-DL alternative):** A **Single `kNN` on pre-trained `e5-base` Embeddings (Accuracy: 0.7825, Hamming Loss: 0.0394)**. This surprisingly simple approach remains the best choice if you cannot afford the computational cost of fine-tuning. It highlights the incredible quality of the base e5 embeddings.
+1.  **Tier 1 (State-of-the-Art):** **Fine-Tuned Transformer (Accuracy: 0.8063, Hamming Loss: 0.0353)**. The clear champion. Its end-to-end, deep learning architecture provides the most powerful and accurate solution.
+2.  **Tier 2 (Excellent, Non-DL alternative):** A **Single `kNN` on pre-trained `e5-base` Embeddings (Accuracy: 0.7825, Hamming Loss: 0.0394)**. This surprisingly simple approach remains the best choice if we cannot afford the computational cost of fine-tuning. It highlights the incredible quality of the base e5 embeddings.
 3.  **Tier 3 (Robust & Reliable):** **Binary Relevance with a Soft-Voting Ensemble (Accuracy: ~0.77, Hamming Loss: ~0.0387)**. While not the most accurate, it makes the fewest errors on average and is a highly robust and interpretable ensemble method.
 4.  **Tier 4 (Underperforming):** Stacking Ensembles and other single-model approaches, which were all surpassed by the top 3 architectures.
 
@@ -2992,12 +2994,9 @@ from sklearn.metrics import accuracy_score, classification_report
 from tqdm.auto import tqdm
 
 # --- Configuration ---
-# Path to your saved fine-tuned model
 FINETUNED_MODEL_PATH = "./e5_finetuned_multilabel" 
-# Path to the single-label test data
 TEST_DATA_PATH = "./final_datasets/single_label_test.csv"
 
-# These must match the categories the model was trained on
 CATEGORIES = [
     'math', 'astro-ph', 'cs', 'cond-mat', 'physics', 
     'hep-ph', 'quant-ph', 'hep-th'
@@ -3229,8 +3228,44 @@ The fine-tuned e5 model is the undisputed, overall champion. It not only proved 
     *   The stacking model is a multi-stage pipeline. Each stage (base model training, meta-learner training) is optimized independently. This is powerful but can lead to "local optima" where the best possible solution for one stage isn't the best for the overall system.
     *   The fine-tuned model is an **end-to-end** system. A single loss function (BCEWithLogitsLoss) sends a corrective signal all the way back through the entire network. Every single parameter, from the first embedding layer to the final classification neuron, is adjusted with the single, unified goal of improving the final classification. This holistic optimization process allows it to find a better overall solution (a "global optimum").
 
+<details>
+<summary>Visualizations</summary>
+
 ![alt text](visualizations/final_model_hierarchy.png)
 
 ![alt text](visualizations/champion_f1_score_comparison.png)
 
 ![alt text](visualizations/project_journey_performance.png)
+</details>
+
+---
+# Phase 4 - Try to finetune Gemma 3 270M for this task
+
+The result is meh, I think it's because of using wrong chat format, will work on this later if I have enough time:)
+
+<details>
+<summary>The meh result</summary>
+
+==================================================
+--- Gemma Fine-Tuning Results (LoRA model) ---
+==================================================
+Overall Subset Accuracy: 0.0000
+Hamming Loss: 0.7033
+
+Per-Category Performance:
+              precision    recall  f1-score   support
+
+        math       0.00      0.00      0.00      1181
+    astro-ph       0.23      1.00      0.38       984
+          cs       0.06      1.00      0.11       257
+    cond-mat       0.20      1.00      0.33       848
+     physics       0.08      1.00      0.15       355
+      hep-ph       0.11      1.00      0.19       457
+    quant-ph       0.07      1.00      0.13       303
+      hep-th       0.00      0.00      0.00       439
+
+   micro avg       0.13      0.66      0.21      4824
+   macro avg       0.09      0.75      0.16      4824
+weighted avg       0.11      0.66      0.18      4824
+ samples avg       0.13      0.67      0.21      4824
+</details>

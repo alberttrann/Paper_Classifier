@@ -1,29 +1,70 @@
-
-
-================================================================================
---- Deep Learning Multi-Label Benchmark: 2025-08-24 16:53:38 ---
-================================================================================
-
+--- Epoch 1/9 ---
+Train loss: 0.1339
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7796
+Validation Hamming Loss: 0.0413
+New best validation accuracy! Saving model state.
+--- Epoch 2/9 ---
+Train loss: 0.0968
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7787
+Validation Hamming Loss: 0.0405
+Validation accuracy did not improve. Patience: 1/2
+--- Epoch 3/9 ---
+Train loss: 0.0810
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7916
+Validation Hamming Loss: 0.0385
+New best validation accuracy! Saving model state.
+--- Epoch 4/9 ---
+Train loss: 0.0671
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7933
+Validation Hamming Loss: 0.0384
+New best validation accuracy! Saving model state.
+--- Epoch 5/9 ---
+Train loss: 0.0569
+Evaluating on validation set...
+Validation Subset Accuracy: 0.8063
+Validation Hamming Loss: 0.0353
+New best validation accuracy! Saving model state.
+--- Epoch 6/9 ---
+Train loss: 0.0572
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7867
+Validation Hamming Loss: 0.0389
+Validation accuracy did not improve. Patience: 1/2
+--- Epoch 7/9 ---
+Train loss: 0.0482
+Evaluating on validation set...
+Validation Subset Accuracy: 0.7883
+Validation Hamming Loss: 0.0398
+Validation accuracy did not improve. Patience: 2/2
+Early stopping triggered after 7 epochs.
+--- Step 5: Final Evaluation on Test Set ---
+Loaded best model checkpoint for final evaluation.
 ==================================================
-Model: Fine-Tuned Transformer (intfloat/multilingual-e5-base)
+Model: Fine-Tuned Transformer (w/ Early Stopping)
 ==================================================
-Overall Subset Accuracy: 0.7962
-Hamming Loss: 0.0370
+Overall Subset Accuracy: 0.8063
+Hamming Loss: 0.0353
 
 Per-Category Performance:
               precision    recall  f1-score   support
 
-        math       0.93      0.91      0.92      4441
-    astro-ph       0.97      0.92      0.95      3378
-          cs       0.86      0.78      0.82       950
-    cond-mat       0.91      0.87      0.89      3213
-     physics       0.76      0.57      0.65      1365
-      hep-ph       0.87      0.83      0.85      1543
-    quant-ph       0.70      0.84      0.77      1102
-      hep-th       0.78      0.81      0.79      1564
+        math       0.94      0.91      0.92      4441
+    astro-ph       0.95      0.95      0.95      3378
+          cs       0.89      0.76      0.82       950
+    cond-mat       0.88      0.91      0.89      3213
+     physics       0.69      0.66      0.68      1365
+      hep-ph       0.89      0.81      0.85      1543
+    quant-ph       0.82      0.77      0.79      1102
+      hep-th       0.83      0.79      0.81      1564
 
-   micro avg       0.88      0.85      0.87     17556
-   macro avg       0.85      0.82      0.83     17556
-weighted avg       0.88      0.85      0.87     17556
- samples avg       0.89      0.89      0.88     17556
-
+   micro avg       0.89      0.86      0.87     17556
+   macro avg       0.86      0.82      0.84     17556
+weighted avg       0.89      0.86      0.87     17556
+ samples avg       0.90      0.90      0.89     17556
+	
+--- Saving the best performing model to './e5_finetuned_best_checkpoint' ---
+Best model saved successfully.
