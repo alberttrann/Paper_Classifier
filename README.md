@@ -1068,7 +1068,10 @@ While well-tuned individual models like `LogisticRegression(TFIDF)` provide a st
 
 However, the ultimate performance is achieved through a **heterogeneous stacking architecture**. By training a `LogisticRegression` meta-learner on the calibrated, out-of-fold predictions of three distinct base models (each paired with its optimal feature set) and augmenting this with the original TF-IDF features for context, we achieved a peak accuracy of **89.6%**.
 
-This result proves that the highest levels of performance are unlocked not by a single "magic" algorithm, but by the intelligent synthesis of multiple models and feature types. 
+This result proves that the highest levels of performance are unlocked not by a single "magic" algorithm, but by the intelligent synthesis of multiple models and feature types.
+
+<details>
+<summary>Visualizations</summary>
 
 ```
 Model Architecture & Configuration           Accuracy
@@ -1122,6 +1125,8 @@ Stack: LR(BoW)        | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇�
 Stack: GNB(Emb)       | ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 86.44%
 --------------------------------------------------
 ```
+</details>
+
 ---
 **Project Limitation:** By focusing only on single-label entries (using `if len(s['categories'].split(' ')) != 1: continue`), we deliberately simplified the problem. We changed it from a complex "multi-label classification" task into a simpler "multi-class classification" task. This was a necessary and smart simplification for our initial experiments, but it doesn't reflect the true, messy nature of the data where research is often interdisciplinary.
 
@@ -2587,12 +2592,15 @@ Based on all the data from our experiments, a clear hierarchy emerges:
 4.  **Tier 4 (Underperforming):** **Stacking Ensembles** and **Algorithm Adaptation methods** like `ClassifierChain(RandomForest)`. Their complexity did not translate into top-tier performance on this specific multi-label task.
 5.  **Tier 5 (Not Recommended):** Simple linear models on embeddings, GNB, and K-Means, which were clearly not suited for this problem.
 
+<details>
+<summary>Visualizations</summary>
+
 ![alt text](visualizations/accuracy_multilabel_comparison.png)
 
 ![alt text](visualizations/hamming_loss_comparison.png)
 
 ![alt text](visualizations/accuracy_vs_loss_tradeoff.png)
-
+</details>
 ---
 ## Phase 3
 
