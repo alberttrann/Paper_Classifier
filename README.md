@@ -105,7 +105,7 @@ Check `run_heterogenous_ensembles.py` for code script. Also check `run_embedding
 *   **Value of the "Weak" Learner:** Crucially, the ensemble with the Decision Tree performed better than the ensemble without it. This demonstrates a core principle of ensembling: a weak learner can improve overall performance if its errors are uncorrelated with the errors of the stronger models, providing a valuable "dissenting opinion."
 
 <details>
-<sumamry>Visualizations for embedding-only ensembles</summary>
+<summary>Visualizations for embedding-only ensembles</summary>
 
 ![alt text](visualizations/plot_2_embedding_ensembles.png)
 </details>
@@ -135,7 +135,8 @@ Check `run_stacking_benchmark.py` for code script
 *   **TF-IDF for the Meta-Learner:** The highest performing configurations were those where the Logistic Regression meta-learner was given TF-IDF features as additional context. This suggests that after seeing the probabilistic outputs of the base models, the meta-learner benefits from having access to the original keyword-based features to make a final, refined decision.
 *   **Logistic Regression as an Ideal Meta-Learner:** The simple, linear Logistic Regression outperformed the more complex Decision Tree as a meta-learner, highlighting that for a meta-task, a simpler model that can effectively weigh strong input features is often superior.
 
-#### Recap
+<details>
+<summary>Recap</summary>
 
 ```
 --- Configuration ---
@@ -182,6 +183,8 @@ Stacking Configuration                            | Accuracy
 [MNB(b)+kNN(e)] + LR(t)                           | 0.8910
 [MNB(b)+kNN(e)] + LR(e)			                  | 0.8870
 ```
+</details>
+
 <details>
 <summary>Visualizations</summary>
 
@@ -384,7 +387,8 @@ The comprehensive journey of this project, from initial benchmarks to advanced o
 
 The champion architecture, achieving **90.4% accuracy**, leverages the principle of "using the right tool for the right job" at every level. It combines the lexical precision of a tuned **Multinomial Naive Bayes** on n-gram TF-IDF features with the semantic nuance of a tuned, calibrated **k-Nearest Neighbors** on state-of-the-art **e5-base embeddings**, using a diverse **Decision Tree** to resolve ambiguities. The final verdict is rendered by a **Logistic Regression meta-learner**, which weighs the advice of these experts while also reviewing the raw TF-IDF evidence for itself.
 
-#### Recap
+<details>
+<summary>Recap</summary>
 
 **Table 1: SciBERT - 1000 Samples per Category**
 
@@ -514,6 +518,8 @@ GNB(BoW)                            | 0.7425
 GNB(Emb)                            | 0.8545
 -----------------------------------------------------
 ```
+</details>
+
 <details>
 <summary>Visualizations</summary>
 
@@ -545,6 +551,9 @@ This last set of experiments was the ultimate stress test. We took two powerful,
     *   `LR(BoW)` @ **0.8515** vs. `XGB(BoW)` @ 0.8345
 *   **Technical Insight:** This is a classic text classification result. For high-dimensional, sparse data like BoW and TF-IDF, linear models like Logistic Regression and SVMs are incredibly effective and efficient. They are excellent at finding a linear separating hyperplane in that vast feature space. While XGBoost is more powerful in finding complex, non-linear interactions, it can sometimes be more prone to overfitting on sparse text data if not extensively tuned. The simple, robust nature of Logistic Regression made it the better choice here.
 
+<details>
+<summary>Summary - 1000sam/cat</summary>
+
 ```
 --- Single Model (LR & XGBoost) Summary ---
 1000sam/cat
@@ -558,6 +567,10 @@ XGB(TFIDF)                | 0.8270
 XGB(Emb)                  | 0.8380         
 -------------------------------------------
 ```
+</details>
+
+<details>
+<summary>Summary - 2000sam/cat</summary>
 
 ```
 --- Single Model (LR & XGBoost) Summary ---
@@ -572,6 +585,7 @@ XGB(TFIDF)                | 0.8360
 XGB(Emb)                  | 0.8350         
 -------------------------------------------
 ```
+</details>
 
 **3. The Power of "Just Enough" Features:**
 
@@ -2601,10 +2615,9 @@ Based on all the data from our experiments, a clear hierarchy emerges:
 
 ![alt text](visualizations/accuracy_vs_loss_tradeoff.png)
 </details>
----
-## Phase 3
 
-Now comes the final frontier for our project - moving to a fine-tuning approach with a deep learning model 
+---
+## Phase 3 - Finetuning the e5 embedding model
 
 Instead of using a pre-trained model to *extract features* and then feeding those features to a separate scikit-learn model, we will **load a pre-trained Transformer and continue training its internal weights** to make it an expert on our specific multi-label task.
 
