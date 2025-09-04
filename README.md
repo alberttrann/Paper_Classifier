@@ -3292,3 +3292,7 @@ weighted avg       0.11      0.66      0.18      4824
  samples avg       0.13      0.67      0.21      4824
  ```
 </details>
+
+I've got some new finetuning runs completed, will share results when done
+
+![alt text](visualizations/wandb.png)
