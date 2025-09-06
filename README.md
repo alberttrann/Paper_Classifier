@@ -3296,3 +3296,19 @@ weighted avg       0.11      0.66      0.18      4824
 I've got some new finetuning runs completed, will share results when done
 
 ![alt text](visualizations/wandb.png)
+
+Actually the result is still not good so this time we wont have the gemma model:)
+
+# Phase 5 - DEMO APP
+
+You need to run `train_and_save_production_models.py` first to get the models saved, then `streamlit app.py` to get the apps running
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
